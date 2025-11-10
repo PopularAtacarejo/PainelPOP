@@ -1,0 +1,156 @@
+/* ====== FILTROS ESTILO AVANÇADO ====== */
+.filters-panel {
+    background: var(--input-bg);
+    padding: 1.1rem 1.3rem;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 2.3rem;
+    margin-top: 1rem;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.9rem 1.2rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 600px) {
+    .filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .filters-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 0.97em;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    display: block;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+}
+
+.filter-select, .filter-input {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    font-family: inherit;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    border: 1.2px solid var(--border);
+    font-size: 1rem;
+    background: var(--input-bg);
+    color: var(--text);
+    transition: border var(--transition-speed), box-shadow var(--transition-speed);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.filter-select:focus, .filter-input:focus {
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus-ring) 20%, transparent);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1rem;
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+    .filter-actions {
+        flex-direction: column;
+    }
+}
+
+.filter-actions .btn {
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Estilo para datalist */
+datalist {
+    position: absolute;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Indicador de carregamento nos filtros */
+.filter-loading {
+    position: relative;
+}
+
+.filter-loading::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top: 2px solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Badges de contador de filtros */
+.filter-badge {
+    background: var(--accent);
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+/* Grupo de busca avançada */
+.search-group {
+    grid-column: 1 / -1;
+}
+
+.search-group .filter-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666' width='18px' height='18px'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    background-size: 18px;
+    padding-left: 40px;
+}
+
+/* Filtros ativos */
+.filter-active {
+    border-color: var(--accent) !important;
+    background: color-mix(in srgb, var(--accent) 5%, transparent) !important;
+}
+
+/* Transições suaves */
+.filter-select, .filter-input {
+    transition: all 0.23s cubic-bezier(.4,0,.2,1);
+}
+
+.filter-select:hover, .filter-input:hover {
+    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
