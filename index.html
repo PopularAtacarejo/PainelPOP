@@ -1,272 +1,840 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel Admin - Mercado Arapiraca</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="css/filtros.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Candidaturas</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2E7D32;
+            --primary-dark: #1B5E20;
+            --primary-light: #4CAF50;
+            --accent-color: #388E3C;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --background: #FFFFFF;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --input-border: #E0E0E0;
+            --error-color: #D32F2F;
+            --success-color: #388E3C;
+            --warning-color: #FF9800;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            min-height: 600px;
+            background: var(--background);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.1; }
+            100% { transform: scale(1.2); opacity: 0.15; }
+        }
+
+        .login-right {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .features {
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: slideInLeft 0.5s ease forwards;
+        }
+
+        .feature:nth-child(1) { animation-delay: 0.3s; }
+        .feature:nth-child(2) { animation-delay: 0.5s; }
+        .feature:nth-child(3) { animation-delay: 0.7s; }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .feature-text h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .feature-text p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h2 {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .button-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--input-border);
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+            animation: slideInDown 0.3s ease;
+        }
+
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-error {
+            background: #FFEBEE;
+            color: var(--error-color);
+            border: 1px solid #FFCDD2;
+        }
+
+        .alert-success {
+            background: #E8F5E9;
+            color: var(--success-color);
+            border: 1px solid #C8E6C9;
+        }
+
+        .alert-warning {
+            background: #FFF3E0;
+            color: var(--warning-color);
+            border: 1px solid #FFE0B2;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        .pulse-dots {
+            display: inline-flex;
+            margin-left: 8px;
+        }
+
+        .pulse-dots span {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+            margin: 0 1px;
+            animation: pulseDots 1.4s ease-in-out infinite both;
+        }
+
+        .pulse-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .pulse-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes pulseDots {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .server-status {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-online {
+            background: var(--success-color);
+        }
+
+        .status-waking {
+            background: var(--warning-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-offline {
+            background: var(--error-color);
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .login-left {
+                padding: 30px;
+            }
+
+            .login-right {
+                padding: 30px;
+            }
+
+            .logo h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-left,
+            .login-right {
+                padding: 20px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
-<body data-theme="light">
-  <div class="app-container">
-    <div class="header">
-      <button class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon"></i>
-      </button>
-      
-      <div class="header-content">
-        <h1>Painel Administrativo - Mercado Arapiraca</h1>
-        <p class="header-subtitle">Gerencie candidaturas, vagas e visualize métricas importantes</p>
-      </div>
+<body>
+    <div class="login-container">
+        <!-- Lado esquerdo com informações -->
+        <div class="login-left">
+            <div class="logo">
+                <h1>Sistema RH</h1>
+                <p>Gestão de Candidaturas e Processos Seletivos</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">
+                        <h3>Dashboard Completo</h3>
+                        <p>Acompanhe métricas e indicadores em tempo real</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-text">
+                        <h3>Gestão de Candidatos</h3>
+                        <p>Organize e avalie todas as candidaturas</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-text">
+                        <h3>Acesso Seguro</h3>
+                        <p>Sistema protegido com autenticação avançada</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lado direito com formulário -->
+        <div class="login-right">
+            <div class="login-header">
+                <h2>Bem-vindo de volta</h2>
+                <p>Entre com suas credenciais para acessar o sistema</p>
+            </div>
+
+            <div id="alert" class="alert" style="display: none;"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="seu.email@empresa.com"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <div class="password-container">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-input" 
+                            placeholder="Digite sua senha"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        Lembrar de mim
+                    </label>
+                    <a href="#" class="forgot-password" onclick="showForgotPassword()">Esqueceu a senha?</a>
+                </div>
+
+                <button type="submit" class="login-button" id="loginButton">
+                    <div class="button-content">
+                        <span id="buttonText">Entrar no Sistema</span>
+                        <span id="buttonLoading" class="loading" style="display: none;"></span>
+                    </div>
+                </button>
+            </form>
+
+            <div class="server-status">
+                Status do servidor: 
+                <span id="serverStatusText">Verificando</span>
+                <span class="status-indicator">
+                    <span id="statusDot" class="status-dot status-offline"></span>
+                </span>
+            </div>
+
+            <div class="divider">
+                <span>ou</span>
+            </div>
+
+            <div style="text-align: center;">
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                    Problemas para acessar? <br>
+                    <a href="mailto:suporte@empresa.com" style="color: var(--primary-color); text-decoration: none;">
+                        Contate o suporte técnico
+                    </a>
+                </p>
+            </div>
+        </div>
     </div>
 
-    <div class="tabs-container">
-      <div class="tabs-header">
-        <div class="tab active" data-tab="dashboard">
-          <i class="fas fa-chart-line"></i>
-          Dashboard Interativo
-        </div>
-        <div class="tab" data-tab="curriculos">
-          <i class="fas fa-file-alt"></i>
-          Análise de Currículos
-        </div>
-        <div class="tab" data-tab="vagas">
-          <i class="fas fa-list-ul"></i>
-          Gerenciamento de Vagas
-        </div>
-      </div>
+    <script>
+        // CONFIGURAÇÃO PARA SEU SISTEMA
+        const API_BASE_URL = 'https://formulariobk.onrender.com';
+        const LOGIN_ENDPOINT = '/api/users/login';
+        const HEALTH_CHECK_ENDPOINT = '/health';
+        const REDIRECT_AFTER_LOGIN = 'https://formulariobk.onrender.com/dashboard.html';
+        
+        // Timeouts ajustados para o Render (cold start pode levar até 30s)
+        const REQUEST_TIMEOUT = 45000; // 45 segundos para login
+        const HEALTH_CHECK_TIMEOUT = 10000; // 10 segundos para health check
 
-      <!-- DASHBOARD INTERATIVO -->
-      <div id="dashboard" class="tab-content active">
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <h3>Total de Candidaturas</h3>
-            <div class="value" id="total-candidaturas">0</div>
-            <div class="description">Candidaturas recebidas</div>
-          </div>
-          <div class="metric-card">
-            <h3>Vaga Mais Popular</h3>
-            <div class="value" id="vaga-popular">-</div>
-            <div class="description" id="count-vaga-popular">0 candidaturas</div>
-          </div>
-          <div class="metric-card">
-            <h3>Candidatos de Arapiraca</h3>
-            <div class="value" id="candidatos-arapiraca">0</div>
-            <div class="description" id="percentual-arapiraca">0% do total</div>
-          </div>
-          <div class="metric-card">
-            <h3>Taxa com Transporte</h3>
-            <div class="value" id="taxa-transporte">0%</div>
-            <div class="description">Possuem veículo próprio</div>
-          </div>
-        </div>
+        // Elementos do DOM
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonLoading = document.getElementById('buttonLoading');
+        const alertDiv = document.getElementById('alert');
+        const serverStatusText = document.getElementById('serverStatusText');
+        const statusDot = document.getElementById('statusDot');
 
-        <div class="charts-grid">
-          <div class="chart-card">
-            <h3><i class="fas fa-chart-bar"></i> Candidaturas por Vaga</h3>
-            <canvas id="chart-vagas"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3><i class="fas fa-map-marker-alt"></i> Distribuição por Cidade</h3>
-            <canvas id="chart-cidades"></canvas>
-          </div>
-        </div>
+        // Controladores de abort para timeout
+        let healthCheckController;
+        let loginController;
 
-        <div class="charts-grid">
-          <div class="chart-card">
-            <h3><i class="fas fa-chart-line"></i> Evolução dos Últimos 7 Dias</h3>
-            <canvas id="chart-evolucao"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3><i class="fas fa-car"></i> Status de Transporte</h3>
-            <canvas id="chart-transporte"></canvas>
-          </div>
-        </div>
-      </div>
+        // Função para mostrar alertas
+        function showAlert(message, type) {
+            alertDiv.textContent = message;
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.display = 'block';
+            
+            // Auto-esconder após um tempo
+            const timeout = type === 'success' ? 5000 : 8000;
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, timeout);
+        }
 
-      <!-- ANÁLISE DE CURRÍCULOS -->
-      <div id="curriculos" class="tab-content">
-        <div class="filters-panel">
-          <div class="filters-grid">
-            <div class="filter-group">
-              <label for="filter-vaga">Vaga</label>
-              <select id="filter-vaga" class="filter-select">
-                <option value="todas">Todas as vagas</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label for="filter-cidade">Cidade</label>
-              <select id="filter-cidade" class="filter-select">
-                <option value="todas">Todas as cidades</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label for="filter-transporte">Transporte</label>
-              <select id="filter-transporte" class="filter-select">
-                <option value="todos">Todos</option>
-                <option value="Sim">Com transporte</option>
-                <option value="Não">Sem transporte</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label for="filter-periodo">Período</label>
-              <select id="filter-periodo" class="filter-select">
-                <option value="todos">Todos os períodos</option>
-                <option value="7">Últimos 7 dias</option>
-                <option value="30">Últimos 30 dias</option>
-                <option value="90">Últimos 3 meses</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label for="filter-distancia">Distância</label>
-              <select id="filter-distancia" class="filter-select">
-                <option value="todas">Todas as distâncias</option>
-                <option value="proximos">Mais próximos</option>
-                <option value="distantes">Mais distantes</option>
-              </select>
-            </div>
-            <div class="filter-group search-group">
-              <label for="filter-search">Buscar (Nome, CPF ou Telefone)</label>
-              <input type="text" id="filter-search" class="filter-input" placeholder="Digite para buscar...">
-            </div>
-          </div>
-          <div class="filter-actions">
-            <button class="btn btn-primary" id="aplicar-filtros">
-              <i class="fas fa-search"></i> Buscar
-            </button>
-            <button class="btn btn-secondary" id="limpar-filtros">
-              <i class="fas fa-eraser"></i> Limpar Filtros
-            </button>
-          </div>
-        </div>
+        // Função para alternar visibilidade da senha
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleButton = document.querySelector('.toggle-password');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.textContent = '🙈';
+            } else {
+                passwordField.type = 'password';
+                toggleButton.textContent = '👁️';
+            }
+        }
 
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Vaga</th>
-                <th>Cidade</th>
-                <th>Bairro</th>
-                <th>Transporte</th>
-                <th>Data</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="corpo-tabela">
-              <tr>
-                <td colspan="7" style="text-align: center; padding: 2rem;">
-                  <i class="fas fa-spinner fa-spin"></i> Carregando dados...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        // Função para mostrar mensagem de "esqueci a senha"
+        function showForgotPassword() {
+            showAlert('Entre em contato com o administrador do sistema para redefinir sua senha.', 'error');
+            return false;
+        }
 
-        <div class="filter-actions">
-          <div id="pagination-info" style="color: var(--legend-text); font-size: 0.9rem;">
-            Mostrando 0 de 0 registros
-          </div>
-          <div id="pagination">
-            <!-- Paginação será gerada aqui -->
-          </div>
-        </div>
-      </div>
+        // Função para validar email
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
 
-      <!-- GERENCIAMENTO DE VAGAS -->
-      <div id="vagas" class="tab-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-          <h2 style="color: var(--text);">Gerenciamento de Vagas</h2>
-          <button class="btn btn-primary" id="add-vaga-btn">
-            <i class="fas fa-plus"></i> Nova Vaga
-          </button>
-        </div>
+        // Função para verificar status do servidor
+        async function checkServerStatus() {
+            healthCheckController = new AbortController();
+            const timeoutId = setTimeout(() => healthCheckController.abort(), HEALTH_CHECK_TIMEOUT);
+            
+            try {
+                serverStatusText.textContent = 'Verificando';
+                statusDot.className = 'status-dot status-waking';
+                
+                const response = await fetch(`${API_BASE_URL}${HEALTH_CHECK_ENDPOINT}`, {
+                    signal: healthCheckController.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    serverStatusText.textContent = 'Online';
+                    statusDot.className = 'status-dot status-online';
+                    return true;
+                } else {
+                    throw new Error('Servidor não respondeu corretamente');
+                }
+            } catch (error) {
+                clearTimeout(timeoutId);
+                serverStatusText.textContent = 'Offline ou iniciando';
+                statusDot.className = 'status-dot status-offline';
+                
+                if (error.name === 'AbortError') {
+                    console.log('Health check timeout - servidor pode estar iniciando');
+                } else {
+                    console.error('Erro no health check:', error);
+                }
+                return false;
+            }
+        }
 
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome da Vaga</th>
-                <th>Status</th>
-                <th>Candidaturas</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tabela-vagas">
-              <tr>
-                <td colspan="4" style="text-align: center; padding: 2rem;">
-                  <i class="fas fa-spinner fa-spin"></i> Carregando vagas...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+        // Função para fazer login com timeout estendido
+        async function handleLogin(email, password) {
+            // Criar novo AbortController para esta requisição
+            loginController = new AbortController();
+            const timeoutId = setTimeout(() => {
+                loginController.abort();
+                showAlert('O servidor está iniciando. Isso pode levar até 30 segundos. Tente novamente em instantes.', 'warning');
+            }, REQUEST_TIMEOUT);
+            
+            try {
+                // Mostrar estado de carregamento
+                loginButton.disabled = true;
+                buttonText.textContent = 'Conectando';
+                buttonLoading.style.display = 'inline-block';
+                
+                // Mostrar indicador de servidor iniciando após 5 segundos
+                const slowRequestIndicator = setTimeout(() => {
+                    buttonText.innerHTML = 'Servidor iniciando <span class="pulse-dots"><span></span><span></span><span></span></span>';
+                }, 5000);
 
-  <!-- MODAL DE DETALHES DO CANDIDATO -->
-  <div id="candidato-modal" class="modal">
-    <div class="modal-content">
-      <button class="modal-close" id="close-modal">&times;</button>
-      <div class="modal-header">
-        <h2>Detalhes do Candidato</h2>
-      </div>
-      <div id="candidato-info">
-        <!-- Informações serão preenchidas via JavaScript -->
-      </div>
-    </div>
-  </div>
+                const apiUrl = `${API_BASE_URL}${LOGIN_ENDPOINT}`;
+                console.log('Fazendo requisição para:', apiUrl);
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    }),
+                    signal: loginController.signal
+                });
 
-  <!-- MODAL DE NOVA VAGA -->
-  <div id="vaga-modal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
-      <button class="modal-close" id="close-vaga-modal">&times;</button>
-      <div class="modal-header">
-        <h2 id="vaga-modal-title">Nova Vaga</h2>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <div class="filter-group">
-          <label for="vaga-nome">Nome da Vaga</label>
-          <input type="text" id="vaga-nome" class="filter-input" placeholder="Ex: Caixa">
-        </div>
-        <div class="filter-group">
-          <label for="vaga-status">Status</label>
-          <select id="vaga-status" class="filter-select">
-            <option value="true">Ativa</option>
-            <option value="false">Inativa</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" id="salvar-vaga-btn">Salvar Vaga</button>
-      </div>
-    </div>
-  </div>
+                clearTimeout(timeoutId);
+                clearTimeout(slowRequestIndicator);
 
-  <!-- MODAL DE DISTÂNCIA -->
-  <div id="distancia-modal" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
-      <button class="modal-close" id="close-distancia-modal">&times;</button>
-      <div class="modal-header">
-        <h2><i class="fas fa-route"></i> Calculadora de Distância</h2>
-      </div>
-      <div id="distancia-content">
-        <!-- Conteúdo será preenchido via JavaScript -->
-      </div>
-    </div>
-  </div>
+                const data = await response.json();
+                console.log('Resposta da API:', data);
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script src="js/curriculos.js"></script>
-  <script src="js/vagas.js"></script>
-  <script src="js/modals.js"></script>
-  <script src="js/app.js"></script>
+                if (response.ok && data.ok) {
+                    showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+                    
+                    // Salvar token e dados do usuário
+                    localStorage.setItem('userToken', data.token);
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+                    
+                    // Salvar email se "Lembrar de mim" estiver marcado
+                    if (document.getElementById('remember').checked) {
+                        localStorage.setItem('savedEmail', email);
+                        localStorage.setItem('rememberMe', 'true');
+                    }
+                    
+                    // Atualizar status do servidor
+                    serverStatusText.textContent = 'Online';
+                    statusDot.className = 'status-dot status-online';
+                    
+                    // Redirecionar para dashboard
+                    setTimeout(() => {
+                        window.location.href = REDIRECT_AFTER_LOGIN;
+                    }, 1500);
+                } else {
+                    // Tratar diferentes formatos de erro
+                    const errorMessage = data.message || data.error || 'Erro ao fazer login. Verifique suas credenciais.';
+                    showAlert(errorMessage, 'error');
+                    
+                    // Restaurar texto do botão
+                    buttonText.textContent = 'Entrar no Sistema';
+                }
+            } catch (error) {
+                clearTimeout(timeoutId);
+                
+                if (error.name === 'AbortError') {
+                    // Timeout - servidor provavelmente em cold start
+                    console.log('Login timeout - servidor em cold start');
+                    // Não mostrar alerta aqui pois já mostramos no timeout
+                } else {
+                    console.error('Erro no login:', error);
+                    showAlert('Erro de conexão. O servidor pode estar offline ou iniciando.', 'error');
+                    buttonText.textContent = 'Entrar no Sistema';
+                }
+            } finally {
+                // Restaurar estado normal do botão
+                loginButton.disabled = false;
+                buttonLoading.style.display = 'none';
+                
+                // Garantir que o texto volte ao normal
+                if (buttonText.textContent.includes('Servidor iniciando')) {
+                    buttonText.textContent = 'Entrar no Sistema';
+                }
+            }
+        }
+
+        // Event listener para o formulário
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Validações
+            if (!email || !password) {
+                showAlert('Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showAlert('Por favor, insira um e-mail válido.', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('A senha deve ter pelo menos 6 caracteres.', 'error');
+                return;
+            }
+
+            // Fazer login
+            handleLogin(email, password);
+        });
+
+        // Verificar status do servidor e credenciais salvas ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar credenciais salvas
+            const savedEmail = localStorage.getItem('savedEmail');
+            const rememberMe = localStorage.getItem('rememberMe') === 'true';
+            
+            if (savedEmail && rememberMe) {
+                emailInput.value = savedEmail;
+                document.getElementById('remember').checked = true;
+            }
+
+            // Verificar se já está logado (redirecionar automaticamente)
+            const userToken = localStorage.getItem('userToken');
+            if (userToken) {
+                showAlert('Você já está logado. Redirecionando...', 'success');
+                setTimeout(() => {
+                    window.location.href = REDIRECT_AFTER_LOGIN;
+                }, 1000);
+            }
+
+            // Verificar status do servidor
+            checkServerStatus();
+            
+            // Focar no campo de email
+            emailInput.focus();
+            
+            // Mostrar informações de configuração (apenas para debug)
+            console.log('Configuração da API:', {
+                baseUrl: API_BASE_URL,
+                endpoint: LOGIN_ENDPOINT,
+                fullUrl: `${API_BASE_URL}${LOGIN_ENDPOINT}`,
+                timeouts: {
+                    login: REQUEST_TIMEOUT,
+                    healthCheck: HEALTH_CHECK_TIMEOUT
+                }
+            });
+        });
+
+        // Salvar email se "Lembrar de mim" estiver marcado
+        document.getElementById('remember').addEventListener('change', function(e) {
+            if (!e.target.checked) {
+                localStorage.removeItem('savedEmail');
+                localStorage.setItem('rememberMe', 'false');
+            }
+        });
+
+        // Melhorar UX: Enter para submeter
+        emailInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        });
+
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Tentar novamente verificar status do servidor
+        setInterval(checkServerStatus, 30000); // A cada 30 segundos
+    </script>
 </body>
 </html>
