@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Admin - Mercado Arapiraca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ESTILOS GLOBAIS E VARIÁVEIS (sem alterações, mantidos como no original) */
+    :root {
+      --bg-light: #f8fafc; --text-light: #1e293b;
+      --accent-light: #059669; --accent-light-hover: #047857;
+      --secondary-light: #10b981; --secondary-light-hover: #059669;
+      --focus-ring-light: #dc2626; --error-light: #dc2626; --success-light: #059669;
+      --border-light: #e2e8f0; --shadow-light: rgba(0,0,0,.05);
+      --input-bg-light: #fff; --input-text-light: #475569;
+      --card-bg-light: #ffffff; --legend-text-light: #64748b;
+      --step-bg-light: #f8fafc;
+      --header-bg-light: linear-gradient(135deg, #059669 0%, #10b981 100%);
+
+      --bg-dark: #0f172a; --text-dark: #f1f5f9;
+      --accent-dark: #10b981; --accent-dark-hover: #059669;
+      --secondary-dark: #34d399; --secondary-dark-hover: #10b981;
+      --focus-ring-dark: #ef4444; --error-dark: #f87171; --success-dark: #34d399;
+      --border-dark: #334155; --shadow-dark: rgba(255,255,255,.05);
+      --input-bg-dark: #1e293b; --input-text-dark: #cbd5e1; 
+      --card-bg-dark: #1e293b; --legend-text-dark: #94a3b8;
+      --step-bg-dark: #1e293b;
+      --header-bg-dark: linear-gradient(135deg, #047857 0%, #059669 100%);
+
+      --bg: var(--bg-light); --text: var(--text-light); --accent: var(--accent-light);
+      --accent-hover: var(--accent-light-hover); --focus-ring: var(--focus-ring-light);
+      --error-color: var(--error-light); --success-color: var(--success-light);
+      --border: var(--border-light); --shadow: var(--shadow-light);
+      --input-bg: var(--input-bg-light); --input-text: var(--input-text-light);
+      --card-bg: var(--card-bg-light); --legend-text: var(--legend-text-light);
+      --step-bg: var(--step-bg-light);
+      --header-bg: var(--header-bg-light);
+      --transition-speed: .3s;
+      --border-radius: 16px;
+      --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      --header-height: 180px;
+    }
+    
+    [data-theme='dark'] {
+      --bg: var(--bg-dark); --text: var(--text-dark); --accent: var(--accent-dark);
+      --accent-hover: var(--accent-dark-hover); --focus-ring: var(--focus-ring-dark);
+      --error-color: var(--error-dark); --success-color: var(--success-dark);
+      --border: var(--border-dark); --shadow: var(--shadow-dark);
+      --input-bg: var(--input-bg-dark); --input-text: var(--input-text-dark);
+      --card-bg: var(--card-bg-dark); --legend-text: var(--legend-text-dark);
+      --step-bg: var(--step-bg-dark);
+      --header-bg: var(--header-bg-dark);
+      --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background-color var(--transition-speed), color var(--transition-speed); min-height: 100vh; }
+    .app-container { width: 100%; max-width: 1400px; margin: 0 auto; position: relative; }
+    
+    /* ESTILOS DO HEADER E CONTEÚDO (sem alterações) */
+    .header { background: var(--header-bg); color: white; padding: 2rem; border-radius: 0 0 var(--border-radius) var(--border-radius); text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+    .header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity: 0.3; }
+    .header-content { position: relative; z-index: 1; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .header-subtitle { font-size: 1rem; opacity: 0.9; margin-bottom: 1.5rem; font-weight: 400; }
+    
+    /* ====== MENU DO USUÁRIO E TEMA ====== */
+    .header-actions { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; align-items: center; gap: 1rem; z-index: 10; }
+    .theme-toggle { background: rgba(255, 255, 255, 0.2); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: all 0.3s ease; }
+    .theme-toggle:hover { background: rgba(255, 255, 255, 0.3); transform: rotate(30deg); }
+    .user-menu { position: relative; }
+    .user-menu-button { background: rgba(255, 255, 255, 0.2); border: none; height: 40px; border-radius: 20px; color: white; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; padding: 0 15px 0 10px; gap: 10px; }
+    .user-menu-button:hover { background: rgba(255, 255, 255, 0.3); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; }
+    .user-menu-dropdown { display: none; position: absolute; top: 50px; right: 0; background: var(--card-bg); border-radius: 8px; box-shadow: var(--card-shadow); list-style: none; padding: 0.5rem 0; min-width: 180px; z-index: 20; }
+    .user-menu-dropdown.show { display: block; }
+    .user-menu-dropdown li a { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1.2rem; color: var(--text); text-decoration: none; font-size: 0.9rem; }
+    .user-menu-dropdown li a:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .user-menu-dropdown li a i { width: 16px; text-align: center; }
+
+    /* ESTILOS DO CONTEÚDO (Tabs, Cards, Gráficos, etc. - sem alterações) */
+    .tabs-container { background: var(--card-bg); margin: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--card-shadow); overflow: hidden; }
+    .tabs-header { display: flex; border-bottom: 1px solid var(--border); background: var(--card-bg); }
+    .tab { padding: 1.2rem 1.5rem; cursor: pointer; transition: all var(--transition-speed); border-bottom: 3px solid transparent; font-weight: 600; color: var(--legend-text); display: flex; align-items: center; gap: 0.5rem; }
+    .tab.active { border-bottom: 3px solid var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
+    .tab:hover:not(.active) { background: color-mix(in srgb, var(--accent) 2%, transparent); color: var(--text); }
+    .tab-content { display: none; padding: 2rem; animation: fadeInUp .5s ease-out; }
+    .tab-content.active { display: block; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .metric-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 1.5rem; box-shadow: var(--card-shadow); border-left: 4px solid var(--accent); transition: all var(--transition-speed); position: relative; overflow: hidden; }
+    .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
+    .metric-card h3 { font-size: 0.9rem; color: var(--legend-text); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600; }
+    .metric-card .value { font-size: 2rem; font-weight: 700; color: var(--text); }
+    .metric-card .description { font-size: 0.85rem; color: var(--legend-text); }
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .chart-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 1.5rem; box-shadow: var(--card-shadow); }
+    .chart-card h3 { margin-bottom: 1rem; color: var(--text); font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .chart-card h3 i { color: var(--accent); }
+    .table-container { background: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 2rem; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: linear-gradient(90deg, var(--accent), var(--accent-hover)); color: white; }
+    th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+    .filters-panel { background: var(--card-bg); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--card-shadow); margin-bottom: 1.5rem; }
+    .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .filter-group { display: flex; flex-direction: column; }
+    .filter-group label { margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .filter-select, .filter-input { padding: 0.8rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--input-bg); color: var(--input-text); font-size: 0.9rem; transition: all var(--transition-speed); outline: none; }
+    .filter-select:focus, .filter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+    .filter-actions { display: flex; gap: 1rem; justify-content: flex-end; align-items: center; margin-top: 1rem; }
+    .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all var(--transition-speed); display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: color-mix(in srgb, var(--border) 80%, black); }
+    .action-btn { padding: 0.5rem 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all var(--transition-speed); margin: 0 0.2rem; }
+    .action-btn.view { background: var(--accent); color: white; }
+    .action-btn.edit { background: var(--secondary-light); color: white; }
+    .action-btn.delete { background: var(--error-color); color: white; }
+    .action-btn.distance { background: #8b5cf6; color: white; }
+    .action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .badge { padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-success { background: color-mix(in srgb, var(--success-color) 15%, transparent); color: var(--success-color); }
+    .badge-warning { background: color-mix(in srgb, #f97316 15%, transparent); color: #f97316; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
+    .modal-content { background: var(--card-bg); padding: 2rem; border-radius: var(--border-radius); width: 90%; max-width: 600px; box-shadow: var(--card-shadow); position: relative; animation: fadeInUp .3s; }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--legend-text); }
+    .modal-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .modal-header h2 { color: var(--text); font-size: 1.5rem; }
+    
+    /* ====== NOTIFICAÇÕES (TOASTS) ====== */
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+    .toast { padding: 1rem 1.5rem; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: slideInRight 0.4s ease-out; display: flex; align-items: center; gap: 10px; }
+    .toast.success { background-color: var(--success-color); }
+    .toast.error { background-color: var(--error-color); }
+    @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { to { opacity: 0; } }
+
+    /* ====== ANIMAÇÕES E RESPONSIVIDADE (sem alterações) ====== */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) {
+      .header-actions { right: 1rem; }
+      .user-menu-button span { display: none; }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div id="toast-container"></div>
+
+  <div class="app-container">
+    <div class="header">
+      <div class="header-actions">
+        <div class="user-menu">
+          <button class="user-menu-button" id="userMenuButton">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <span id="userName">Carregando...</span>
+            <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
+          </button>
+          <ul class="user-menu-dropdown" id="userMenuDropdown">
+            <li><a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Sair (Logout)</a></li>
+          </ul>
+        </div>
+        <button class="theme-toggle" id="themeToggle">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+      
+      <div class="header-content">
+        <h1>Painel Administrativo</h1>
+        <p class="header-subtitle">Gerencie candidaturas, vagas e visualize métricas importantes</p>
+      </div>
+    </div>
+
+    <!-- O restante do seu HTML (tabs, cards, tabelas, modais) permanece aqui -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <div class="tab active" data-tab="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
+        <div class="tab" data-tab="curriculos"><i class="fas fa-file-alt"></i> Currículos</div>
+        <div class="tab" data-tab="vagas"><i class="fas fa-list-ul"></i> Vagas</div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="dashboard" class="tab-content active">
+        <div class="metrics-grid">
+          <div class="metric-card"><h3>Total de Candidaturas</h3><div class="value" id="total-candidaturas">0</div><div class="description">Candidaturas recebidas</div></div>
+          <div class="metric-card"><h3>Vaga Mais Popular</h3><div class="value" id="vaga-popular">-</div><div class="description" id="count-vaga-popular">0 candidaturas</div></div>
+          <div class="metric-card"><h3>Candidatos de Arapiraca</h3><div class="value" id="candidatos-arapiraca">0</div><div class="description" id="percentual-arapiraca">0% do total</div></div>
+          <div class="metric-card"><h3>Taxa com Transporte</h3><div class="value" id="taxa-transporte">0%</div><div class="description">Possuem veículo próprio</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><h3><i class="fas fa-chart-bar"></i> Candidaturas por Vaga</h3><canvas id="chart-vagas"></canvas></div>
+          <div class="chart-card"><h3><i class="fas fa-map-marker-alt"></i> Distribuição por Cidade</h3><canvas id="chart-cidades"></canvas></div>
+          <div class="chart-card"><h3><i class="fas fa-chart-line"></i> Evolução dos Últimos 7 Dias</h3><canvas id="chart-evolucao"></canvas></div>
+          <div class="chart-card"><h3><i class="fas fa-car"></i> Status de Transporte</h3><canvas id="chart-transporte"></canvas></div>
+        </div>
+      </div>
+
+      <!-- CURRÍCULOS -->
+      <div id="curriculos" class="tab-content">
+        <div class="filters-panel">
+          <div class="filters-grid">
+            <div class="filter-group"><label for="filter-vaga">Vaga</label><select id="filter-vaga" class="filter-select"><option value="todas">Todas as vagas</option></select></div>
+            <div class="filter-group"><label for="filter-cidade">Cidade</label><select id="filter-cidade" class="filter-select"><option value="todas">Todas as cidades</option></select></div>
+            <div class="filter-group"><label for="filter-transporte">Transporte</label><select id="filter-transporte" class="filter-select"><option value="todos">Todos</option><option value="Sim">Com transporte</option><option value="Não">Sem transporte</option></select></div>
+          </div>
+          <div class="filter-actions">
+            <div class="filter-group" style="flex: 1;"><label for="filter-search">Buscar (Nome, CPF ou Telefone)</label><input type="text" id="filter-search" class="filter-input" placeholder="Digite para buscar..."></div>
+            <button class="btn btn-primary" id="aplicar-filtros"><i class="fas fa-filter"></i> Aplicar</button>
+            <button class="btn btn-secondary" id="limpar-filtros"><i class="fas fa-eraser"></i> Limpar</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Nome</th><th>Vaga</th><th>Cidade</th><th>Bairro</th><th>Transporte</th><th>Data</th><th>Ações</th></tr></thead>
+            <tbody id="corpo-tabela"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VAGAS -->
+      <div id="vagas" class="tab-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h2 style="color: var(--text);">Gerenciamento de Vagas</h2>
+          <button class="btn btn-primary" id="add-vaga-btn"><i class="fas fa-plus"></i> Nova Vaga</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Nome da Vaga</th><th>Status</th><th>Candidaturas</th><th>Ações</th></tr></thead>
+            <tbody id="tabela-vagas"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAIS -->
+  <div id="candidato-modal" class="modal"><div class="modal-content"><button class="modal-close">&times;</button><div class="modal-header"><h2>Detalhes do Candidato</h2></div><div id="candidato-info"></div></div></div>
+  <div id="vaga-modal" class="modal"><div class="modal-content" style="max-width: 500px;"><button class="modal-close">&times;</button><div class="modal-header"><h2 id="vaga-modal-title">Nova Vaga</h2></div><div style="display: flex; flex-direction: column; gap: 1.5rem;"><div class="filter-group"><label for="vaga-nome">Nome da Vaga</label><input type="text" id="vaga-nome" class="filter-input" placeholder="Ex: Caixa"></div><div class="filter-group"><label for="vaga-status">Status</label><select id="vaga-status" class="filter-select"><option value="true">Ativa</option><option value="false">Inativa</option></select></div><button class="btn btn-primary" id="salvar-vaga-btn">Salvar Vaga</button></div></div></div>
+  <div id="distancia-modal" class="modal"><div class="modal-content" style="max-width: 600px;"><button class="modal-close">&times;</button><div class="modal-header"><h2><i class="fas fa-route"></i> Calculadora de Distância</h2></div><div id="distancia-content"></div></div></div>
+
+  <script>
+    // =================================================================================
+    // INÍCIO DO SCRIPT - INTEGRAÇÃO DE AUTENTICAÇÃO E NOVAS FUNCIONALIDADES
+    // =================================================================================
+
+    // ====== CONFIGURAÇÕES E AUTENTICAÇÃO ======
+    const API_BASE = "https://formulariobk.onrender.com";
+    // URL da sua página de login correta no repositório AnalisePOPRH
+    const LOGIN_PAGE_URL = 'https://popularatacarejo.github.io/AnalisePOPRH/index.html'; 
+    
+    // O token será lido e verificado dentro da função de inicialização
+    let authToken = null; 
+
+    // Função de verificação de autenticação
+    function checkAuthentication() {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            // Se não houver token, redireciona imediatamente para a página de login
+            window.location.href = LOGIN_PAGE_URL;
+            return false;
+        }
+        return true;
+    }
+
+    // ====== ESTADO DA APLICAÇÃO ======
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let currentFilters = {};
+    let editingVagaId = null;
+    let activeCharts = {}; // Para destruir gráficos antigos antes de criar novos
+
+    // ====== ELEMENTOS DA DOM ======
+    const themeToggle = document.getElementById('themeToggle');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userMenuDropdown = document.getElementById('userMenuDropdown');
+    const logoutButton = document.getElementById('logoutButton');
+    const candidatoModal = document.getElementById('candidato-modal');
+    const vagaModal = document.getElementById('vaga-modal');
+    const distanciaModal = document.getElementById('distancia-modal');
+    const corpoTabela = document.getElementById('corpo-tabela');
+    const tabelaVagas = document.getElementById('tabela-vagas');
+    const aplicarFiltrosBtn = document.getElementById('aplicar-filtros');
+    const limparFiltrosBtn = document.getElementById('limpar-filtros');
+    const addVagaBtn = document.getElementById('add-vaga-btn');
+    const salvarVagaBtn = document.getElementById('salvar-vaga-btn');
+    const filterVaga = document.getElementById('filter-vaga');
+    const filterCidade = document.getElementById('filter-cidade');
+    const filterTransporte = document.getElementById('filter-transporte');
+    const filterSearch = document.getElementById('filter-search');
+
+
+    // ====== FUNÇÕES DE UI (INTERFACE DO USUÁRIO) ======
+
+    // MOSTRA NOTIFICAÇÕES (TOASTS)
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut .5s forwards';
+            toast.addEventListener('animationend', () => toast.remove());
+        }, 4000);
+    }
+
+    // FUNÇÃO PARA ABRIR MODAIS
+    function openModal(modalElement) {
+        modalElement.style.display = 'flex';
+    }
+
+    // FUNÇÃO PARA FECHAR MODAIS
+    function closeModal(modalElement) {
+        modalElement.style.display = 'none';
+    }
+
+    // INICIALIZA INFORMAÇÕES DO USUÁRIO NO HEADER
+    function setupUserMenu() {
+        const userName = localStorage.getItem('userName') || 'Admin';
+        const userAvatar = document.getElementById('userAvatar');
+        document.getElementById('userName').textContent = userName;
+        userAvatar.textContent = userName.charAt(0).toUpperCase();
+
+        userMenuButton.addEventListener('click', () => {
+            userMenuDropdown.classList.toggle('show');
+        });
+
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+            showToast('Você foi desconectado.', 'success');
+            setTimeout(() => window.location.href = LOGIN_PAGE_URL, 1500);
+        });
+
+        // Fecha o dropdown se clicar fora
+        window.addEventListener('click', (e) => {
+            if (!userMenuButton.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+                userMenuDropdown.classList.remove('show');
+            }
+        });
+    }
+
+    // ====== FUNÇÕES DE API ======
+    async function apiCall(endpoint, options = {}) {
+        try {
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+
+            // Tratamento de token expirado ou inválido
+            if (response.status === 401) {
+                localStorage.removeItem('authToken');
+                showToast('Sua sessão expirou. Faça login novamente.', 'error');
+                setTimeout(() => window.location.href = LOGIN_PAGE_URL, 1500);
+                return;
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `Erro ${response.status}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error('Erro na chamada da API:', error);
+            showToast('Erro na API: ' + error.message, 'error');
+            throw error;
+        }
+    }
+
+    // ====== FUNÇÕES DE FORMATAÇÃO E UTILIDADE ======
+    function formatarData(dataString) {
+        if (!dataString) return 'N/A';
+        const data = new Date(dataString);
+        return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function formatarTelefone(telefone) {
+        if (!telefone) return 'N/A';
+        const cleaned = ('' + telefone).replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{2})(\d{5})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return telefone;
+    }
+
+    // ====== FUNÇÕES DE CURRÍCULOS ======
+
+    // 1. CARREGAR CURRÍCULOS
+    async function carregarCurriculos() {
+        try {
+            corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center;">Carregando currículos...</td></tr>';
+            
+            const params = new URLSearchParams({
+                page: currentPage,
+                limit: itemsPerPage,
+                ...currentFilters
+            });
+
+            // Adiciona a busca por texto (nome, cpf, telefone)
+            if (currentFilters.search) {
+                params.append('search', currentFilters.search);
+            }
+
+            const data = await apiCall(`/api/admin/curriculos?${params.toString()}`);
+            
+            displayCurriculos(data.curriculos);
+            // Implementar paginação aqui se o backend retornar totalPages/totalCount
+            
+        } catch (error) {
+            corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--error-color);">Erro ao carregar currículos.</td></tr>';
+        }
+    }
+
+    // 2. EXIBIR CURRÍCULOS NA TABELA
+    function displayCurriculos(curriculos) {
+        corpoTabela.innerHTML = '';
+
+        if (curriculos.length === 0) {
+            corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhuma candidatura encontrada com os filtros aplicados.</td></tr>';
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        curriculos.forEach(curriculo => {
+            const tr = document.createElement('tr');
+            const statusBadge = curriculo.transporte === 'Sim' ? 'badge-success' : 'badge-warning';
+            
+            tr.innerHTML = `
+                <td><strong>${curriculo.nome}</strong></td>
+                <td>${curriculo.vaga}</td>
+                <td>${curriculo.cidade}</td>
+                <td>${curriculo.bairro}</td>
+                <td><span class="badge ${statusBadge}">${curriculo.transporte}</span></td>
+                <td>${formatarData(curriculo.enviado_em)}</td>
+                <td>
+                    <button class="action-btn view" title="Ver detalhes" data-id="${curriculo.id}"><i class="fas fa-eye"></i></button>
+                    <button class="action-btn distance" title="Calcular distância" data-id="${curriculo.id}"><i class="fas fa-route"></i></button>
+                    <button class="action-btn delete" title="Excluir candidatura" data-id="${curriculo.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            
+            // Adiciona os event listeners diretamente
+            tr.querySelector('.view').addEventListener('click', () => visualizarCandidato(curriculo.id));
+            tr.querySelector('.distance').addEventListener('click', () => calcularDistanciaCandidato(curriculo.id));
+            tr.querySelector('.delete').addEventListener('click', () => excluirCandidatura(curriculo.id));
+            
+            fragment.appendChild(tr);
+        });
+
+        corpoTabela.appendChild(fragment);
+    }
+
+    // 3. VISUALIZAR DETALHES DO CANDIDATO
+    async function visualizarCandidato(id) {
+        try {
+            const infoDiv = document.getElementById('candidato-info');
+            infoDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Carregando detalhes...</p>';
+            openModal(candidatoModal);
+
+            const candidato = await apiCall(`/api/admin/curriculos/${id}`);
+            
+            infoDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; font-size: 0.95rem;">
+                    <p><strong>Vaga:</strong> ${candidato.vaga}</p>
+                    <p><strong>Nome:</strong> ${candidato.nome}</p>
+                    <p><strong>Email:</strong> ${candidato.email}</p>
+                    <p><strong>Telefone:</strong> ${formatarTelefone(candidato.telefone)}</p>
+                    <p><strong>CPF:</strong> ${candidato.cpf}</p>
+                    <p><strong>Data Nasc.:</strong> ${formatarData(candidato.data_nascimento)}</p>
+                    <p><strong>Cidade:</strong> ${candidato.cidade}</p>
+                    <p><strong>Bairro:</strong> ${candidato.bairro}</p>
+                    <p><strong>Rua:</strong> ${candidato.rua}</p>
+                    <p><strong>Número:</strong> ${candidato.numero}</p>
+                    <p><strong>Transporte Próprio:</strong> <span class="badge ${candidato.transporte === 'Sim' ? 'badge-success' : 'badge-warning'}">${candidato.transporte}</span></p>
+                    <p><strong>Enviado em:</strong> ${formatarData(candidato.enviado_em)}</p>
+                </div>
+                <h3 style="margin-top: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Informações Adicionais</h3>
+                <p style="white-space: pre-wrap;">${candidato.informacoes_adicionais || 'Nenhuma informação adicional fornecida.'}</p>
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button class="btn btn-primary" onclick="calcularDistanciaCandidato(${candidato.id})"><i class="fas fa-route"></i> Calcular Distância</button>
+                    <button class="btn btn-secondary" onclick="closeModal(candidatoModal)">Fechar</button>
+                </div>
+            `;
+
+        } catch (error) {
+            infoDiv.innerHTML = '<p style="text-align: center; color: var(--error-color);">Não foi possível carregar os detalhes do candidato.</p>';
+        }
+    }
+
+    // 4. EXCLUIR CANDIDATURA
+    async function excluirCandidatura(id) {
+        if (!confirm('Tem certeza que deseja excluir esta candidatura? Esta ação é irreversível.')) {
+            return;
+        }
+
+        try {
+            await apiCall(`/api/admin/curriculos/${id}`, { method: 'DELETE' });
+            showToast('Candidatura excluída com sucesso!', 'success');
+            carregarCurriculos(); // Recarrega a lista
+        } catch (error) {
+            showToast('Falha ao excluir candidatura.', 'error');
+        }
+    }
+
+    // 5. CALCULAR DISTÂNCIA (NOVA FUNÇÃO)
+    async function calcularDistanciaCandidato(id) {
+        const distanciaContent = document.getElementById('distancia-content');
+        distanciaContent.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Calculando distância...</p>';
+        closeModal(candidatoModal); // Fecha o modal de detalhes se estiver aberto
+        openModal(distanciaModal);
+
+        try {
+            const result = await apiCall(`/api/admin/curriculos/${id}/distancia`);
+            
+            distanciaContent.innerHTML = `
+                <h3 style="color: var(--accent); margin-bottom: 1rem;">Resultado do Cálculo</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; background: color-mix(in srgb, var(--accent) 5%, transparent); padding: 1.5rem; border-radius: 8px;">
+                    <p><strong>Candidato:</strong> ${result.nome_candidato}</p>
+                    <p><strong>Endereço:</strong> ${result.endereco_candidato}</p>
+                    <p><strong>Destino (Empresa):</strong> ${result.endereco_empresa}</p>
+                    <p><strong>Status:</strong> <span class="badge ${result.status === 'OK' ? 'badge-success' : 'badge-warning'}">${result.status}</span></p>
+                </div>
+                <h3 style="margin-top: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Detalhes da Rota</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <p><strong>Distância:</strong> <span style="font-size: 1.2rem; font-weight: 600; color: var(--accent);">${result.distancia}</span></p>
+                    <p><strong>Tempo Estimado:</strong> <span style="font-size: 1.2rem; font-weight: 600; color: var(--accent);">${result.tempo_estimado}</span></p>
+                </div>
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" onclick="closeModal(distanciaModal)">Fechar</button>
+                </div>
+            `;
+
+        } catch (error) {
+            distanciaContent.innerHTML = `<p style="text-align: center; color: var(--error-color);">Falha ao calcular distância: ${error.message}</p>`;
+        }
+    }
+
+    // 6. APLICAR FILTROS
+    aplicarFiltrosBtn.addEventListener('click', () => {
+        currentFilters = {
+            vaga: filterVaga.value === 'todas' ? undefined : filterVaga.value,
+            cidade: filterCidade.value === 'todas' ? undefined : filterCidade.value,
+            transporte: filterTransporte.value === 'todos' ? undefined : filterTransporte.value,
+            search: filterSearch.value.trim() || undefined
+        };
+        currentPage = 1;
+        carregarCurriculos();
+    });
+
+    // 7. LIMPAR FILTROS
+    limparFiltrosBtn.addEventListener('click', () => {
+        filterVaga.value = 'todas';
+        filterCidade.value = 'todas';
+        filterTransporte.value = 'todos';
+        filterSearch.value = '';
+        currentFilters = {};
+        currentPage = 1;
+        carregarCurriculos();
+    });
+
+    // ====== FUNÇÕES DE VAGAS ======
+
+    // 1. CARREGAR VAGAS
+    async function carregarVagas() {
+        try {
+            tabelaVagas.innerHTML = '<tr><td colspan="4" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Carregando vagas...</td></tr>';
+            const vagas = await apiCall('/api/admin/vagas');
+            displayVagas(vagas);
+            popularFiltros(vagas);
+        } catch (error) {
+            tabelaVagas.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--error-color);">Erro ao carregar vagas.</td></tr>';
+        }
+    }
+
+    // 2. EXIBIR VAGAS NA TABELA
+    function displayVagas(vagas) {
+        tabelaVagas.innerHTML = '';
+
+        if (vagas.length === 0) {
+            tabelaVagas.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhuma vaga cadastrada.</td></tr>';
+            return;
+        }
+
+        vagas.forEach(vaga => {
+            const tr = document.createElement('tr');
+            const statusBadge = vaga.ativa ? 
+                `<span class="badge badge-success">Ativa</span>` : 
+                `<span class="badge badge-warning">Inativa</span>`;
+            
+            tr.innerHTML = `
+                <td><strong>${vaga.nome}</strong></td>
+                <td>${statusBadge}</td>
+                <td>${vaga.candidaturas_count || 0}</td>
+                <td>
+                    <button class="action-btn edit" title="Editar vaga" data-id="${vaga.id}"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete" title="Excluir vaga" data-id="${vaga.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+
+            tr.querySelector('.edit').addEventListener('click', () => editarVaga(vaga.id));
+            tr.querySelector('.delete').addEventListener('click', () => excluirVaga(vaga.id));
+            
+            tabelaVagas.appendChild(tr);
+        });
+    }
+
+    // 3. POPULAR FILTROS DE VAGA E CIDADE
+    async function popularFiltros(vagas) {
+        // Vagas
+        filterVaga.innerHTML = '<option value="todas">Todas as vagas</option>';
+        vagas.forEach(vaga => {
+            const option = document.createElement('option');
+            option.value = vaga.nome;
+            option.textContent = vaga.nome;
+            filterVaga.appendChild(option);
+        });
+
+        // Cidades (Busca cidades únicas na API)
+        try {
+            const cidades = await apiCall('/api/admin/cidades');
+            filterCidade.innerHTML = '<option value="todas">Todas as cidades</option>';
+            cidades.forEach(cidade => {
+                const option = document.createElement('option');
+                option.value = cidade;
+                option.textContent = cidade;
+                filterCidade.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erro ao popular cidades:', error);
+            // Continua sem as cidades se a chamada falhar
+        }
+    }
+
+    // 4. ABRIR MODAL PARA NOVA VAGA
+    addVagaBtn.addEventListener('click', () => {
+        editingVagaId = null;
+        document.getElementById('vaga-modal-title').textContent = 'Nova Vaga';
+        document.getElementById('vaga-nome').value = '';
+        document.getElementById('vaga-status').value = 'true';
+        openModal(vagaModal);
+    });
+
+    // 5. EDITAR VAGA
+    async function editarVaga(id) {
+        try {
+            const vaga = await apiCall(`/api/admin/vagas/${id}`);
+            editingVagaId = id;
+            document.getElementById('vaga-modal-title').textContent = `Editar Vaga: ${vaga.nome}`;
+            document.getElementById('vaga-nome').value = vaga.nome;
+            document.getElementById('vaga-status').value = vaga.ativa ? 'true' : 'false';
+            openModal(vagaModal);
+        } catch (error) {
+            showToast('Não foi possível carregar os dados da vaga.', 'error');
+        }
+    }
+
+    // 6. SALVAR VAGA (CRIAR OU ATUALIZAR)
+    salvarVagaBtn.addEventListener('click', async () => {
+        const nome = document.getElementById('vaga-nome').value.trim();
+        const ativa = document.getElementById('vaga-status').value === 'true';
+
+        if (!nome) {
+            showToast('O nome da vaga é obrigatório.', 'error');
+            return;
+        }
+
+        const method = editingVagaId ? 'PUT' : 'POST';
+        const endpoint = editingVagaId ? `/api/admin/vagas/${editingVagaId}` : '/api/admin/vagas';
+        const successMessage = editingVagaId ? 'Vaga atualizada com sucesso!' : 'Vaga criada com sucesso!';
+
+        try {
+            salvarVagaBtn.disabled = true;
+            salvarVagaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
+            await apiCall(endpoint, {
+                method: method,
+                body: JSON.stringify({ nome, ativa })
+            });
+
+            showToast(successMessage, 'success');
+            closeModal(vagaModal);
+            carregarVagas();
+
+        } catch (error) {
+            showToast('Falha ao salvar a vaga.', 'error');
+        } finally {
+            salvarVagaBtn.disabled = false;
+            salvarVagaBtn.innerHTML = 'Salvar Vaga';
+        }
+    });
+
+    // 7. EXCLUIR VAGA
+    async function excluirVaga(id) {
+        if (!confirm('Tem certeza que deseja excluir esta vaga? Todas as candidaturas associadas serão perdidas.')) {
+            return;
+        }
+
+        try {
+            await apiCall(`/api/admin/vagas/${id}`, { method: 'DELETE' });
+            showToast('Vaga excluída com sucesso!', 'success');
+            carregarVagas();
+        } catch (error) {
+            showToast('Falha ao excluir vaga.', 'error');
+        }
+    }
+
+    // ====== FUNÇÕES DE DASHBOARD ======
+
+    // 1. CARREGAR ESTATÍSTICAS
+    async function carregarEstatisticas() {
+        try {
+            const stats = await apiCall('/api/admin/stats');
+            
+            // Métricas
+            document.getElementById('total-candidaturas').textContent = stats.total_candidaturas;
+            document.getElementById('vaga-popular').textContent = stats.vaga_mais_popular.nome || '-';
+            document.getElementById('count-vaga-popular').textContent = `${stats.vaga_mais_popular.count || 0} candidaturas`;
+            document.getElementById('candidatos-arapiraca').textContent = stats.candidatos_arapiraca;
+            document.getElementById('percentual-arapiraca').textContent = `${stats.percentual_arapiraca}% do total`;
+            document.getElementById('taxa-transporte').textContent = `${stats.taxa_transporte}%`;
+
+            // Gráficos
+            renderChartVagas(stats.candidaturas_por_vaga);
+            renderChartCidades(stats.candidaturas_por_cidade);
+            renderChartEvolucao(stats.evolucao_7_dias);
+            renderChartTransporte(stats.status_transporte);
+
+        } catch (error) {
+            console.error('Erro ao carregar estatísticas:', error);
+            showToast('Não foi possível carregar as estatísticas do Dashboard.', 'error');
+        }
+    }
+
+    // 2. FUNÇÕES DE RENDERIZAÇÃO DE GRÁFICOS (Chart.js)
+    function renderChartVagas(data) {
+        if (activeCharts['vagas']) activeCharts['vagas'].destroy();
+        const ctx = document.getElementById('chart-vagas').getContext('2d');
+        activeCharts['vagas'] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.vaga),
+                datasets: [{
+                    label: 'Candidaturas',
+                    data: data.map(item => item.count),
+                    backgroundColor: 'rgba(5, 150, 105, 0.7)',
+                    borderColor: 'rgba(5, 150, 105, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    function renderChartCidades(data) {
+        if (activeCharts['cidades']) activeCharts['cidades'].destroy();
+        const ctx = document.getElementById('chart-cidades').getContext('2d');
+        activeCharts['cidades'] = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.map(item => item.cidade),
+                datasets: [{
+                    data: data.map(item => item.count),
+                    backgroundColor: ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'right' } } }
+        });
+    }
+
+    function renderChartEvolucao(data) {
+        if (activeCharts['evolucao']) activeCharts['evolucao'].destroy();
+        const ctx = document.getElementById('chart-evolucao').getContext('2d');
+        activeCharts['evolucao'] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(item => formatarData(item.data)),
+                datasets: [{
+                    label: 'Novas Candidaturas',
+                    data: data.map(item => item.count),
+                    borderColor: '#059669',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(5, 150, 105, 0.1)'
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    function renderChartTransporte(data) {
+        if (activeCharts['transporte']) activeCharts['transporte'].destroy();
+        const ctx = document.getElementById('chart-transporte').getContext('2d');
+        activeCharts['transporte'] = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Com Transporte', 'Sem Transporte'],
+                datasets: [{
+                    data: [data.sim, data.nao],
+                    backgroundColor: ['#059669', '#f97316'],
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+
+    // ====== INICIALIZAÇÃO E EVENT LISTENERS GERAIS ======
+
+    // 1. EVENTOS DE TABS
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.getAttribute('data-tab');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(tc => tc.classList.remove('active'));
+
+            tab.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+
+            // Carregar dados da aba ativa
+            if (targetTab === 'dashboard') {
+                carregarEstatisticas();
+            } else if (targetTab === 'curriculos') {
+                carregarCurriculos();
+            } else if (targetTab === 'vagas') {
+                carregarVagas();
+            }
+        });
+    });
+
+    // 2. EVENTOS DE MODAL
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            closeModal(e.target.closest('.modal'));
+        });
+    });
+
+    // 3. EVENTO DE TEMA
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
+    // 4. INICIALIZAÇÃO
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!checkAuthentication()) {
+            return; // Interrompe a inicialização se não estiver autenticado
+        }
+        
+        // Aplica o tema salvo
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+        setupUserMenu();
+        
+        // Carrega a aba inicial (Dashboard)
+        carregarEstatisticas();
+        carregarVagas(); // Carrega vagas para popular o filtro de currículos
+    });
+
+    // Fecha modais ao clicar fora
+    window.addEventListener('click', (event) => {
+        if (event.target === candidatoModal) closeModal(candidatoModal);
+        if (event.target === vagaModal) closeModal(vagaModal);
+        if (event.target === distanciaModal) closeModal(distanciaModal);
+    });
+
+    // =================================================================================
+    // FIM DO SCRIPT
+    // =================================================================================
+  </script>
+</body>
+</html>
