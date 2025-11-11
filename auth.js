@@ -1,6 +1,6 @@
-// auth.js - Sistema de autenticação com token de 1 hora
+// auth.js - Sistema de autenticação com token de 1 hora e funções de API
 const SUPABASE_URL = 'https://sutprwpsketwdcdmpswo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1dHByd3Bza2V0d2RjZG1wc3dvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMzI3ODAsImV4cCI6MjA3NzgwODc4MH0.TyTfO6o6YJUm947LHfl81i82V2R12sqcnFBhYHsoDZc';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1dHByd3Bza2V0d2RjZG1wc3dvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMzI3ODAsImV4cCI6MjA3NzgwODc4MH0.TyTfO6o6oYJUm947LHfl81i82V2R12sqcnFBhYHsoDZc';
 
 // Inicializar Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -48,6 +48,10 @@ class AuthManager {
         // Verificar expiração do token periodicamente
         this.startTokenExpiryCheck();
     }
+
+    /* =========================
+       FUNÇÕES DE AUTENTICAÇÃO
+    ========================= */
 
     // Configurar expiração do token
     setTokenExpiry() {
@@ -201,6 +205,10 @@ class AuthManager {
         return session?.access_token || localStorage.getItem('authToken');
     }
 
+    /* =========================
+       FUNÇÕES DE PERMISSÕES
+    ========================= */
+
     // Verificar permissões específicas
     hasPermission(requiredPermission) {
         if (!this.userProfile) return false;
@@ -239,6 +247,531 @@ class AuthManager {
         const remaining = parseInt(expiryTime) - now;
         return Math.max(0, remaining);
     }
+
+    /* =========================
+       FUNÇÕES DE API - CANDIDATURAS
+    ========================= */
+
+    // Buscar candidaturas com filtros
+    async getCandidaturas(filters = {}) {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const queryParams = new URLSearchParams();
+        
+        // Adicionar filtros aos parâmetros
+        Object.keys(filters).forEach(key => {
+            if (filters[key]) {
+                queryParams.append(key, filters[key]);
+            }
+        });
+
+        const response = await fetch(`/api/users/candidaturas?${queryParams}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar candidaturas: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Buscar candidatura específica
+    async getCandidatura(id) {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/candidaturas/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar candidatura: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Atualizar status da candidatura
+    async updateCandidaturaStatus(candidaturaId, status, observacao = '') {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/candidaturas/${candidaturaId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status, observacao })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao atualizar status: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Buscar histórico de status da candidatura
+    async getCandidaturaStatusHistory(candidaturaId) {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/candidaturas/${candidaturaId}/status`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar histórico: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    /* =========================
+       FUNÇÕES DE API - COMENTÁRIOS
+    ========================= */
+
+    // Buscar comentários de uma candidatura
+    async getComentarios(candidaturaId) {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/comentarios/${candidaturaId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar comentários: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Adicionar comentário
+    async addComentario(candidaturaId, comentario, tipo = 'observacao') {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/users/comentarios', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ candidatura_id: candidaturaId, comentario, tipo })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao adicionar comentário: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Atualizar comentário
+    async updateComentario(comentarioId, comentario) {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/comentarios/${comentarioId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ comentario })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao atualizar comentário: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Excluir comentário
+    async deleteComentario(comentarioId) {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/comentarios/${comentarioId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao excluir comentário: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    /* =========================
+       FUNÇÕES DE API - ADMIN (apenas admin)
+    ========================= */
+
+    // Buscar estatísticas (apenas admin)
+    async getAdminStats(filters = {}) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const queryParams = new URLSearchParams();
+        
+        Object.keys(filters).forEach(key => {
+            if (filters[key]) {
+                queryParams.append(key, filters[key]);
+            }
+        });
+
+        const response = await fetch(`/api/admin/stats?${queryParams}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar estatísticas: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Calcular distância (apenas admin)
+    async calcularDistancia(enderecoCandidato, enderecoTrabalho = null) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const payload = { enderecoCandidato };
+        
+        if (enderecoTrabalho) {
+            payload.enderecoTrabalho = enderecoTrabalho;
+        }
+
+        const response = await fetch('/api/admin/calcular-distancia', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao calcular distância: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Buscar opções de filtro (apenas admin)
+    async getAdminFiltros() {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/admin/filtros', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar filtros: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Buscar vagas (admin)
+    async getAdminVagas() {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/admin/vagas', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar vagas: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Criar vaga (admin)
+    async createVaga(nome, ativa = true) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/admin/vagas', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nome, ativa })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao criar vaga: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Atualizar vaga (admin)
+    async updateVaga(id, nome, ativa) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/admin/vagas/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nome, ativa })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao atualizar vaga: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Excluir vaga (admin)
+    async deleteVaga(id) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/admin/vagas/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao excluir vaga: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    /* =========================
+       FUNÇÕES DE API - USUÁRIOS (apenas admin)
+    ========================= */
+
+    // Buscar todos os usuários (apenas admin)
+    async getUsers() {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/users', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar usuários: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Criar usuário (apenas admin)
+    async createUser(userData) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao criar usuário: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Atualizar usuário (apenas admin)
+    async updateUser(id, userData) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao atualizar usuário: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Excluir usuário (apenas admin)
+    async deleteUser(id) {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch(`/api/users/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao excluir usuário: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Sincronizar usuários (apenas admin)
+    async syncUsers() {
+        if (!this.isAuthenticated() || !this.isAdmin()) {
+            throw new Error('Acesso não autorizado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/users/sync', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao sincronizar usuários: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    /* =========================
+       FUNÇÕES DE API - GERAIS
+    ========================= */
+
+    // Buscar vagas disponíveis (público)
+    async getVagas() {
+        const response = await fetch('/api/vagas');
+        
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar vagas: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Alterar senha do usuário
+    async changePassword(currentPassword, newPassword) {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/users/change-password', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao alterar senha: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    // Buscar status disponíveis
+    async getStatusOptions() {
+        if (!this.isAuthenticated()) {
+            throw new Error('Usuário não autenticado');
+        }
+
+        const token = await this.getAccessToken();
+        const response = await fetch('/api/users/status', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar opções de status: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
 }
 
 // Inicializar gerenciador de autenticação
@@ -267,3 +800,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 });
+
+// Exportar para uso em outros arquivos
+window.authManager = authManager;
