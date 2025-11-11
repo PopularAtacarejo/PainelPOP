@@ -3,16 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel Admin - Mercado Arapiraca</title>
+  <title>Visualizar Currículos - Mercado Arapiraca</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Incluir auth.js primeiro -->
   <script src="auth.js"></script>
   <style>
-    /* ESTILOS GLOBAIS E VARIÁVEIS */
     :root {
       --bg-light: #f8fafc; --text-light: #1e293b;
       --accent-light: #059669; --accent-light-hover: #047857;
@@ -64,14 +62,14 @@
     body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background-color var(--transition-speed), color var(--transition-speed); min-height: 100vh; }
     .app-container { width: 100%; max-width: 1400px; margin: 0 auto; position: relative; }
     
-    /* ESTILOS DO HEADER E CONTEÚDO */
+    /* HEADER */
     .header { background: var(--header-bg); color: white; padding: 2rem; border-radius: 0 0 var(--border-radius) var(--border-radius); text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
     .header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity: 0.3; }
     .header-content { position: relative; z-index: 1; }
     h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
     .header-subtitle { font-size: 1rem; opacity: 0.9; margin-bottom: 1.5rem; font-weight: 400; }
     
-    /* ====== MENU DO USUÁRIO E TEMA ====== */
+    /* USER MENU */
     .header-actions { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; align-items: center; gap: 1rem; z-index: 10; }
     .theme-toggle { background: rgba(255, 255, 255, 0.2); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: all 0.3s ease; }
     .theme-toggle:hover { background: rgba(255, 255, 255, 0.3); transform: rotate(30deg); }
@@ -85,30 +83,12 @@
     .user-menu-dropdown li a:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
     .user-menu-dropdown li a i { width: 16px; text-align: center; }
 
-    /* ESTILOS DO CONTEÚDO (Tabs, Cards, Gráficos, etc.) */
-    .tabs-container { background: var(--card-bg); margin: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--card-shadow); overflow: hidden; }
-    .tabs-header { display: flex; border-bottom: 1px solid var(--border); background: var(--card-bg); }
-    .tab { padding: 1.2rem 1.5rem; cursor: pointer; transition: all var(--transition-speed); border-bottom: 3px solid transparent; font-weight: 600; color: var(--legend-text); display: flex; align-items: center; gap: 0.5rem; }
-    .tab.active { border-bottom: 3px solid var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
-    .tab:hover:not(.active) { background: color-mix(in srgb, var(--accent) 2%, transparent); color: var(--text); }
-    .tab-content { display: none; padding: 2rem; animation: fadeInUp .5s ease-out; }
-    .tab-content.active { display: block; }
-    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-    .metric-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 1.5rem; box-shadow: var(--card-shadow); border-left: 4px solid var(--accent); transition: all var(--transition-speed); position: relative; overflow: hidden; }
-    .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
-    .metric-card h3 { font-size: 0.9rem; color: var(--legend-text); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600; }
-    .metric-card .value { font-size: 2rem; font-weight: 700; color: var(--text); }
-    .metric-card .description { font-size: 0.85rem; color: var(--legend-text); }
-    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-    .chart-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 1.5rem; box-shadow: var(--card-shadow); }
-    .chart-card h3 { margin-bottom: 1rem; color: var(--text); font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
-    .chart-card h3 i { color: var(--accent); }
-    .table-container { background: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 2rem; }
-    table { width: 100%; border-collapse: collapse; }
-    thead { background: linear-gradient(90deg, var(--accent), var(--accent-hover)); color: white; }
-    th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--border); }
-    tbody tr:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
-    .filters-panel { background: var(--card-bg); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--card-shadow); margin-bottom: 1.5rem; }
+    /* CONTENT */
+    .main-content { padding: 1.5rem; }
+    .content-card { background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--card-shadow); overflow: hidden; margin-bottom: 1.5rem; }
+    
+    /* FILTERS */
+    .filters-panel { padding: 1.5rem; border-bottom: 1px solid var(--border); }
     .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
     .filter-group { display: flex; flex-direction: column; }
     .filter-group label { margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--text); }
@@ -120,34 +100,47 @@
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
     .btn-secondary { background: var(--border); color: var(--text); }
     .btn-secondary:hover { background: color-mix(in srgb, var(--border) 80%, black); }
+    
+    /* TABLE */
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: linear-gradient(90deg, var(--accent), var(--accent-hover)); color: white; }
+    th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
     .action-btn { padding: 0.5rem 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all var(--transition-speed); margin: 0 0.2rem; }
     .action-btn.view { background: var(--accent); color: white; }
-    .action-btn.edit { background: var(--secondary-light); color: white; }
-    .action-btn.delete { background: var(--error-color); color: white; }
+    .action-btn.download { background: var(--secondary-light); color: white; }
     .action-btn.distance { background: #8b5cf6; color: white; }
+    .action-btn.delete { background: var(--error-color); color: white; }
     .action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .badge { padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .badge-success { background: color-mix(in srgb, var(--success-color) 15%, transparent); color: var(--success-color); }
     .badge-warning { background: color-mix(in srgb, #f97316 15%, transparent); color: #f97316; }
+    
+    /* MODAL */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
     .modal-content { background: var(--card-bg); padding: 2rem; border-radius: var(--border-radius); width: 90%; max-width: 600px; box-shadow: var(--card-shadow); position: relative; animation: fadeInUp .3s; }
     .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--legend-text); }
     .modal-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
     .modal-header h2 { color: var(--text); font-size: 1.5rem; }
     
-    /* ====== NOTIFICAÇÕES (TOASTS) ====== */
+    /* TOAST */
     #toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
     .toast { padding: 1rem 1.5rem; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: slideInRight 0.4s ease-out; display: flex; align-items: center; gap: 10px; }
     .toast.success { background-color: var(--success-color); }
     .toast.error { background-color: var(--error-color); }
+    
+    /* ANIMATIONS */
     @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     @keyframes fadeOut { to { opacity: 0; } }
-
-    /* ====== ANIMAÇÕES E RESPONSIVIDADE ====== */
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* RESPONSIVE */
     @media (max-width: 768px) {
       .header-actions { right: 1rem; }
       .user-menu-button span { display: none; }
+      .filters-grid { grid-template-columns: 1fr; }
+      .filter-actions { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -173,117 +166,144 @@
       </div>
       
       <div class="header-content">
-        <h1>Painel Administrativo</h1>
-        <p class="header-subtitle">Gerencie candidaturas, vagas e visualize métricas importantes</p>
+        <h1>Visualizar Currículos</h1>
+        <p class="header-subtitle">Gerencie e visualize todas as candidaturas recebidas</p>
       </div>
     </div>
 
-    <div class="tabs-container">
-      <div class="tabs-header">
-        <div class="tab active" data-tab="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
-        <div class="tab" data-tab="curriculos"><i class="fas fa-file-alt"></i> Currículos</div>
-        <div class="tab" data-tab="vagas"><i class="fas fa-list-ul"></i> Vagas</div>
-      </div>
-
-      <!-- DASHBOARD -->
-      <div id="dashboard" class="tab-content active">
-        <div class="metrics-grid">
-          <div class="metric-card"><h3>Total de Candidaturas</h3><div class="value" id="total-candidaturas">0</div><div class="description">Candidaturas recebidas</div></div>
-          <div class="metric-card"><h3>Vaga Mais Popular</h3><div class="value" id="vaga-popular">-</div><div class="description" id="count-vaga-popular">0 candidaturas</div></div>
-          <div class="metric-card"><h3>Candidatos de Arapiraca</h3><div class="value" id="candidatos-arapiraca">0</div><div class="description" id="percentual-arapiraca">0% do total</div></div>
-          <div class="metric-card"><h3>Taxa com Transporte</h3><div class="value" id="taxa-transporte">0%</div><div class="description">Possuem veículo próprio</div></div>
-        </div>
-        <div class="charts-grid">
-          <div class="chart-card"><h3><i class="fas fa-chart-bar"></i> Candidaturas por Vaga</h3><canvas id="chart-vagas"></canvas></div>
-          <div class="chart-card"><h3><i class="fas fa-map-marker-alt"></i> Distribuição por Cidade</h3><canvas id="chart-cidades"></canvas></div>
-          <div class="chart-card"><h3><i class="fas fa-chart-line"></i> Evolução dos Últimos 7 Dias</h3><canvas id="chart-evolucao"></canvas></div>
-          <div class="chart-card"><h3><i class="fas fa-car"></i> Status de Transporte</h3><canvas id="chart-transporte"></canvas></div>
-        </div>
-      </div>
-
-      <!-- CURRÍCULOS -->
-      <div id="curriculos" class="tab-content">
+    <div class="main-content">
+      <div class="content-card">
         <div class="filters-panel">
           <div class="filters-grid">
-            <div class="filter-group"><label for="filter-vaga">Vaga</label><select id="filter-vaga" class="filter-select"><option value="todas">Todas as vagas</option></select></div>
-            <div class="filter-group"><label for="filter-cidade">Cidade</label><select id="filter-cidade" class="filter-select"><option value="todas">Todas as cidades</option></select></div>
-            <div class="filter-group"><label for="filter-transporte">Transporte</label><select id="filter-transporte" class="filter-select"><option value="todos">Todos</option><option value="Sim">Com transporte</option><option value="Não">Sem transporte</option></select></div>
+            <div class="filter-group">
+              <label for="filter-vaga">Vaga</label>
+              <select id="filter-vaga" class="filter-select">
+                <option value="todas">Todas as vagas</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filter-cidade">Cidade</label>
+              <select id="filter-cidade" class="filter-select">
+                <option value="todas">Todas as cidades</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filter-transporte">Transporte</label>
+              <select id="filter-transporte" class="filter-select">
+                <option value="todos">Todos</option>
+                <option value="Sim">Com transporte</option>
+                <option value="Não">Sem transporte</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filter-status">Status</label>
+              <select id="filter-status" class="filter-select">
+                <option value="todos">Todos os status</option>
+                <option value="Novo">Novo</option>
+                <option value="Selecionado">Selecionado</option>
+                <option value="Não Atendeu a Ligação">Não Atendeu</option>
+                <option value="Desistiu">Desistiu</option>
+                <option value="Já trabalhou Aqui">Já trabalhou</option>
+                <option value="Passou na Entrevista">Passou Entrevista</option>
+                <option value="Já está trabalhando">Já trabalhando</option>
+                <option value="Contratado">Contratado</option>
+              </select>
+            </div>
           </div>
           <div class="filter-actions">
-            <div class="filter-group" style="flex: 1;"><label for="filter-search">Buscar (Nome, CPF ou Telefone)</label><input type="text" id="filter-search" class="filter-input" placeholder="Digite para buscar..."></div>
-            <button class="btn btn-primary" id="aplicar-filtros"><i class="fas fa-filter"></i> Aplicar</button>
-            <button class="btn btn-secondary" id="limpar-filtros"><i class="fas fa-eraser"></i> Limpar</button>
+            <div class="filter-group" style="flex: 1;">
+              <label for="filter-search">Buscar (Nome, CPF, Email ou Telefone)</label>
+              <input type="text" id="filter-search" class="filter-input" placeholder="Digite para buscar...">
+            </div>
+            <button class="btn btn-primary" id="aplicar-filtros">
+              <i class="fas fa-filter"></i> Aplicar
+            </button>
+            <button class="btn btn-secondary" id="limpar-filtros">
+              <i class="fas fa-eraser"></i> Limpar
+            </button>
           </div>
         </div>
-        <div class="table-container">
-          <table>
-            <thead><tr><th>Nome</th><th>Vaga</th><th>Cidade</th><th>Bairro</th><th>Transporte</th><th>Data</th><th>Ações</th></tr></thead>
-            <tbody id="corpo-tabela"></tbody>
-          </table>
-        </div>
-      </div>
 
-      <!-- VAGAS -->
-      <div id="vagas" class="tab-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-          <h2 style="color: var(--text);">Gerenciamento de Vagas</h2>
-          <button class="btn btn-primary" id="add-vaga-btn"><i class="fas fa-plus"></i> Nova Vaga</button>
-        </div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Nome da Vaga</th><th>Status</th><th>Candidaturas</th><th>Ações</th></tr></thead>
-            <tbody id="tabela-vagas"></tbody>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Vaga</th>
+                <th>Cidade</th>
+                <th>Bairro</th>
+                <th>Transporte</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela">
+              <tr>
+                <td colspan="8" style="text-align: center;">Carregando currículos...</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAIS -->
-  <div id="candidato-modal" class="modal"><div class="modal-content"><button class="modal-close">&times;</button><div class="modal-header"><h2>Detalhes do Candidato</h2></div><div id="candidato-info"></div></div></div>
-  <div id="vaga-modal" class="modal"><div class="modal-content" style="max-width: 500px;"><button class="modal-close">&times;</button><div class="modal-header"><h2 id="vaga-modal-title">Nova Vaga</h2></div><div style="display: flex; flex-direction: column; gap: 1.5rem;"><div class="filter-group"><label for="vaga-nome">Nome da Vaga</label><input type="text" id="vaga-nome" class="filter-input" placeholder="Ex: Caixa"></div><div class="filter-group"><label for="vaga-status">Status</label><select id="vaga-status" class="filter-select"><option value="true">Ativa</option><option value="false">Inativa</option></select></div><button class="btn btn-primary" id="salvar-vaga-btn">Salvar Vaga</button></div></div></div>
-  <div id="distancia-modal" class="modal"><div class="modal-content" style="max-width: 600px;"><button class="modal-close">&times;</button><div class="modal-header"><h2><i class="fas fa-route"></i> Calculadora de Distância</h2></div><div id="distancia-content"></div></div></div>
+  <!-- MODAL DETALHES CANDIDATO -->
+  <div id="candidato-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <div class="modal-header">
+        <h2>Detalhes do Candidato</h2>
+      </div>
+      <div id="candidato-info"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DISTÂNCIA -->
+  <div id="distancia-modal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <button class="modal-close">&times;</button>
+      <div class="modal-header">
+        <h2><i class="fas fa-route"></i> Calculadora de Distância</h2>
+      </div>
+      <div id="distancia-content"></div>
+    </div>
+  </div>
 
   <script>
     // =================================================================================
-    // INÍCIO DO SCRIPT - INTEGRAÇÃO DE AUTENTICAÇÃO
+    // CONFIGURAÇÕES E AUTENTICAÇÃO
     // =================================================================================
-
-    // ====== CONFIGURAÇÕES E AUTENTICAÇÃO ======
     const API_BASE = "https://formulariobk.onrender.com";
     const LOGIN_PAGE_URL = 'index.html';
     
-    // ====== ESTADO DA APLICAÇÃO ======
+    // Estado da aplicação
     let currentPage = 1;
     const itemsPerPage = 10;
     let currentFilters = {};
-    let editingVagaId = null;
-    let activeCharts = {};
 
-    // ====== ELEMENTOS DA DOM ======
+    // Elementos da DOM
     const themeToggle = document.getElementById('themeToggle');
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
     const userMenuButton = document.getElementById('userMenuButton');
     const userMenuDropdown = document.getElementById('userMenuDropdown');
     const logoutButton = document.getElementById('logoutButton');
     const candidatoModal = document.getElementById('candidato-modal');
-    const vagaModal = document.getElementById('vaga-modal');
     const distanciaModal = document.getElementById('distancia-modal');
     const corpoTabela = document.getElementById('corpo-tabela');
-    const tabelaVagas = document.getElementById('tabela-vagas');
     const aplicarFiltrosBtn = document.getElementById('aplicar-filtros');
     const limparFiltrosBtn = document.getElementById('limpar-filtros');
-    const addVagaBtn = document.getElementById('add-vaga-btn');
-    const salvarVagaBtn = document.getElementById('salvar-vaga-btn');
     const filterVaga = document.getElementById('filter-vaga');
     const filterCidade = document.getElementById('filter-cidade');
     const filterTransporte = document.getElementById('filter-transporte');
+    const filterStatus = document.getElementById('filter-status');
     const filterSearch = document.getElementById('filter-search');
 
-    // ====== FUNÇÕES DE UI (INTERFACE DO USUÁRIO) ======
+    // =================================================================================
+    // FUNÇÕES DE UI
+    // =================================================================================
 
-    // MOSTRA NOTIFICAÇÕES (TOASTS)
+    // Mostra notificações (toasts)
     function showToast(message, type = 'success') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -296,17 +316,17 @@
         }, 4000);
     }
 
-    // FUNÇÃO PARA ABRIR MODAIS
+    // Abrir modal
     function openModal(modalElement) {
         modalElement.style.display = 'flex';
     }
 
-    // FUNÇÃO PARA FECHAR MODAIS
+    // Fechar modal
     function closeModal(modalElement) {
         modalElement.style.display = 'none';
     }
 
-    // INICIALIZA INFORMAÇÕES DO USUÁRIO NO HEADER
+    // Configurar menu do usuário
     function setupUserMenu() {
         const userName = localStorage.getItem('userName') || 'Admin';
         const userAvatar = document.getElementById('userAvatar');
@@ -330,7 +350,9 @@
         });
     }
 
-    // ====== FUNÇÕES DE API ======
+    // =================================================================================
+    // FUNÇÕES DE API
+    // =================================================================================
     async function apiCall(endpoint, options = {}) {
         // Verificar autenticação antes de cada chamada
         if (!authManager.isAuthenticated()) {
@@ -371,7 +393,9 @@
         }
     }
 
-    // ====== FUNÇÕES DE FORMATAÇÃO E UTILIDADE ======
+    // =================================================================================
+    // FUNÇÕES DE FORMATAÇÃO
+    // =================================================================================
     function formatarData(dataString) {
         if (!dataString) return 'N/A';
         const data = new Date(dataString);
@@ -388,10 +412,12 @@
         return telefone;
     }
 
-    // ====== FUNÇÕES DE CURRÍCULOS ======
+    // =================================================================================
+    // FUNÇÕES DE CURRÍCULOS
+    // =================================================================================
     async function carregarCurriculos() {
         try {
-            corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center;">Carregando currículos...</td></tr>';
+            corpoTabela.innerHTML = '<tr><td colspan="8" style="text-align: center;">Carregando currículos...</td></tr>';
             
             const params = new URLSearchParams({
                 page: currentPage,
@@ -403,14 +429,14 @@
                 params.append('search', currentFilters.search);
             }
 
-            const data = await apiCall(`/api/admin/curriculos?${params.toString()}`);
+            const data = await apiCall(`/api/admin/candidaturas?${params.toString()}`);
             
             if (data) {
-                displayCurriculos(data.curriculos);
+                displayCurriculos(data.candidaturas);
             }
             
         } catch (error) {
-            corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--error-color);">Erro ao carregar currículos.</td></tr>';
+            corpoTabela.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--error-color);">Erro ao carregar currículos.</td></tr>';
         }
     }
 
@@ -418,7 +444,7 @@
         corpoTabela.innerHTML = '';
 
         if (!curriculos || curriculos.length === 0) {
-            corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhuma candidatura encontrada com os filtros aplicados.</td></tr>';
+            corpoTabela.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhuma candidatura encontrada com os filtros aplicados.</td></tr>';
             return;
         }
 
@@ -427,6 +453,7 @@
         curriculos.forEach(curriculo => {
             const tr = document.createElement('tr');
             const statusBadge = curriculo.transporte === 'Sim' ? 'badge-success' : 'badge-warning';
+            const statusColor = getStatusColor(curriculo.status);
             
             tr.innerHTML = `
                 <td><strong>${curriculo.nome}</strong></td>
@@ -434,15 +461,18 @@
                 <td>${curriculo.cidade}</td>
                 <td>${curriculo.bairro}</td>
                 <td><span class="badge ${statusBadge}">${curriculo.transporte}</span></td>
+                <td><span class="badge" style="background: color-mix(in srgb, ${statusColor} 15%, transparent); color: ${statusColor};">${curriculo.status}</span></td>
                 <td>${formatarData(curriculo.enviado_em)}</td>
                 <td>
                     <button class="action-btn view" title="Ver detalhes" data-id="${curriculo.id}"><i class="fas fa-eye"></i></button>
+                    <button class="action-btn download" title="Baixar currículo" data-id="${curriculo.id}"><i class="fas fa-download"></i></button>
                     <button class="action-btn distance" title="Calcular distância" data-id="${curriculo.id}"><i class="fas fa-route"></i></button>
                     <button class="action-btn delete" title="Excluir candidatura" data-id="${curriculo.id}"><i class="fas fa-trash"></i></button>
                 </td>
             `;
             
             tr.querySelector('.view').addEventListener('click', () => visualizarCandidato(curriculo.id));
+            tr.querySelector('.download').addEventListener('click', () => baixarCurriculo(curriculo.id));
             tr.querySelector('.distance').addEventListener('click', () => calcularDistanciaCandidato(curriculo.id));
             tr.querySelector('.delete').addEventListener('click', () => excluirCandidatura(curriculo.id));
             
@@ -452,13 +482,27 @@
         corpoTabela.appendChild(fragment);
     }
 
+    function getStatusColor(status) {
+        const colors = {
+            'Novo': '#3b82f6',
+            'Selecionado': '#8b5cf6',
+            'Não Atendeu a Ligação': '#ef4444',
+            'Desistiu': '#f97316',
+            'Já trabalhou Aqui': '#6b7280',
+            'Passou na Entrevista': '#10b981',
+            'Já está trabalhando': '#059669',
+            'Contratado': '#047857'
+        };
+        return colors[status] || '#6b7280';
+    }
+
     async function visualizarCandidato(id) {
         try {
             const infoDiv = document.getElementById('candidato-info');
             infoDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Carregando detalhes...</p>';
             openModal(candidatoModal);
 
-            const candidato = await apiCall(`/api/admin/curriculos/${id}`);
+            const candidato = await apiCall(`/api/admin/candidaturas/${id}`);
             
             if (candidato) {
                 infoDiv.innerHTML = `
@@ -474,12 +518,14 @@
                         <p><strong>Rua:</strong> ${candidato.rua}</p>
                         <p><strong>Número:</strong> ${candidato.numero}</p>
                         <p><strong>Transporte Próprio:</strong> <span class="badge ${candidato.transporte === 'Sim' ? 'badge-success' : 'badge-warning'}">${candidato.transporte}</span></p>
+                        <p><strong>Status:</strong> <span class="badge" style="background: color-mix(in srgb, ${getStatusColor(candidato.status)} 15%, transparent); color: ${getStatusColor(candidato.status)};">${candidato.status}</span></p>
                         <p><strong>Enviado em:</strong> ${formatarData(candidato.enviado_em)}</p>
                     </div>
                     <h3 style="margin-top: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Informações Adicionais</h3>
                     <p style="white-space: pre-wrap;">${candidato.informacoes_adicionais || 'Nenhuma informação adicional fornecida.'}</p>
                     <div style="text-align: right; margin-top: 1.5rem;">
-                        <button class="btn btn-primary" onclick="calcularDistanciaCandidato(${candidato.id})"><i class="fas fa-route"></i> Calcular Distância</button>
+                        <button class="btn btn-primary" onclick="baixarCurriculo(${candidato.id})"><i class="fas fa-download"></i> Baixar Currículo</button>
+                        <button class="btn btn-secondary" onclick="calcularDistanciaCandidato(${candidato.id})"><i class="fas fa-route"></i> Calcular Distância</button>
                         <button class="btn btn-secondary" onclick="closeModal(candidatoModal)">Fechar</button>
                     </div>
                 `;
@@ -491,13 +537,32 @@
         }
     }
 
+    async function baixarCurriculo(id) {
+        try {
+            const result = await apiCall(`/api/admin/curriculo/${id}`);
+            if (result && result.url) {
+                // Criar link temporário para download
+                const link = document.createElement('a');
+                link.href = result.url;
+                link.download = result.nome_arquivo || 'curriculo.pdf';
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('Currículo baixado com sucesso!', 'success');
+            }
+        } catch (error) {
+            showToast('Erro ao baixar currículo.', 'error');
+        }
+    }
+
     async function excluirCandidatura(id) {
         if (!confirm('Tem certeza que deseja excluir esta candidatura? Esta ação é irreversível.')) {
             return;
         }
 
         try {
-            await apiCall(`/api/admin/curriculos/${id}`, { method: 'DELETE' });
+            await apiCall(`/api/admin/candidaturas/${id}`, { method: 'DELETE' });
             showToast('Candidatura excluída com sucesso!', 'success');
             carregarCurriculos();
         } catch (error) {
@@ -512,22 +577,40 @@
         openModal(distanciaModal);
 
         try {
-            const result = await apiCall(`/api/admin/curriculos/${id}/distancia`);
+            // Primeiro buscar informações do candidato
+            const candidato = await apiCall(`/api/admin/candidaturas/${id}`);
+            
+            if (!candidato) {
+                throw new Error('Candidato não encontrado');
+            }
+
+            // Montar endereço completo do candidato
+            const enderecoCandidato = `${candidato.rua}, ${candidato.numero}, ${candidato.bairro}, ${candidato.cidade}`;
+
+            // Chamar API para calcular distância
+            const result = await apiCall('/api/admin/calcular-distancia', {
+                method: 'POST',
+                body: JSON.stringify({
+                    enderecoCandidato: enderecoCandidato,
+                    enderecoTrabalho: 'Km 91, AL-220, 948 - Sen. Arnon de Melo, Arapiraca - AL, 57315-745'
+                })
+            });
             
             if (result) {
                 distanciaContent.innerHTML = `
                     <h3 style="color: var(--accent); margin-bottom: 1rem;">Resultado do Cálculo</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; background: color-mix(in srgb, var(--accent) 5%, transparent); padding: 1.5rem; border-radius: 8px;">
-                        <p><strong>Candidato:</strong> ${result.nome_candidato}</p>
-                        <p><strong>Endereço:</strong> ${result.endereco_candidato}</p>
-                        <p><strong>Destino (Empresa):</strong> ${result.endereco_empresa}</p>
-                        <p><strong>Status:</strong> <span class="badge ${result.status === 'OK' ? 'badge-success' : 'badge-warning'}">${result.status}</span></p>
+                        <p><strong>Candidato:</strong> ${candidato.nome}</p>
+                        <p><strong>Endereço:</strong> ${enderecoCandidato}</p>
+                        <p><strong>Destino (Empresa):</strong> ${result.endereco_empresa || 'Mercado Arapiraca'}</p>
+                        <p><strong>Status:</strong> <span class="badge badge-success">${result.status || 'OK'}</span></p>
                     </div>
                     <h3 style="margin-top: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Detalhes da Rota</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <p><strong>Distância:</strong> <span style="font-size: 1.2rem; font-weight: 600; color: var(--accent);">${result.distancia}</span></p>
-                        <p><strong>Tempo Estimado:</strong> <span style="font-size: 1.2rem; font-weight: 600; color: var(--accent);">${result.tempo_estimado}</span></p>
+                        <p><strong>Tempo Estimado:</strong> <span style="font-size: 1.2rem; font-weight: 600; color: var(--accent);">${result.duracao}</span></p>
                     </div>
+                    ${result.observacao ? `<p style="margin-top: 1rem; padding: 1rem; background: color-mix(in srgb, var(--accent) 10%, transparent); border-radius: 8px; font-size: 0.9rem;"><strong>Observação:</strong> ${result.observacao}</p>` : ''}
                     <div style="text-align: right; margin-top: 1.5rem;">
                         <button class="btn btn-secondary" onclick="closeModal(distanciaModal)">Fechar</button>
                     </div>
@@ -539,227 +622,61 @@
         }
     }
 
-    // ====== FUNÇÕES DE VAGAS ======
-    async function carregarVagas() {
+    // =================================================================================
+    // FUNÇÕES DE FILTROS
+    // =================================================================================
+    async function popularFiltros() {
         try {
-            tabelaVagas.innerHTML = '<tr><td colspan="4" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Carregando vagas...</td></tr>';
+            // Carregar vagas
             const vagas = await apiCall('/api/admin/vagas');
             if (vagas) {
-                displayVagas(vagas);
-                popularFiltros(vagas);
+                filterVaga.innerHTML = '<option value="todas">Todas as vagas</option>';
+                vagas.forEach(vaga => {
+                    const option = document.createElement('option');
+                    option.value = vaga.nome;
+                    option.textContent = vaga.nome;
+                    filterVaga.appendChild(option);
+                });
             }
-        } catch (error) {
-            tabelaVagas.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--error-color);">Erro ao carregar vagas.</td></tr>';
-        }
-    }
 
-    function displayVagas(vagas) {
-        tabelaVagas.innerHTML = '';
-
-        if (!vagas || vagas.length === 0) {
-            tabelaVagas.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhuma vaga cadastrada.</td></tr>';
-            return;
-        }
-
-        vagas.forEach(vaga => {
-            const tr = document.createElement('tr');
-            const statusBadge = vaga.ativa ? 
-                `<span class="badge badge-success">Ativa</span>` : 
-                `<span class="badge badge-warning">Inativa</span>`;
-            
-            tr.innerHTML = `
-                <td><strong>${vaga.nome}</strong></td>
-                <td>${statusBadge}</td>
-                <td>${vaga.candidaturas_count || 0}</td>
-                <td>
-                    <button class="action-btn edit" title="Editar vaga" data-id="${vaga.id}"><i class="fas fa-edit"></i></button>
-                    <button class="action-btn delete" title="Excluir vaga" data-id="${vaga.id}"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
-
-            tr.querySelector('.edit').addEventListener('click', () => editarVaga(vaga.id));
-            tr.querySelector('.delete').addEventListener('click', () => excluirVaga(vaga.id));
-            
-            tabelaVagas.appendChild(tr);
-        });
-    }
-
-    async function popularFiltros(vagas) {
-        // Vagas
-        filterVaga.innerHTML = '<option value="todas">Todas as vagas</option>';
-        vagas.forEach(vaga => {
-            const option = document.createElement('option');
-            option.value = vaga.nome;
-            option.textContent = vaga.nome;
-            filterVaga.appendChild(option);
-        });
-
-        // Cidades
-        try {
-            const cidades = await apiCall('/api/admin/cidades');
-            if (cidades) {
+            // Carregar cidades
+            const cidades = await apiCall('/api/admin/filtros');
+            if (cidades && cidades.cidades) {
                 filterCidade.innerHTML = '<option value="todas">Todas as cidades</option>';
-                cidades.forEach(cidade => {
+                cidades.cidades.forEach(cidade => {
                     const option = document.createElement('option');
                     option.value = cidade;
                     option.textContent = cidade;
                     filterCidade.appendChild(option);
                 });
             }
-        } catch (error) {
-            console.error('Erro ao popular cidades:', error);
-        }
-    }
-
-    async function editarVaga(id) {
-        try {
-            const vaga = await apiCall(`/api/admin/vagas/${id}`);
-            if (vaga) {
-                editingVagaId = id;
-                document.getElementById('vaga-modal-title').textContent = `Editar Vaga: ${vaga.nome}`;
-                document.getElementById('vaga-nome').value = vaga.nome;
-                document.getElementById('vaga-status').value = vaga.ativa ? 'true' : 'false';
-                openModal(vagaModal);
-            }
-        } catch (error) {
-            showToast('Não foi possível carregar os dados da vaga.', 'error');
-        }
-    }
-
-    async function excluirVaga(id) {
-        if (!confirm('Tem certeza que deseja excluir esta vaga? Todas as candidaturas associadas serão perdidas.')) {
-            return;
-        }
-
-        try {
-            await apiCall(`/api/admin/vagas/${id}`, { method: 'DELETE' });
-            showToast('Vaga excluída com sucesso!', 'success');
-            carregarVagas();
-        } catch (error) {
-            showToast('Falha ao excluir vaga.', 'error');
-        }
-    }
-
-    // ====== FUNÇÕES DE DASHBOARD ======
-    async function carregarEstatisticas() {
-        try {
-            const stats = await apiCall('/api/admin/stats');
-            
-            if (stats) {
-                // Métricas
-                document.getElementById('total-candidaturas').textContent = stats.total_candidaturas;
-                document.getElementById('vaga-popular').textContent = stats.vaga_mais_popular.nome || '-';
-                document.getElementById('count-vaga-popular').textContent = `${stats.vaga_mais_popular.count || 0} candidaturas`;
-                document.getElementById('candidatos-arapiraca').textContent = stats.candidatos_arapiraca;
-                document.getElementById('percentual-arapiraca').textContent = `${stats.percentual_arapiraca}% do total`;
-                document.getElementById('taxa-transporte').textContent = `${stats.taxa_transporte}%`;
-
-                // Gráficos
-                renderChartVagas(stats.candidaturas_por_vaga);
-                renderChartCidades(stats.candidaturas_por_cidade);
-                renderChartEvolucao(stats.evolucao_7_dias);
-                renderChartTransporte(stats.status_transporte);
-            }
 
         } catch (error) {
-            console.error('Erro ao carregar estatísticas:', error);
-            showToast('Não foi possível carregar as estatísticas do Dashboard.', 'error');
+            console.error('Erro ao popular filtros:', error);
         }
     }
 
-    function renderChartVagas(data) {
-        if (activeCharts['vagas']) activeCharts['vagas'].destroy();
-        const ctx = document.getElementById('chart-vagas').getContext('2d');
-        activeCharts['vagas'] = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(item => item.vaga),
-                datasets: [{
-                    label: 'Candidaturas',
-                    data: data.map(item => item.count),
-                    backgroundColor: 'rgba(5, 150, 105, 0.7)',
-                    borderColor: 'rgba(5, 150, 105, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    }
+    // =================================================================================
+    // INICIALIZAÇÃO E EVENT LISTENERS
+    // =================================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        // Aplicar tema salvo
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 
-    function renderChartCidades(data) {
-        if (activeCharts['cidades']) activeCharts['cidades'].destroy();
-        const ctx = document.getElementById('chart-cidades').getContext('2d');
-        activeCharts['cidades'] = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: data.map(item => item.cidade),
-                datasets: [{
-                    data: data.map(item => item.count),
-                    backgroundColor: ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'right' } } }
-        });
-    }
+        // Configurar elementos de UI
+        setupUserMenu();
+        
+        // Carregar dados iniciais
+        popularFiltros();
+        carregarCurriculos();
 
-    function renderChartEvolucao(data) {
-        if (activeCharts['evolucao']) activeCharts['evolucao'].destroy();
-        const ctx = document.getElementById('chart-evolucao').getContext('2d');
-        activeCharts['evolucao'] = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.map(item => formatarData(item.data)),
-                datasets: [{
-                    label: 'Novas Candidaturas',
-                    data: data.map(item => item.count),
-                    borderColor: '#059669',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(5, 150, 105, 0.1)'
-                }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    }
-
-    function renderChartTransporte(data) {
-        if (activeCharts['transporte']) activeCharts['transporte'].destroy();
-        const ctx = document.getElementById('chart-transporte').getContext('2d');
-        activeCharts['transporte'] = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Com Transporte', 'Sem Transporte'],
-                datasets: [{
-                    data: [data.sim, data.nao],
-                    backgroundColor: ['#059669', '#f97316'],
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-        });
-    }
-
-    // ====== INICIALIZAÇÃO E EVENT LISTENERS GERAIS ======
-
-    // Eventos de Tabs
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetTab = tab.getAttribute('data-tab');
-
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(tc => tc.classList.remove('active'));
-
-            tab.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
-
-            // Carregar dados da aba ativa
-            if (targetTab === 'dashboard') {
-                carregarEstatisticas();
-            } else if (targetTab === 'curriculos') {
-                carregarCurriculos();
-            } else if (targetTab === 'vagas') {
-                carregarVagas();
-            }
-        });
+        // Verificar autenticação
+        if (!authManager.isAuthenticated()) {
+            console.log('Usuário não autenticado, redirecionando para login...');
+            authManager.redirectToLogin();
+        }
     });
 
     // Eventos de Filtros
@@ -768,6 +685,7 @@
             vaga: filterVaga.value === 'todas' ? undefined : filterVaga.value,
             cidade: filterCidade.value === 'todas' ? undefined : filterCidade.value,
             transporte: filterTransporte.value === 'todos' ? undefined : filterTransporte.value,
+            status: filterStatus.value === 'todos' ? undefined : filterStatus.value,
             search: filterSearch.value.trim() || undefined
         };
         currentPage = 1;
@@ -778,60 +696,11 @@
         filterVaga.value = 'todas';
         filterCidade.value = 'todas';
         filterTransporte.value = 'todos';
+        filterStatus.value = 'todos';
         filterSearch.value = '';
         currentFilters = {};
         currentPage = 1;
         carregarCurriculos();
-    });
-
-    // Eventos de Vagas
-    addVagaBtn.addEventListener('click', () => {
-        editingVagaId = null;
-        document.getElementById('vaga-modal-title').textContent = 'Nova Vaga';
-        document.getElementById('vaga-nome').value = '';
-        document.getElementById('vaga-status').value = 'true';
-        openModal(vagaModal);
-    });
-
-    salvarVagaBtn.addEventListener('click', async () => {
-        const nome = document.getElementById('vaga-nome').value.trim();
-        const ativa = document.getElementById('vaga-status').value === 'true';
-
-        if (!nome) {
-            showToast('O nome da vaga é obrigatório.', 'error');
-            return;
-        }
-
-        const method = editingVagaId ? 'PUT' : 'POST';
-        const endpoint = editingVagaId ? `/api/admin/vagas/${editingVagaId}` : '/api/admin/vagas';
-        const successMessage = editingVagaId ? 'Vaga atualizada com sucesso!' : 'Vaga criada com sucesso!';
-
-        try {
-            salvarVagaBtn.disabled = true;
-            salvarVagaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-
-            await apiCall(endpoint, {
-                method: method,
-                body: JSON.stringify({ nome, ativa })
-            });
-
-            showToast(successMessage, 'success');
-            closeModal(vagaModal);
-            carregarVagas();
-
-        } catch (error) {
-            showToast('Falha ao salvar a vaga.', 'error');
-        } finally {
-            salvarVagaBtn.disabled = false;
-            salvarVagaBtn.innerHTML = 'Salvar Vaga';
-        }
-    });
-
-    // Eventos de Modal
-    document.querySelectorAll('.modal-close').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            closeModal(e.target.closest('.modal'));
-        });
     });
 
     // Evento de Tema
@@ -843,30 +712,25 @@
         themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     });
 
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', () => {
-        // Aplica o tema salvo
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.body.setAttribute('data-theme', savedTheme);
-        themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-
-        setupUserMenu();
-        
-        // Carrega a aba inicial (Dashboard)
-        carregarEstatisticas();
-        carregarVagas();
+    // Eventos de Modal
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            closeModal(e.target.closest('.modal'));
+        });
     });
 
-    // Fecha modais ao clicar fora
+    // Fechar modais ao clicar fora
     window.addEventListener('click', (event) => {
         if (event.target === candidatoModal) closeModal(candidatoModal);
-        if (event.target === vagaModal) closeModal(vagaModal);
         if (event.target === distanciaModal) closeModal(distanciaModal);
     });
 
-    // =================================================================================
-    // FIM DO SCRIPT
-    // =================================================================================
+    // Permitir busca com Enter
+    filterSearch.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            aplicarFiltrosBtn.click();
+        }
+    });
   </script>
 </body>
 </html>
