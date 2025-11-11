@@ -8,7 +8,7 @@
     <!-- Incluir SDK do Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
+          * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -554,10 +554,17 @@
         </div>
     </div>
 
-    <!-- Incluir sistema de autenticação -->
-    <script src="auth.js"></script>
-
     <script>
+        // CONFIGURAÇÃO DO SUPABASE - SUAS CREDENCIAIS
+        const SUPABASE_URL = 'https://sutprwpsketwdcdmpswo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1dHByd3Bza2V0d2RjZG1wc3dvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyMzI3ODAsImV4cCI6MjA3NzgwODc4MH0.TyTfO6o6YJUm947LHfl81i82V2R12sqcnFBhYHsoDZc';
+        
+        // URL de redirecionamento após login
+        const REDIRECT_AFTER_LOGIN = 'https://popularatacarejo.github.io/AnalisePOPRH/consulta.html/';
+
+        // Inicializar Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         // Elementos do DOM
         const loginForm = document.getElementById('loginForm');
         const emailInput = document.getElementById('email');
@@ -566,6 +573,8 @@
         const buttonText = document.getElementById('buttonText');
         const buttonLoading = document.getElementById('buttonLoading');
         const alertDiv = document.getElementById('alert');
+        const serverStatusText = document.getElementById('serverStatusText');
+        const statusDot = document.getElementById('statusDot');
 
         // Função para mostrar alertas
         function showAlert(message, type) {
@@ -606,7 +615,7 @@
             return emailRegex.test(email);
         }
 
-        // Função para fazer login
+        // Função para fazer login com Supabase
         async function handleLogin(email, password) {
             try {
                 // Mostrar estado de carregamento
@@ -614,8 +623,15 @@
                 buttonText.textContent = 'Conectando';
                 buttonLoading.style.display = 'inline-block';
 
-                // Fazer login com Supabase usando o AuthManager
-                await authManager.login(email, password);
+                // Fazer login com Supabase
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    throw error;
+                }
 
                 // Login bem-sucedido
                 showAlert('Login realizado com sucesso! Redirecionando...', 'success');
@@ -626,9 +642,9 @@
                     localStorage.setItem('rememberMe', 'true');
                 }
                 
-                // Redirecionar para o painel
+                // Redirecionar para dashboard
                 setTimeout(() => {
-                    window.location.href = 'consulta.html';
+                    window.location.href = REDIRECT_AFTER_LOGIN;
                 }, 1500);
 
             } catch (error) {
@@ -682,6 +698,16 @@
         });
 
         // Verificar se já está logado (redirecionar automaticamente)
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                showAlert('Você já está logado. Redirecionando...', 'success');
+                setTimeout(() => {
+                    window.location.href = REDIRECT_AFTER_LOGIN;
+                }, 1000);
+            }
+        });
+
+        // Verificar credenciais salvas ao carregar a página
         document.addEventListener('DOMContentLoaded', function() {
             // Verificar credenciais salvas
             const savedEmail = localStorage.getItem('savedEmail');
@@ -691,16 +717,6 @@
                 emailInput.value = savedEmail;
                 document.getElementById('remember').checked = true;
             }
-
-            // Verificar se já está autenticado
-            setTimeout(() => {
-                if (authManager.isAuthenticated()) {
-                    showAlert('Você já está logado. Redirecionando...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'consulta.html';
-                    }, 1000);
-                }
-            }, 500);
 
             // Focar no campo de email
             emailInput.focus();
