@@ -82,6 +82,12 @@ class AuthManager {
             throw error;
         }
 
+        // Salvar o token de acesso no localStorage para ser usado pelo painel administrativo
+        if (data.session && data.session.access_token) {
+            localStorage.setItem('authToken', data.session.access_token);
+            // Salvar nome/email para exibição no painel
+            localStorage.setItem('userName', data.user.user_metadata?.name || data.user.email);
+        }
         return data;
     }
 
