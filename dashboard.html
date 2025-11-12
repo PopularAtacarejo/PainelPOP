@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dashboard | FormulárioBK Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div class="logo">FormulárioBK Admin</div>
+      <div class="small">Painel administrativo • Visão Geral</div>
+    </div>
+
+    <nav class="header-nav">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="candidaturas.html">Candidaturas</a>
+      <a href="user-management.html" id="nav-users" data-admin-only>Usuários</a>
+    </nav>
+
+    <div class="header-actions">
+      <button onclick="window.logout()">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="grid-3">
+      <div class="card stat-card">
+        <div class="stat-icon">📥</div>
+        <div class="stat-info">
+          <h3>Total de candidaturas</h3>
+          <div class="stat-value" id="stat-total">...</div>
+          <div class="small">Últimos 30 dias: <span id="stat-30d" class="small">...</span></div>
+        </div>
+      </div>
+
+      <div class="card stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#f97316)">⚡</div>
+        <div class="stat-info">
+          <h3>Candidaturas 'Novo'</h3>
+          <div class="stat-value" id="stat-novo">...</div>
+          <div class="small">Pendentes de triagem</div>
+        </div>
+      </div>
+
+      <div class="card stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#6b7280,#374151)">📂</div>
+        <div class="stat-info">
+          <h3>Vagas distintas</h3>
+          <div class="stat-value" id="stat-vagas">...</div>
+          <div class="small">Vagas ativas</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 style="margin-top:0">Resumo de filtros e dados</h3>
+      <div id="filter-options-summary" class="small">Carregando opções...</div>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Candidaturas recentes</h3>
+        <div class="small">Últimas 50 entradas</div>
+      </div>
+
+      <div class="results-row" style="margin-top:10px;">
+        <div class="small" id="results-meta">Carregando...</div>
+        <div>
+          <input type="search" id="quick-search" placeholder="Buscar nome / e-mail..." style="padding:8px 12px;border-radius:10px;border:1px solid #eef5ff">
+          <button id="btn-search" class="btn btn-primary" style="margin-left:8px">Buscar</button>
+        </div>
+      </div>
+
+      <div class="table-container" id="recent-container">
+        <table class="table" id="recent-table">
+          <thead>
+            <tr><th>Vaga</th><th>Nome</th><th>Cidade</th><th>Status</th><th>Enviado</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="6"><div class="skeleton" style="height:14px;width:80%;"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="footer-note">Design atualizado • Legível e responsivo — <small>Feito para melhorar velocidade e usabilidade</small></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="data-access.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // esperar dataAccess
+    async function waitReady(){ return new Promise(r=>{
+      const it = setInterval(()=>{ if(window.dataAccess){ clearInterval(it); r(); } },100);
+      setTimeout(()=>{ clearInterval(it); r(); }, 8000);
+    });}
+    await waitReady();
+
+    const statTotal = document.getElementById('stat-total');
+    const stat30 = document.getElementById('stat-30d');
+    const statNovo = document.getElementById('stat-novo');
+    const statVagas = document.getElementById('stat-vagas');
+    const optionsDiv = document.getElementById('filter-options-summary');
+    const tableBody = document.querySelector('#recent-table tbody');
+    const resultsMeta = document.getElementById('results-meta');
+
+    try{
+      const options = await window.dataAccess.getFilterOptions();
+      optionsDiv.innerHTML = `
+        <div><strong>Vagas:</strong> ${options.vagas.length} • <strong>Cidades:</strong> ${options.cidades.length} • <strong>Status:</strong> ${options.status.join(', ')}</div>
+      `;
+
+      // carrega candidaturas (limite 50)
+      const res = await window.dataAccess.getCandidaturas({ limit: 50 });
+      const rows = res.data || [];
+
+      statTotal.textContent = rows.length.toLocaleString('pt-BR');
+      statVagas.textContent = options.vagas.length.toLocaleString('pt-BR');
+      statNovo.textContent = rows.filter(r => r.status === 'Novo').length.toLocaleString('pt-BR');
+
+      // Últimos 30 dias count
+      const now = Date.now();
+      const days30 = rows.filter(r => {
+        const d = new Date(r.enviado_em || r.criado_em || r.created_at).getTime();
+        return !isNaN(d) && (now - d) <= (30*24*60*60*1000);
+      }).length;
+      stat30.textContent = `${days30} entradas`;
+
+      // Popular tabela
+      tableBody.innerHTML = '';
+      if(rows.length === 0){
+        tableBody.innerHTML = '<tr><td colspan="6" class="small">Nenhuma candidatura encontrada.</td></tr>';
+      } else {
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          const sent = new Date(r.enviado_em || r.criado_em || r.created_at).toLocaleDateString('pt-BR');
+          const statusBadge = (() => {
+            const s = String(r.status||'').toLowerCase();
+            if(s.includes('novo')) return '<span class="badge new">Novo</span>';
+            if(s.includes('contrat')) return '<span class="badge success">Contratado</span>';
+            if(s.includes('nao')||s.includes('não')) return '<span class="badge danger">Não Atendeu</span>';
+            return `<span class="badge warn">${r.status||'—'}</span>`;
+          })();
+
+          tr.innerHTML = `
+            <td>${r.vaga || '—'}</td>
+            <td><strong>${r.nome_completo || r.nome || '—'}</strong><div class="small">${r.email || ''}</div></td>
+            <td>${r.cidade || '—'}</td>
+            <td>${statusBadge}</td>
+            <td class="small">${sent}</td>
+            <td style="text-align:right"><a href="candidatura-detail.html?id=${r.id}" class="small">Abrir</a></td>
+          `;
+          tableBody.appendChild(tr);
+        });
+        resultsMeta.textContent = `${rows.length} resultados mostrados`;
+      }
+
+    }catch(err){
+      console.error('Erro dashboard:', err);
+      optionsDiv.textContent = 'Erro ao carregar dados: ' + (err.message || err);
+      tableBody.innerHTML = `<tr><td colspan="6" class="small">Erro ao carregar candidaturas</td></tr>`;
+    }
+
+    // Busca rápida
+    document.getElementById('btn-search').addEventListener('click', async () => {
+      const q = document.getElementById('quick-search').value.trim();
+      tableBody.innerHTML = '<tr><td colspan="6"><div class="skeleton" style="height:12px;width:80%"></div></td></tr>';
+      try{
+        const res = await window.dataAccess.getCandidaturas({ search: q, limit: 200 });
+        const rows = res.data || [];
+        tableBody.innerHTML = '';
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${r.vaga||''}</td><td><strong>${r.nome_completo||r.nome||''}</strong><div class="small">${r.email||''}</div></td><td>${r.cidade||''}</td><td><span class="badge ${r.status==='Novo'?'new':'warn'}">${r.status||''}</span></td><td class="small">${new Date(r.enviado_em||r.criado_em||r.created_at).toLocaleDateString('pt-BR')}</td><td style="text-align:right"><a href="candidatura-detail.html?id=${r.id}" class="small">Abrir</a></td>`;
+          tableBody.appendChild(tr);
+        });
+        resultsMeta.textContent = `${rows.length} resultados`;
+      }catch(e){
+        tableBody.innerHTML = `<tr><td colspan="6" class="small">Erro: ${e.message}</td></tr>`;
+      }
+    });
+
+  });
+  </script>
+</body>
+</html>

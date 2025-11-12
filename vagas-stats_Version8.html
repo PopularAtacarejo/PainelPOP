@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Estatísticas | Vagas e Locais</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div class="logo">FormulárioBK Admin</div>
+      <div class="small">Estatísticas — Gráficos</div>
+    </div>
+
+    <nav class="header-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="candidaturas.html">Candidaturas</a>
+      <a href="vagas-stats.html" class="active">Estatísticas</a>
+      <a href="user-management.html" id="nav-users" data-admin-only>Usuários</a>
+    </nav>
+
+    <div class="header-actions">
+      <button onclick="window.logout()">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" style="margin-bottom:14px;">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div>
+          <label class="small">Período início</label><br>
+          <input id="stat-data-inicio" type="date" />
+        </div>
+        <div>
+          <label class="small">Período fim</label><br>
+          <input id="stat-data-fim" type="date" />
+        </div>
+        <div>
+          <label class="small">Vaga (filtro)</label><br>
+          <select id="stat-vaga"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label class="small">Cidade (filtro)</label><br>
+          <select id="stat-cidade"><option value="">Todas</option></select>
+        </div>
+        <div style="margin-left:auto">
+          <button id="btn-refresh-stats" class="btn btn-primary">Atualizar gráficos</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <div class="card">
+        <h4 style="margin-top:0">Top Vagas (barra)</h4>
+        <canvas id="chart-vagas" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <h4 style="margin-top:0">Evolução (linha)</h4>
+        <canvas id="chart-evolucao" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <h4 style="margin-top:0">Top Cidades/Bairros</h4>
+        <div>
+          <h5 class="small">Cidades</h5>
+          <ol id="top-cidades"></ol>
+          <h5 class="small" style="margin-top:8px">Bairros</h5>
+          <ol id="top-bairros"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Lista paginada de candidaturas</h3>
+        <div>
+          <button id="btn-export-page" class="btn btn-ghost">Exportar CSV (Página)</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="table-container">
+          <table class="table" id="pag-table">
+            <thead>
+              <tr><th>ID</th><th>Vaga</th><th>Nome</th><th>Cidade</th><th>Status</th><th>Enviado</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+          <div class="small" id="page-info">Página 1</div>
+          <div>
+            <button id="prev-page" class="btn btn-ghost">Anterior</button>
+            <button id="next-page" class="btn btn-ghost">Próxima</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="data-access.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      async function waitReady(){ return new Promise(r=>{
+        const it = setInterval(()=>{ if(window.dataAccess){ clearInterval(it); r(); } },100);
+        setTimeout(()=>{ clearInterval(it); r(); }, 8000);
+      });}
+      await waitReady();
+
+      const statVaga = document.getElementById('stat-vaga');
+      const statCidade = document.getElementById('stat-cidade');
+      const dataInicio = document.getElementById('stat-data-inicio');
+      const dataFim = document.getElementById('stat-data-fim');
+      const btnRefresh = document.getElementById('btn-refresh-stats');
+
+      const topCidadesEl = document.getElementById('top-cidades');
+      const topBairrosEl = document.getElementById('top-bairros');
+
+      const canvasVagas = document.getElementById('chart-vagas');
+      const canvasEvol = document.getElementById('chart-evolucao');
+      let chartVagas = null;
+      let chartEvol = null;
+
+      const tableBody = document.querySelector('#pag-table tbody');
+      const prevBtn = document.getElementById('prev-page');
+      const nextBtn = document.getElementById('next-page');
+      const pageInfo = document.getElementById('page-info');
+      const exportPageBtn = document.getElementById('btn-export-page');
+
+      let page = 1;
+      const limit = 30;
+      let totalPages = 1;
+
+      async function populateFilters() {
+        try {
+          const opts = await window.dataAccess.getFilterOptions();
+          statVaga.innerHTML = '<option value="">Todas</option>' + (opts.vagas || []).map(v => `<option value="${v}">${v}</option>`).join('');
+          statCidade.innerHTML = '<option value="">Todas</option>' + (opts.cidades || []).map(c => `<option value="${c}">${c}</option>`).join('');
+        } catch (err) {
+          console.warn('Erro ao popular filtros:', err);
+        }
+      }
+
+      function buildFiltersForStats() {
+        const f = {};
+        if (statVaga.value) f.vaga = statVaga.value;
+        if (statCidade.value) f.cidade = statCidade.value;
+        if (dataInicio.value) f.data_inicio = dataInicio.value;
+        if (dataFim.value) f.data_fim = dataFim.value;
+        return f;
+      }
+
+      async function drawTopVagas(filters) {
+        try {
+          const stats = await window.dataAccess.getTopStats({ limitVagas: 15, limitCidades: 0, limitBairros: 0, filters });
+          const labels = stats.vagas.map(v => v.key);
+          const values = stats.vagas.map(v => v.count);
+
+          if (chartVagas) chartVagas.destroy();
+          chartVagas = new Chart(canvasVagas.getContext('2d'), {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Candidaturas', data: values, backgroundColor: 'rgba(43,110,246,0.85)' }] },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { ticks: { maxRotation: 40, minRotation: 0 } },
+                y: { beginAtZero: true }
+              }
+            }
+          });
+        } catch (err) {
+          console.error('Erro drawTopVagas', err);
+        }
+      }
+
+      async function drawEvolution(filters) {
+        try {
+          const evo = await window.dataAccess.getEvolution(filters);
+          const labels = evo.labels;
+          const data = evo.counts;
+
+          if (chartEvol) chartEvol.destroy();
+          chartEvol = new Chart(canvasEvol.getContext('2d'), {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [{
+                label: 'Candidaturas por dia',
+                data,
+                fill: true,
+                borderColor: 'rgba(32,201,151,0.95)',
+                backgroundColor: 'rgba(32,201,151,0.12)',
+                tension: 0.2,
+                pointRadius: 3
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { ticks: { maxRotation: 45 } },
+                y: { beginAtZero: true }
+              }
+            }
+          });
+        } catch (err) {
+          console.error('Erro drawEvolution', err);
+        }
+      }
+
+      async function drawCitiesAndNeighborhoods(filters) {
+        try {
+          const stats = await window.dataAccess.getTopStats({ limitVagas: 0, limitCidades: 10, limitBairros: 10, filters });
+          topCidadesEl.innerHTML = stats.cidades.map(c => `<li>${c.key} <span class="small">(${c.count})</span></li>`).join('') || '<li class="small">Sem dados</li>';
+          topBairrosEl.innerHTML = stats.bairros.map(b => `<li>${b.key} <span class="small">(${b.count})</span></li>`).join('') || '<li class="small">Sem dados</li>';
+        } catch (err) {
+          console.error('Erro drawCitiesAndNeighborhoods', err);
+        }
+      }
+
+      async function loadPage(p = 1) {
+        const filters = buildFiltersForStats();
+        page = p;
+        pageInfo.textContent = 'Carregando...';
+        tableBody.innerHTML = '<tr><td colspan="6"><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
+        try {
+          const res = await window.dataAccess.getCandidaturas({ ...filters, page, limit });
+          const rows = res.data || [];
+          const total = res.total || 0;
+          totalPages = res.totalPages || Math.max(1, Math.ceil((total || 0) / limit));
+          tableBody.innerHTML = '';
+          if (!rows.length) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="small">Nenhuma candidatura nesta página.</td></tr>';
+          } else {
+            rows.forEach(r => {
+              const sent = new Date(r.enviado_em || r.criado_em || r.created_at).toLocaleDateString('pt-BR');
+              const idShort = String(r.id || '').slice(0, 8);
+              const tr = document.createElement('tr');
+              tr.innerHTML = `<td>${idShort}</td><td>${r.vaga || ''}</td><td><strong>${r.nome_completo || r.nome || ''}</strong><div class="small">${r.email || ''}</div></td><td>${r.cidade || ''}${r.bairro ? ' / ' + r.bairro : ''}</td><td>${r.status || '—'}</td><td class="small">${sent}</td>`;
+              tableBody.appendChild(tr);
+            });
+          }
+          pageInfo.textContent = `Página ${page} de ${totalPages} • ${total.toLocaleString ? total.toLocaleString('pt-BR') : total} candidaturas`;
+          prevBtn.disabled = page <= 1;
+          nextBtn.disabled = page >= totalPages;
+        } catch (err) {
+          console.error('Erro ao carregar página:', err);
+          tableBody.innerHTML = `<tr><td colspan="6" class="small">Erro: ${err.message || err}</td></tr>`;
+          pageInfo.textContent = 'Erro ao carregar';
+        }
+      }
+
+      prevBtn.addEventListener('click', () => { if (page > 1) loadPage(page - 1); });
+      nextBtn.addEventListener('click', () => { if (page < totalPages) loadPage(page + 1); });
+
+      btnRefresh.addEventListener('click', async () => {
+        const filters = buildFiltersForStats();
+        await drawTopVagas(filters);
+        await drawEvolution(filters);
+        await drawCitiesAndNeighborhoods(filters);
+        await loadPage(1);
+      });
+
+      exportPageBtn.addEventListener('click', async () => {
+        try {
+          const filters = buildFiltersForStats();
+          const res = await window.dataAccess.getCandidaturas({ ...filters, page, limit });
+          const rows = res.data || [];
+          if (!rows.length) return alert('Nenhuma linha nesta página para exportar.');
+          const headers = ['id', 'nome', 'cpf', 'telefone', 'email', 'vaga', 'cidade', 'bairro', 'rua', 'cep', 'transporte', 'status', 'enviado_em'];
+          const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => `"${String(r[h] || '').replace(/"/g, '""')}"`).join(','))).join('\n');
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = `candidaturas_page_${page}_${Date.now()}.csv`; a.click();
+          URL.revokeObjectURL(url);
+        } catch (e) {
+          alert('Erro ao exportar CSV: ' + (e.message || e));
+        }
+      });
+
+      // inicial
+      await populateFilters();
+      await drawTopVagas({});
+      await drawEvolution({});
+      await drawCitiesAndNeighborhoods({});
+      await loadPage(1);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vagas | FormulárioBK Admin</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .row-actions{ display:flex; gap:8px; justify-content:flex-end; }
+    .inline-input{ width:100%; padding:8px 10px; border-radius:10px; border:1px solid #e6eef9; background:#fbfdff; }
+    .muted{ color: var(--muted); }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { display:none; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #e6eef9; transition: .2s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; box-shadow:0 1px 2px rgba(0,0,0,.15);}
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(20px); }
+    .table td input.inline-input[disabled] { background:#f9fbff; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div class="logo">FormulárioBK Admin</div>
+      <div class="small">Cadastro de Vagas • Criar, editar, ativar e excluir</div>
+    </div>
+
+    <nav class="header-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="candidaturas.html">Candidaturas</a>
+      <a href="vagas.html" class="active">Vagas</a>
+      <a href="user-management.html" id="nav-users" data-admin-only>Usuários</a>
+    </nav>
+
+    <div class="header-actions">
+      <button onclick="window.logout()">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h3 style="margin-top:0">Nova vaga</h3>
+      <div class="filter-form" style="grid-template-columns:2fr 1fr 120px">
+        <div>
+          <label for="input-nome">Nome da vaga</label>
+          <input id="input-nome" type="text" class="inline-input" placeholder="ex.: Atendente, Entregador..." />
+        </div>
+        <div>
+          <label for="input-ativa">Ativa?</label><br>
+          <label class="switch">
+            <input id="input-ativa" type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="filter-actions" style="align-items:end">
+          <button id="btn-add" class="btn btn-primary">Adicionar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Vagas</h3>
+        <div class="small muted" id="list-meta">Carregando...</div>
+      </div>
+
+      <div class="table-container" style="margin-top:10px;">
+        <table class="table" id="vagas-table">
+          <thead>
+            <tr>
+              <th style="width:80px">ID</th>
+              <th>Nome</th>
+              <th style="width:120px">Ativa</th>
+              <th style="width:180px">Criada em</th>
+              <th style="width:220px;text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="confirm-backdrop" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <strong>Confirmar exclusão</strong>
+        <button id="confirm-close" class="btn btn-ghost">Fechar</button>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir esta vaga? Esta ação não pode ser desfeita.</p>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+          <button id="confirm-cancel" class="btn btn-secondary">Cancelar</button>
+          <button id="confirm-ok" class="btn btn-primary">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    // Utilidades simples para CRUD de 'vagas' diretamente no Supabase
+    function ensureClient() {
+      if (!window.supabase || typeof window.supabase.from !== 'function') {
+        throw new Error('Cliente Supabase não inicializado.');
+      }
+    }
+
+    async function vagas_list() {
+      ensureClient();
+      const { data, error } = await window.supabase
+        .from('vagas')
+        .select('*')
+        .order('criada_em', { ascending: false });
+      if (error) throw new Error(error.message);
+      return data || [];
+    }
+
+    async function vagas_create({ nome, ativa=true }) {
+      ensureClient();
+      if (!nome || !nome.trim()) throw new Error('Nome é obrigatório.');
+      const payload = { nome: nome.trim(), ativa: !!ativa };
+      const { data, error } = await window.supabase
+        .from('vagas')
+        .insert([payload])
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    }
+
+    async function vagas_update(id, fields) {
+      ensureClient();
+      if (!id) throw new Error('ID é obrigatório.');
+      const { data, error } = await window.supabase
+        .from('vagas')
+        .update(fields)
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    }
+
+    async function vagas_delete(id) {
+      ensureClient();
+      if (!id) throw new Error('ID é obrigatório.');
+      const { error } = await window.supabase
+        .from('vagas')
+        .delete()
+        .eq('id', id);
+      if (error) throw new Error(error.message);
+      return true;
+    }
+  </script>
+
+  <script>
+    // Página
+    const tbody = document.querySelector('#vagas-table tbody');
+    const meta = document.getElementById('list-meta');
+    const inputNome = document.getElementById('input-nome');
+    const inputAtiva = document.getElementById('input-ativa');
+    const btnAdd = document.getElementById('btn-add');
+
+    // Confirm modal
+    const confirmBackdrop = document.getElementById('confirm-backdrop');
+    const confirmClose = document.getElementById('confirm-close');
+    const confirmCancel = document.getElementById('confirm-cancel');
+    const confirmOk = document.getElementById('confirm-ok');
+    let toDeleteId = null;
+
+    function openConfirm(id){ toDeleteId = id; confirmBackdrop.style.display='flex'; }
+    function closeConfirm(){ toDeleteId = null; confirmBackdrop.style.display='none'; }
+    confirmClose.onclick = confirmCancel.onclick = closeConfirm;
+    confirmOk.onclick = async () => {
+      const id = toDeleteId; if (!id) return;
+      confirmOk.disabled = true; confirmOk.textContent = 'Excluindo...';
+      try{
+        await vagas_delete(id);
+        await renderList();
+      }catch(e){ alert('Erro: '+e.message); }
+      finally{ confirmOk.disabled=false; confirmOk.textContent='Excluir'; closeConfirm(); }
+    };
+
+    function rowTpl(v) {
+      const created = v.criada_em ? new Date(v.criada_em).toLocaleString('pt-BR') : '—';
+      const checked = v.ativa ? 'checked' : '';
+      return `
+        <tr data-id="${v.id}">
+          <td>${v.id}</td>
+          <td><input class="inline-input input-nome" value="${(v.nome||'').replace(/"/g,'&quot;')}"></td>
+          <td style="text-align:center">
+            <label class="switch">
+              <input class="input-ativa" type="checkbox" ${checked}>
+              <span class="slider"></span>
+            </label>
+          </td>
+          <td class="small">${created}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary btn-save">Salvar</button>
+              <button class="btn btn-ghost btn-delete">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    async function renderList() {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="skeleton" style="height:14px;width:80%"></div></td></tr>';
+      try{
+        const rows = await vagas_list();
+        meta.textContent = `${rows.length} registro(s)`;
+        if (!rows.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="small">Nenhuma vaga cadastrada.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = rows.map(rowTpl).join('');
+
+        // Wire events
+        tbody.querySelectorAll('.btn-save').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const tr = e.currentTarget.closest('tr');
+            const id = tr.dataset.id;
+            const nome = tr.querySelector('.input-nome').value.trim();
+            const ativa = tr.querySelector('.input-ativa').checked;
+            if (!nome) { alert('Nome é obrigatório'); return; }
+            btn.disabled = true; btn.textContent = 'Salvando...';
+            try{
+              await vagas_update(id, { nome, ativa });
+            }catch(err){ alert('Erro ao salvar: '+err.message); }
+            finally{ btn.disabled=false; btn.textContent='Salvar'; }
+          });
+        });
+
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const tr = e.currentTarget.closest('tr');
+            const id = tr.dataset.id;
+            openConfirm(id);
+          });
+        });
+      }catch(err){
+        meta.textContent = 'Erro ao carregar';
+        tbody.innerHTML = `<tr><td colspan="5" class="small">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    btnAdd.addEventListener('click', async () => {
+      const nome = inputNome.value.trim();
+      const ativa = inputAtiva.checked;
+      if (!nome) { alert('Informe um nome para a vaga.'); return; }
+      btnAdd.disabled = true; btnAdd.textContent = 'Adicionando...';
+      try{
+        await vagas_create({ nome, ativa });
+        inputNome.value = ''; inputAtiva.checked = true;
+        await renderList();
+      }catch(err){ alert('Erro ao adicionar: '+err.message); }
+      finally{ btnAdd.disabled=false; btnAdd.textContent='Adicionar'; }
+    });
+
+    // Integração básica com auth.js: expõe logout se estiver disponível
+    window.logout = async function(){ 
+      if (window.authManager) await window.authManager.logout();
+      else window.location.href = 'index.html';
+    };
+
+    document.addEventListener('DOMContentLoaded', renderList);
+    // Se a sessão mudar (auth.js aciona onAuthStateChange), recarrega a lista
+    const chk = setInterval(() => { if (window.supabase && window.supabase.auth) {
+      clearInterval(chk);
+      window.supabase.auth.onAuthStateChange(() => renderList());
+    }}, 200);
+  </script>
+</body>
+</html>

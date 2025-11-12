@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login de Acesso aos Dados</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-container">
+    <div class="container card" id="login-form">
+        <h1>Acesso ao Painel 🔐</h1>
+        <form id="login-form-inner">
+            <input type="email" id="email" placeholder="E-mail" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+            <p id="message" class="error"></p>
+        </form>
+    </div>
+
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="data-access.js"></script>
+
+    <script>
+        document.getElementById('login-form-inner').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = 'Autenticando...';
+            messageElement.classList.remove('error');
+            
+            try {
+                // Chama a função de login do seu auth.js (window.authManager)
+                await window.authManager.login(email, password);
+                
+                // Redireciona para o dashboard após login
+                window.location.href = 'dashboard.html';
+
+            } catch (error) {
+                console.error("Erro de login:", error.message);
+                messageElement.textContent = error.message || 'Falha na autenticação. Verifique suas credenciais.';
+                messageElement.classList.add('error');
+            }
+        });
+
+        // Redireciona se o usuário já estiver autenticado
+        document.addEventListener('DOMContentLoaded', () => {
+             // Delay para garantir que o auth.js tenha sido inicializado
+            setTimeout(() => {
+                // A função isAuthenticated é exposta pelo seu auth.js
+                if (window.authManager && window.authManager.isAuthenticated()) { 
+                    window.location.href = 'dashboard.html';
+                }
+            }, 500);
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Candidaturas | FormulárioBK Admin</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilos específicos para a página de candidaturas */
+    .suggestions { position: relative; }
+    .suggestions-list {
+      position: absolute; 
+      top: 100%; 
+      left: 0; 
+      right: 0; 
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xl);
+      border-radius: var(--radius-lg);
+      z-index: 1500; 
+      max-height: 220px; 
+      overflow: auto; 
+      margin-top: 8px;
+      animation: slideDown 0.2s ease;
+    }
+    .suggestion-item { 
+      padding: 12px 16px; 
+      cursor: pointer; 
+      font-size: 0.95rem; 
+      border-bottom: 1px solid var(--border-light); 
+      transition: var(--transition-fast);
+    }
+    .suggestion-item:hover, 
+    .suggestion-item.active { 
+      background: linear-gradient(90deg, rgba(67, 97, 238, 0.08), rgba(76, 201, 240, 0.08));
+    }
+    .suggestion-empty { 
+      padding: 12px 16px; 
+      color: var(--text-muted); 
+      font-size: 0.9rem; 
+    }
+    #saved-presets { min-width: 220px; }
+    
+    /* Estilos para o modal de detalhes */
+    .modal-body {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    @media (max-width: 900px) {
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .kv {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border-light);
+      transition: var(--transition);
+    }
+    
+    .kv:hover {
+      background: rgba(0, 0, 0, 0.02);
+      padding-left: 8px;
+      padding-right: 8px;
+      margin: 0 -8px;
+      border-radius: var(--radius);
+    }
+    
+    .kv strong {
+      color: var(--text-muted);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    /* Preview de arquivo */
+    #preview-area {
+      margin-bottom: 16px;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    
+    #preview-area iframe {
+      width: 100%;
+      height: 300px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    
+    /* Lista de comentários */
+    #comments-list {
+      max-height: 240px;
+      overflow: auto;
+      margin-top: 8px;
+      padding-right: 6px;
+    }
+    
+    /* Botões de ação no modal */
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    /* Badge de status personalizado */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: var(--font-weight-semibold);
+      font-size: 0.8rem;
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    /* Animações específicas */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in-up {
+      animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    /* Efeito de brilho para itens importantes */
+    .highlight {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .highlight::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .highlight:hover::after {
+      left: 100%;
+    }
+    
+    /* Efeito de entrada escalonada para linhas da tabela */
+    .table tbody tr {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    .table tbody tr:nth-child(1) { animation-delay: 0.05s; }
+    .table tbody tr:nth-child(2) { animation-delay: 0.1s; }
+    .table tbody tr:nth-child(3) { animation-delay: 0.15s; }
+    .table tbody tr:nth-child(4) { animation-delay: 0.2s; }
+    .table tbody tr:nth-child(5) { animation-delay: 0.25s; }
+    .table tbody tr:nth-child(6) { animation-delay: 0.3s; }
+    .table tbody tr:nth-child(7) { animation-delay: 0.35s; }
+    .table tbody tr:nth-child(8) { animation-delay: 0.4s; }
+    .table tbody tr:nth-child(9) { animation-delay: 0.45s; }
+    .table tbody tr:nth-child(10) { animation-delay: 0.5s; }
+    
+    /* Layout responsivo para formulário de filtro */
+    @media (max-width: 1200px) {
+      .filter-form {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .filter-form {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-actions {
+        flex-direction: column;
+      }
+      
+      .filter-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="highlight">
+    <div class="header-left">
+      <div class="logo">FormulárioBK Admin</div>
+      <div class="small">Candidaturas • Gerencie envios</div>
+    </div>
+
+    <nav class="header-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="candidaturas.html" class="active">Candidaturas</a>
+      <a href="user-management.html" id="nav-users" data-admin-only>Usuários</a>
+    </nav>
+
+    <div class="header-actions">
+      <button onclick="window.logout()" class="hover-lift">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card fade-in-up">
+      <h3 style="margin:0 0 16px 0; display: flex; align-items: center; gap: 10px;">
+        <span>Filtro Avançado</span>
+        <span class="badge new" style="font-size: 0.7rem;">Novo</span>
+      </h3>
+      <form id="filter-form" class="filter-form">
+        <div>
+          <label for="vaga">Vaga</label>
+          <select id="vaga" name="vaga"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label for="cidade">Cidade</label>
+          <select id="cidade" name="cidade"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label for="bairro">Bairro</label>
+          <input id="bairro" name="bairro" type="text" placeholder="Bairro">
+        </div>
+        <div>
+          <label for="rua">Rua</label>
+          <input id="rua" name="rua" type="text" placeholder="Rua">
+        </div>
+
+        <div class="suggestions">
+          <label for="nome">Nome</label>
+          <input id="nome" name="nome" type="text" placeholder="Nome do candidato" autocomplete="off">
+          <div id="nome-suggestions" class="suggestions-list" style="display:none"></div>
+        </div>
+
+        <div>
+          <label for="cpf">CPF</label>
+          <input id="cpf" name="cpf" type="text" placeholder="CPF (com ou sem formatação)">
+        </div>
+
+        <div>
+          <label for="data_inicio">Data início</label>
+          <input id="data_inicio" name="data_inicio" type="date">
+        </div>
+        <div>
+          <label for="data_fim">Data fim</label>
+          <input id="data_fim" name="data_fim" type="date">
+        </div>
+
+        <div>
+          <label for="search">Busca rápida</label>
+          <input id="search" name="search" type="search" placeholder="Nome, e-mail ou CPF">
+        </div>
+
+        <div class="filter-actions" style="grid-column:1/-1; display: flex; gap: 12px; align-items: center;">
+          <button type="submit" class="btn btn-primary hover-lift">Aplicar</button>
+          <button type="button" id="reset-btn" class="btn btn-secondary hover-lift">Limpar</button>
+          <button type="button" id="btn-export" class="btn btn-ghost hover-lift">Exportar CSV</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card fade-in-up" style="margin-top:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0; display: flex; align-items: center; gap: 8px;">
+          <span>Resultados</span>
+          <span id="results-count" class="small" style="background: rgba(67, 97, 238, 0.1); padding: 4px 8px; border-radius: 12px;"></span>
+        </h3>
+        <div class="small" id="table-controls" style="color: var(--text-muted);">Ordenado por mais recentes</div>
+      </div>
+
+      <div class="table-container" style="margin-top:16px;">
+        <table class="table" id="candidaturas-table">
+          <thead>
+            <tr>
+              <th>Vaga</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Cidade</th>
+              <th>Status</th>
+              <th>Enviado</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal-back" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <strong id="modal-title">Detalhes da Candidatura</strong>
+        <button id="modal-close" class="btn btn-ghost hover-lift">Fechar</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="modal-main">
+          <div class="kv"><strong>Nome</strong><span id="m-nome"></span></div>
+          <div class="kv"><strong>Email</strong><span id="m-email"></span></div>
+          <div class="kv"><strong>Telefone</strong><span id="m-tel"></span></div>
+          <div class="kv"><strong>Vaga</strong><span id="m-vaga"></span></div>
+          <div class="kv"><strong>Cidade/Bairro</strong><span id="m-cidade"></span></div>
+          <div class="kv"><strong>Rua/CEP</strong><span id="m-rua-cep"></span></div>
+          <div class="kv"><strong>Transporte</strong><span id="m-transporte"></span></div>
+          <div class="kv"><strong>Observações</strong><span id="m-obs"></span></div>
+
+          <!-- Controle de Status -->
+          <div class="kv" style="align-items:center;gap:10px; padding: 16px; background: rgba(0,0,0,0.02); border-radius: var(--radius); margin-top: 12px;">
+            <div style="flex:1">
+              <strong>Status atual</strong>
+              <div style="margin-top:6px">
+                <select id="m-status-select" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid var(--border); background: var(--bg-card);"></select>
+              </div>
+            </div>
+            <div style="flex:1">
+              <strong>Nota/Observação</strong>
+              <input id="m-status-note" placeholder="Comentário curto sobre alteração" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid var(--border); background: var(--bg-card);" />
+            </div>
+            <div style="display:flex;align-items:flex-end">
+              <button id="m-save-status" class="btn btn-primary hover-lift">Salvar status</button>
+            </div>
+          </div>
+        </div>
+
+        <aside style="padding:12px;border-left:1px solid var(--border-light);">
+          <div style="margin-bottom:16px">
+            <strong>Arquivo</strong>
+            <div id="m-arquivo" class="small" style="margin-top:4px;"></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <strong>Enviado</strong>
+            <div id="m-enviado" class="small" style="margin-top:4px;"></div>
+          </div>
+
+          <div id="preview-area" style="margin-bottom:16px"></div>
+          <div class="modal-actions">
+            <a id="btn-open-new" class="btn btn-primary hover-lift" target="_blank" rel="noopener" style="display:none">Abrir em nova aba</a>
+            <a id="btn-download" class="btn btn-secondary hover-lift" download style="display:none">Baixar</a>
+          </div>
+
+          <div style="margin-top:16px; padding-top: 16px; border-top: 1px solid var(--border-light);">
+            <strong>Comentários</strong>
+          </div>
+          <div id="comments-list" style="max-height:240px;overflow:auto;margin-top:12px;padding-right:6px"></div>
+
+          <form id="comment-form" style="margin-top:16px;">
+            <textarea id="comment-text" placeholder="Escreva um comentário ou observação..." style="width:100%;min-height:80px;padding:12px;border-radius:var(--radius);border:1px solid var(--border); background: var(--bg-card); font-family: inherit;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <select id="comment-type" style="padding:10px;border-radius:var(--radius);border:1px solid var(--border); background: var(--bg-card);">
+                <option value="observacao">Observação</option>
+                <option value="comentario">Comentário</option>
+              </select>
+              <button type="submit" class="btn btn-primary hover-lift" style="flex:1">Enviar</button>
+            </div>
+          </form>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="data-access.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const tableBody = document.querySelector('#candidaturas-table tbody');
+    const resultsCount = document.getElementById('results-count');
+    const vagaSelect = document.getElementById('vaga');
+    const cidadeSelect = document.getElementById('cidade');
+    const filterForm = document.getElementById('filter-form');
+    const resetBtn = document.getElementById('reset-btn');
+
+    const nomeInput = document.getElementById('nome');
+    const searchInput = document.getElementById('search');
+    const nomeSuggestionsEl = document.getElementById('nome-suggestions');
+
+    const modalBack = document.getElementById('modal-back');
+    const modalClose = document.getElementById('modal-close');
+    const commentsList = document.getElementById('comments-list');
+    const commentForm = document.getElementById('comment-form');
+    const commentText = document.getElementById('comment-text');
+    const commentType = document.getElementById('comment-type');
+
+    const previewArea = document.getElementById('preview-area');
+    const btnDownload = document.getElementById('btn-download');
+    const btnOpenNew = document.getElementById('btn-open-new');
+
+    const mStatusSelect = document.getElementById('m-status-select');
+    const mStatusNote = document.getElementById('m-status-note');
+    const mSaveStatusBtn = document.getElementById('m-save-status');
+
+    let currentCandidaturaId = null;
+    let lastFilters = {};
+    let suggestionIndex = -1;
+    let currentSuggestions = [];
+
+    function openModal(){ 
+      modalBack.style.display='flex';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(){ 
+      modalBack.style.display='none'; 
+      document.body.style.overflow = 'auto';
+      currentCandidaturaId = null; 
+      commentsList.innerHTML=''; 
+      commentText.value=''; 
+      previewArea.innerHTML=''; 
+      btnDownload.style.display='none'; 
+      btnOpenNew.style.display='none'; 
+      mStatusSelect.innerHTML=''; 
+      mStatusNote.value=''; 
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modalBack.addEventListener('click', (e)=>{ if(e.target===modalBack) closeModal(); });
+
+    async function waitReady(){ return new Promise(r=>{
+      const it = setInterval(()=>{ if(window.dataAccess){ clearInterval(it); r(); } },100);
+      setTimeout(()=>{ clearInterval(it); r(); }, 8000);
+    });}
+    await waitReady();
+
+    // Popular filtros básicos
+    try{
+      const opts = await window.dataAccess.getFilterOptions();
+      (opts.vagas || []).forEach(v => vagaSelect.add(new Option(v,v)));
+      (opts.cidades || []).forEach(c => cidadeSelect.add(new Option(c,c)));
+    }catch(e){ console.warn('Erro filtros:', e); }
+
+    // Utilitário (DEFINIDO UMA VEZ)
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    async function renderComments(candidaturaId){
+      commentsList.innerHTML = '<div class="skeleton" style="height:12px;width:70%"></div>';
+      try{
+        const items = await window.dataAccess.getComentarios(candidaturaId);
+        if(!items || items.length === 0){
+          commentsList.innerHTML = '<div class="small" style="padding: 12px; text-align: center; color: var(--text-muted);">Sem comentários.</div>';
+          return;
+        }
+        commentsList.innerHTML = items.map(it => {
+          const who = it.nome_exibicao || it.owner_name || (it.usuario_id === null ? 'Sistema' : 'Usuário');
+          const when = new Date(it.criado_em || it.at || it.created_at || '').toLocaleString('pt-BR');
+          const tipoLabel = it.tipo === 'observacao' ? '<span class="badge warn">Observação</span>' : '<span class="badge new">Comentário</span>';
+          return `<div style="padding:12px;border-bottom:1px dashed var(--border-light); border-radius: var(--radius); margin-bottom: 8px; background: rgba(0,0,0,0.02);">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong style="font-size:0.95rem">${who}</strong>
+              <div class="small">${when}</div>
+            </div>
+            <div class="small" style="margin-top:8px">${tipoLabel} ${escapeHtml(it.comentario)}</div>
+          </div>`;
+        }).join('');
+      }catch(err){
+        commentsList.innerHTML = `<div class="small" style="color: var(--danger); padding: 12px;">Erro ao carregar comentários: ${err.message}</div>`;
+      }
+    }
+
+    async function load(filters = {}) {
+      lastFilters = filters;
+      tableBody.innerHTML = '<tr><td colspan="7"><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
+      try{
+        const res = await window.dataAccess.getCandidaturas(filters);
+        const rows = res.data || [];
+        resultsCount.textContent = `${rows.length} resultado${rows.length !== 1 ? 's' : ''}`;
+        tableBody.innerHTML = '';
+        if(rows.length === 0){
+          tableBody.innerHTML = '<tr><td colspan="7" class="small" style="text-align: center; padding: 40px; color: var(--text-muted);">Nenhuma candidatura encontrada.</td></tr>';
+          return;
+        }
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          const sent = new Date(r.enviado_em || r.criado_em || r.created_at).toLocaleDateString('pt-BR');
+          const statusBadgeClass = (s => {
+            const st = String(s||'').toLowerCase();
+            if (st.includes('novo')) return 'new';
+            if (st.includes('contrat')) return 'success';
+            if (st.includes('não') || st.includes('nao')) return 'danger';
+            return 'warn';
+          })(r.status);
+
+          tr.innerHTML = `
+            <td>${r.vaga || ''}</td>
+            <td><strong>${r.nome_completo || r.nome || ''}</strong></td>
+            <td>${r.telefone || r.tel || ''}</td>
+            <td>${r.cidade || ''}${r.bairro ? ' / ' + r.bairro : ''}</td>
+            <td>${r.status ? `<span class="badge ${statusBadgeClass}">${r.status}</span>` : '—'}</td>
+            <td class="small">${sent}</td>
+            <td style="text-align:right">
+              <button class="btn btn-ghost btn-open hover-lift" data-id="${r.id}">Ver</button>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        // abrir modal
+        document.querySelectorAll('.btn-open').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            const id = btn.dataset.id;
+            if (btn.dataset.loading === '1') return;
+            btn.dataset.loading = '1';
+            btn.disabled = true;
+            const originalLabel = btn.textContent;
+            btn.textContent = 'Abrindo...';
+
+            // abre modal com skeleton
+            currentCandidaturaId = id;
+            openModal();
+            document.getElementById('m-nome').textContent = '...';
+            document.getElementById('m-email').textContent = '...';
+            document.getElementById('m-tel').textContent = '...';
+            document.getElementById('m-vaga').textContent = '...';
+            document.getElementById('m-cidade').textContent = '...';
+            document.getElementById('m-rua-cep').textContent = '...';
+            document.getElementById('m-transporte').textContent = '...';
+            document.getElementById('m-obs').textContent = '...';
+            document.getElementById('m-enviado').textContent = '...';
+            previewArea.innerHTML = '<div class="skeleton" style="height:20px;width:100%"></div>';
+            btnDownload.style.display = 'none';
+            btnOpenNew.style.display = 'none';
+            mStatusSelect.innerHTML = '<option>Carregando...</option>';
+            mStatusNote.value = '';
+
+            try {
+              const tasks = [
+                window.dataAccess.getCandidaturaById(id),
+                window.dataAccess.getComentarios(id),          // <- usa owner_name/nome_exibicao
+                window.dataAccess.getStatusOptions(),
+                (async () => { try { return await window.dataAccess.getSignedCurriculo(id); } catch(e){ return null; } })()
+              ];
+
+              const [detRes, commentsRes, statusesRes, signedRes] = await Promise.allSettled(tasks);
+
+              // detalhes
+              if (detRes.status === 'fulfilled') {
+                const { data } = detRes.value;
+                document.getElementById('m-nome').textContent = data.nome || '';
+                document.getElementById('m-email').textContent = data.email || '';
+                document.getElementById('m-tel').textContent = data.telefone || '';
+                document.getElementById('m-vaga').textContent = data.vaga || '';
+                document.getElementById('m-cidade').textContent = (data.bairro? data.bairro + ' - ' : '') + (data.cidade||'');
+                document.getElementById('m-rua-cep').textContent = (data.rua? data.rua + ' • ' : '') + (data.cep||'');
+                document.getElementById('m-transporte').textContent = data.transporte || '';
+                document.getElementById('m-obs').textContent = data.observacao || '-';
+                document.getElementById('m-enviado').textContent = new Date(data.enviado_em || data.criado_em || data.created_at || Date.now()).toLocaleString('pt-BR');
+
+                // status
+                const selected = data.status || '';
+                if (statusesRes.status === 'fulfilled') {
+                  const statuses = statusesRes.value || [];
+                  mStatusSelect.innerHTML = '';
+                  statuses.forEach(s => {
+                    const opt = new Option(s, s);
+                    if (s === selected) opt.selected = true;
+                    mStatusSelect.add(opt);
+                  });
+                } else {
+                  mStatusSelect.innerHTML = `<option value="${selected}">${selected||'—'}</option>`;
+                }
+              } else {
+                document.getElementById('m-obs').textContent = 'Falha ao carregar detalhes.';
+              }
+
+              // comentários
+              if (commentsRes.status === 'fulfilled') {
+                const items = commentsRes.value || [];
+                if (!items.length) {
+                  commentsList.innerHTML = '<div class="small" style="padding: 12px; text-align: center; color: var(--text-muted);">Sem comentários.</div>';
+                } else {
+                  commentsList.innerHTML = items.map(it => {
+                    const who = it.nome_exibicao || it.owner_name || (it.usuario_id === null ? 'Sistema' : 'Usuário');
+                    const when = new Date(it.criado_em || it.at || it.created_at || '').toLocaleString('pt-BR');
+                    const tipoLabel = it.tipo === 'observacao' ? '<span class="badge warn">Observação</span>' : '<span class="badge new">Comentário</span>';
+                    return `<div style="padding:12px;border-bottom:1px dashed var(--border-light); border-radius: var(--radius); margin-bottom: 8px; background: rgba(0,0,0,0.02);">
+                      <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong style="font-size:0.95rem">${who}</strong>
+                        <div class="small">${when}</div>
+                      </div>
+                      <div class="small" style="margin-top:8px">${tipoLabel} ${escapeHtml(it.comentario)}</div>
+                    </div>`;
+                  }).join('');
+                }
+              } else {
+                commentsList.innerHTML = '<div class="small" style="color: var(--danger); padding: 12px;">Erro ao carregar comentários.</div>';
+              }
+
+              // preview do arquivo (se houver)
+              previewArea.innerHTML = '';
+              btnDownload.style.display = 'none';
+              btnOpenNew.style.display = 'none';
+              const signed = (signedRes.status === 'fulfilled') ? signedRes.value : null;
+              const fileUrl = signed?.url || null;
+              if (fileUrl) {
+                const isPdf = (signed?.tipo && String(signed.tipo).toLowerCase().includes('pdf')) || fileUrl.toLowerCase().includes('.pdf');
+                if (isPdf) {
+                  previewArea.innerHTML = `<iframe src="${fileUrl}" style="width:100%;height:300px;border:1px solid var(--border);border-radius:var(--radius)"></iframe>`;
+                } else {
+                  previewArea.innerHTML = `<div class="small">Arquivo disponível: <a href="${fileUrl}" target="_blank" rel="noopener">Abrir arquivo</a></div>`;
+                }
+                btnOpenNew.href = fileUrl;
+                btnOpenNew.style.display = 'inline-block';
+                btnDownload.href = fileUrl;
+                if (signed?.nome_arquivo) btnDownload.setAttribute('download', signed.nome_arquivo); else btnDownload.removeAttribute('download');
+                btnDownload.style.display = 'inline-block';
+              }
+
+            } catch (err) {
+              alert('Erro ao abrir a candidatura: ' + (err.message||err));
+            } finally {
+              btn.dataset.loading = '0';
+              btn.disabled = false;
+              btn.textContent = originalLabel;
+            }
+          });
+        });
+
+      }catch(err){
+        tableBody.innerHTML = `<tr><td colspan="7" class="small" style="color: var(--danger); text-align: center; padding: 20px;">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    // Salvar status
+    mSaveStatusBtn.addEventListener('click', async () => {
+      if (!currentCandidaturaId) return alert('Selecione uma candidatura.');
+      const newStatus = mStatusSelect.value;
+      const note = mStatusNote.value.trim() || null;
+      if (!newStatus) return alert('Selecione um status válido.');
+      mSaveStatusBtn.disabled = true;
+      mSaveStatusBtn.textContent = 'Salvando...';
+      try {
+        await window.dataAccess.updateCandidaturaStatus(currentCandidaturaId, newStatus, note);
+
+        // Atualiza badge na linha
+        try {
+          const btn = document.querySelector(`.btn-open[data-id="${currentCandidaturaId}"]`);
+          if (btn) {
+            const tr = btn.closest('tr');
+            if (tr) {
+              const statusCellIndex = 4;
+              const st = String(newStatus || '').toLowerCase();
+              let statusBadgeClass = 'warn';
+              if (st.includes('novo')) statusBadgeClass = 'new';
+              else if (st.includes('contrat')) statusBadgeClass = 'success';
+              else if (st.includes('não') || st.includes('nao')) statusBadgeClass = 'danger';
+              tr.cells[statusCellIndex].innerHTML = `<span class="badge ${statusBadgeClass}">${newStatus}</span>`;
+            }
+          }
+        } catch (e) {
+          console.warn('Falha ao atualizar badge localmente:', e);
+        }
+
+        await renderComments(currentCandidaturaId);
+        try { await load(lastFilters || {}); } catch(_) {}
+        alert('Status atualizado com sucesso.');
+      } catch (err) {
+        alert('Falha ao atualizar status: ' + (err.message || err));
+      } finally {
+        mSaveStatusBtn.disabled = false;
+        mSaveStatusBtn.textContent = 'Salvar status';
+      }
+    });
+
+    // Debounce util
+    function debounce(fn, wait) {
+      let t;
+      return function(...args){
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // Sugestões de nomes
+    async function fetchNameSuggestions(q) {
+      if (!window.dataAccess || typeof window.dataAccess.getNameSuggestions !== 'function') {
+        if (!q || q.length < 2) return [];
+        try {
+          const res = await window.dataAccess.getCandidaturas({ search: q, limit: 10 });
+          return [...new Set((res.data || []).map(r => r.nome).filter(Boolean))];
+        } catch (e) { return []; }
+      }
+      try {
+        return await window.dataAccess.getNameSuggestions(q, 10);
+      } catch { return []; }
+    }
+
+    function renderSuggestions(list) {
+      currentSuggestions = list || [];
+      suggestionIndex = -1;
+      if (!list || list.length === 0) {
+        nomeSuggestionsEl.innerHTML = `<div class="suggestion-empty">Nenhuma sugestão</div>`;
+        nomeSuggestionsEl.style.display = 'block';
+        return;
+      }
+      nomeSuggestionsEl.innerHTML = list.map((n, i) => `<div class="suggestion-item" data-idx="${i}">${n}</div>`).join('');
+      nomeSuggestionsEl.style.display = 'block';
+      nomeSuggestionsEl.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const val = item.textContent;
+          nomeInput.value = val;
+          nomeSuggestionsEl.style.display = 'none';
+          debouncedLoad();
+        });
+      });
+    }
+
+    const debouncedSuggest = debounce(async () => {
+      const q = String(nomeInput.value || '').trim();
+      if (!q || q.length < 2) { nomeSuggestionsEl.style.display = 'none'; return; }
+      nomeSuggestionsEl.innerHTML = `<div class="suggestion-empty">Carregando...</div>`;
+      nomeSuggestionsEl.style.display = 'block';
+      const suggestions = await fetchNameSuggestions(q);
+      renderSuggestions(suggestions);
+    }, 300);
+
+    const debouncedLoad = debounce(() => {
+      const fd = new FormData(filterForm);
+      const filters = {};
+      for(const [k,v] of fd.entries()){ if(v) filters[k] = v; }
+      load(filters);
+    }, 350);
+
+    nomeInput.addEventListener('keydown', (e) => {
+      if (nomeSuggestionsEl.style.display === 'none' || currentSuggestions.length === 0) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter') {
+        e.preventDefault();
+        const items = nomeSuggestionsEl.querySelectorAll('.suggestion-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') {
+          suggestionIndex = Math.min(suggestionIndex + 1, items.length - 1);
+        } else if (e.key === 'ArrowUp') {
+          suggestionIndex = Math.max(suggestionIndex - 1, 0);
+        } else if (e.key === 'Enter') {
+          const sel = items[suggestionIndex] || items[0];
+          if (sel) {
+            nomeInput.value = sel.textContent;
+            nomeSuggestionsEl.style.display = 'none';
+            debouncedLoad();
+          }
+          return;
+        }
+        items.forEach(it => it.classList.remove('active'));
+        const cur = items[suggestionIndex];
+        if (cur) cur.classList.add('active');
+      }
+    });
+
+    nomeInput.addEventListener('input', () => {
+      debouncedSuggest();
+      debouncedLoad();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!nomeInput.contains(e.target) && !nomeSuggestionsEl.contains(e.target)) {
+        nomeSuggestionsEl.style.display = 'none';
+      }
+    });
+
+    searchInput.addEventListener('input', () => { debouncedLoad(); });
+
+    filterForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(filterForm);
+      const filters = {};
+      for(const [k,v] of fd.entries()){ if(v) filters[k] = v; }
+      load(filters);
+    });
+
+    resetBtn.addEventListener('click', () => {
+      filterForm.reset();
+      nomeSuggestionsEl.style.display = 'none';
+      load({});
+    });
+
+    // Envio de comentário (REUTILIZA escapeHtml já definido)
+    async function renderCommentsWrapper(){ if(currentCandidaturaId) await renderComments(currentCandidaturaId); }
+    const commentFormHandler = async (e) => {
+      e.preventDefault();
+      if(!currentCandidaturaId) return alert('Candidatura não selecionada.');
+      const text = commentText.value.trim();
+      const tipo = commentType.value;
+      if(!text) return alert('Comentário vazio.');
+      try{
+        await window.dataAccess.createComentario(currentCandidaturaId, text, tipo);
+        commentText.value = '';
+        await renderCommentsWrapper();
+      }catch(err){
+        alert('Erro ao enviar comentário: ' + (err.message||err));
+      }
+    };
+    commentForm.addEventListener('submit', commentFormHandler);
+
+    // Export CSV
+    document.getElementById('btn-export').addEventListener('click', async () => {
+      try{
+        const fd = new FormData(filterForm);
+        const filters = {};
+        for(const [k,v] of fd.entries()){ if(v) filters[k] = v; }
+        const res = await window.dataAccess.getCandidaturas({ ...filters, limit: 10000 });
+        const rows = res.data || [];
+        if(!rows.length) return alert('Nenhuma linha para exportar.');
+        const headers = ['id','nome','cpf','telefone','email','vaga','cidade','bairro','rua','cep','transporte','status','enviado_em'];
+        const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(','))).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `candidaturas_export_${Date.now()}.csv`; a.click();
+        URL.revokeObjectURL(url);
+      }catch(e){
+        alert('Erro ao exportar CSV: ' + (e.message||e));
+      }
+    });
+
+    // Inicial
+    load({});
+  });
+
+  // Pré-aquecimento
+  let __prewarmed = false;
+  const _tbl = document.getElementById('candidaturas-table');
+  if (_tbl) {
+    _tbl.addEventListener('mouseenter', () => {
+      if (__prewarmed) return;
+      __prewarmed = true;
+      if (window.authManager && typeof window.authManager.warmUpServer === 'function') {
+        window.authManager.warmUpServer();
+      }
+    }, { passive: true });
+  }
+  </script>
+</body>
+</html>
