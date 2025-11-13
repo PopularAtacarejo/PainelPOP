@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso | CurrículoPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0D1117; /* Preto mais profundo, estilo GitHub */
+            --accent-color: #238636; /* Verde mais vibrante e moderno */
+            --accent-hover: #2EA043;
+            --background-color: #F6F8FA;
+            --surface-color: #FFFFFF;
+            --text-primary: #0D1117;
+            --text-secondary: #656D76;
+            --border-color: #D0D7DE;
+            --error-color: #CF222E;
+            --whatsapp-color: #25D366;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 3px 6px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .split-view {
+            display: flex;
+            width: 100%;
+        }
+
+        .branding-section {
+            flex: 1;
+            background: linear-gradient(160deg, var(--primary-color) 0%, #161B22 100%);
+            color: var(--surface-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .branding-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop') center/cover;
+            opacity: 0.08;
+            z-index: 0;
+        }
+
+        .branding-content {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+        }
+
+        .brand-logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .brand-logo i {
+            font-size: 3rem;
+            color: var(--accent-color);
+            filter: drop-shadow(0 0 8px rgba(35, 134, 54, 0.5));
+        }
+
+        .brand-tagline {
+            font-size: 1.2rem;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+            color: #E6EDF3;
+        }
+
+        .brand-features {
+            list-style: none;
+        }
+
+        .brand-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            font-weight: 400;
+            color: #C9D1D9;
+        }
+
+        .brand-features i {
+            color: var(--accent-color);
+        }
+
+        .form-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-color: var(--surface-color);
+            box-shadow: inset 1px 0 0 var(--border-color);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1.25rem 0 0.75rem 0;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-bottom-color: var(--accent-color);
+            box-shadow: 0 1px 0 0 var(--accent-color);
+        }
+
+        .form-group label {
+            position: absolute;
+            top: 1.25rem;
+            left: 0;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .form-group input:focus + label,
+        .form-group input:not(:placeholder-shown) + label {
+            top: -0.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--accent-color);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            color: var(--surface-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-submit:disabled {
+            background-color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #message {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 1.2rem;
+            transition: var(--transition);
+        }
+
+        #message.error {
+            color: var(--error-color);
+            font-weight: 500;
+        }
+
+        .form-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .form-footer button {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .form-footer button:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Estilos do Modal --- */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(13, 17, 23, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 450px;
+            animation: modalSlideIn 0.3s ease-out;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: var(--transition);
+        }
+
+        .btn-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+
+        .btn-whatsapp {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--whatsapp-color);
+            color: var(--surface-color);
+            text-decoration: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Animações */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 968px) {
+            .branding-section { display: none; }
+            .form-section { flex: 1; box-shadow: none; }
+        }
+        @media (max-width: 480px) {
+            .form-section { padding: 1rem; }
+            .form-container { padding: 1.5rem; }
+            .form-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-view">
+        <section class="branding-section">
+            <div class="branding-content">
+                <div class="brand-logo">
+                    <i class="fas fa-chart-simple"></i>
+                    CurrículoPro
+                </div>
+                <p class="brand-tagline">Portal de Análise de Currículos</p>
+                <ul class="brand-features">
+                    <li><i class="fas fa-check-circle"></i> Gestão de Candidaturas Simplificada</li>
+                    <li><i class="fas fa-check-circle"></i> Análise de Dados em Tempo Real</li>
+                    <li><i class="fas fa-check-circle"></i> Ambiente Seguro e Confidencial</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="form-title">Acesso à Análise de Currículos</h1>
+                    <p class="form-subtitle">Faça login para acessar o painel</p>
+                </div>
+                
+                <form id="login-form-inner">
+                    <div class="form-group">
+                        <input type="email" id="email" placeholder=" " required autocomplete="email">
+                        <label for="email">E-mail Corporativo</label>
+                    </div>
+                    <div class="form-group">
+                        <div class="password-wrapper">
+                            <input type="password" id="password" placeholder=" " required autocomplete="current-password">
+                            <label for="password">Senha</label>
+                            <button type="button" id="toggle-password" class="password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="submit-btn">
+                        <span id="btn-text">Acessar</span>
+                    </button>
+                    <p id="message"></p>
+                </form>
+
+                <div class="form-footer">
+                    <button type="button" id="forgot-password-btn">Esqueceu sua senha?</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de Esqueci a Senha -->
+    <div id="forgot-password-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Redefinir Senha</h2>
+                <button id="close-modal-btn" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Para redefinir sua senha, entre em contato com o administrador do sistema através do WhatsApp.</p>
+            </div>
+            <div class="modal-footer">
+                <a href="https://wa.me/55829991584?text=Olá, Jeferson. Preciso de ajuda para redefinir minha senha de acesso." target="_blank" class="btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Falar com Jeferson
+                </a>
+            </div>
+        </div>
+    </div>
+
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="data-access.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Elementos do DOM ---
+            const loginForm = document.getElementById('login-form-inner');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const messageElement = document.getElementById('message');
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            const togglePasswordIcon = togglePasswordBtn.querySelector('i');
+
+            // --- Lógica de Mostrar/Ocultar Senha ---
+            togglePasswordBtn.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Troca o ícone
+                if (type === 'password') {
+                    togglePasswordIcon.classList.remove('fa-eye-slash');
+                    togglePasswordIcon.classList.add('fa-eye');
+                } else {
+                    togglePasswordIcon.classList.remove('fa-eye');
+                    togglePasswordIcon.classList.add('fa-eye-slash');
+                }
+            });
+
+            // --- Lógica do Login ---
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = emailInput.value;
+                const password = passwordInput.value;
+
+                submitBtn.disabled = true;
+                btnText.innerHTML = '<i class="fas fa-spinner spinner"></i> Autenticando...';
+                messageElement.textContent = '';
+                messageElement.className = '';
+                
+                try {
+                    await window.authManager.login(email, password);
+                    window.location.href = 'dashboard.html';
+
+                } catch (error) {
+                    console.error("Erro de login:", error.message);
+                    messageElement.textContent = error.message || 'Credenciais inválidas. Tente novamente.';
+                    messageElement.classList.add('error');
+                } finally {
+                    submitBtn.disabled = false;
+                    btnText.innerHTML = 'Acessar';
+                }
+            });
+
+            // Redireciona se o usuário já estiver autenticado
+            setTimeout(() => {
+                if (window.authManager && window.authManager.isAuthenticated()) { 
+                    window.location.href = 'dashboard.html';
+                }
+            }, 500);
+
+
+            // --- Lógica do Modal de "Esqueceu a Senha" ---
+            const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+            const modal = document.getElementById('forgot-password-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            function openModal() {
+                modal.style.display = 'flex';
+            }
+
+            function closeModal() {
+                modal.style.display = 'none';
+            }
+
+            forgotPasswordBtn.addEventListener('click', openModal);
+            closeModalBtn.addEventListener('click', closeModal);
+
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

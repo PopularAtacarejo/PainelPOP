@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vagas | CurrículoPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-green: #2E7D32;
+      --light-green: #4CAF50;
+      --accent-green: #81C784;
+      --pale-green: #E8F5E9;
+      --dark-green: #1B5E20;
+      --white: #FFFFFF;
+      --light-gray: #F5F5F5;
+      --medium-gray: #E0E0E0;
+      --dark-gray: #424242;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+      --transition: all 0.2s ease;
+      --header-height: 70px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--pale-green) 0%, var(--white) 100%);
+      color: var(--dark-gray);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: var(--header-height);
+    }
+
+    /* Header Limpo e Moderno */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background-color: var(--primary-green);
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      height: 60px;
+      box-shadow: var(--shadow-hover);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+
+    /* Logo e Brand - Simplificado */
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 45px;
+      height: 45px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--white);
+      transition: var(--transition);
+    }
+
+    .brand-logo:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    /* Navegação Principal - Limpa */
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .nav-link i {
+      font-size: 0.9rem;
+    }
+
+    /* Área do Usuário - Simplificada */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Botão de Notificações - Limpo */
+    .notification-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notification-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      background-color: #ff4757;
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--primary-green);
+    }
+
+    /* Card do Usuário - Limpo */
+    .user-dropdown {
+      position: relative;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem 0.5rem 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-card:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--white);
+      font-size: 1rem;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .user-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background-color: #4CAF50;
+      border: 2px solid var(--primary-green);
+      border-radius: 50%;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      margin-right: 0.5rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1;
+    }
+
+    .user-dropdown-icon {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .user-card:hover .user-dropdown-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Dropdown Menu - Limpo */
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-hover);
+      min-width: 240px;
+      z-index: 2000;
+      display: none;
+      overflow: hidden;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .dropdown-header {
+      padding: 1rem 1.25rem;
+      background-color: var(--pale-green);
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dropdown-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--white);
+      font-size: 0.9rem;
+    }
+
+    .dropdown-user-details h4 {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      margin-bottom: 0.1rem;
+    }
+
+    .dropdown-user-details p {
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .dropdown-body {
+      padding: 0.5rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      color: var(--dark-gray);
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 0.85rem;
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--pale-green);
+    }
+
+    .dropdown-item i {
+      width: 18px;
+      text-align: center;
+      color: var(--primary-green);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: var(--medium-gray);
+      margin: 0.5rem 0;
+    }
+
+    .dropdown-footer {
+      padding: 0.75rem 1.25rem;
+      background-color: var(--light-gray);
+      border-top: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-footer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+    }
+
+    .dropdown-footer-item span:last-child {
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+
+    /* Menu Mobile */
+    .mobile-menu-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .mobile-menu-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background-color: var(--white);
+      margin: 4px auto;
+      transition: var(--transition);
+    }
+
+    /* Container Principal */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    h3 {
+      color: var(--primary-green);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+    }
+
+    .filter-form {
+      display: grid;
+      grid-template-columns: 2fr 1fr 120px;
+      gap: 1.5rem;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark-gray);
+    }
+
+    .inline-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--medium-gray);
+      background-color: var(--white);
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .inline-input:focus {
+      outline: none;
+      border-color: var(--light-green);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .muted {
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .btn {
+      padding: 0.875rem 1.25rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background-color: var(--light-green);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-secondary {
+      background-color: var(--medium-gray);
+      color: var(--dark-gray);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--dark-gray);
+      color: var(--white);
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--dark-gray);
+      border: 1px solid var(--medium-gray);
+    }
+
+    .btn-ghost:hover {
+      background-color: #f44336;
+      color: var(--white);
+      border-color: #f44336;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background-color: var(--pale-green);
+      color: var(--dark-green);
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+      border-bottom: 2px solid var(--light-green);
+    }
+
+    .table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--medium-gray);
+    }
+    
+    .table tbody tr {
+      transition: var(--transition);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .table tbody tr:nth-child(even) {
+      background-color: rgba(232, 245, 233, 0.3);
+    }
+
+    .table tbody tr:hover {
+      background-color: var(--pale-green);
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 54px;
+      height: 28px;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: var(--transition);
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--white);
+      transition: var(--transition);
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: var(--light-green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 500px;
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .modal-header strong {
+      color: var(--primary-green);
+      font-size: 1.3rem;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--light-gray) 0%, var(--medium-gray) 50%, var(--light-gray) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.8s infinite;
+      border-radius: 4px;
+    }
+
+    /* Animações Simplificadas */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes highlight-flash {
+      0% { background-color: var(--pale-green); }
+      100% { background-color: transparent; }
+    }
+
+    .highlight-flash {
+      animation: highlight-flash 1.2s ease-out;
+    }
+
+    .fade-out {
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    @media (max-width: 1024px) {
+      .header-nav {
+        display: none;
+      }
+      
+      .mobile-menu-toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        padding: 0 1rem;
+      }
+      
+      .brand-text {
+        display: none;
+      }
+      
+      .notification-btn {
+        display: none;
+      }
+      
+      .user-info {
+        display: none;
+      }
+      
+      .user-card {
+        padding: 0.4rem;
+      }
+      
+      .filter-form { 
+        grid-template-columns: 1fr; 
+      }
+      
+      .table-container { 
+        font-size: 0.875rem; 
+      }
+      
+      .row-actions { 
+        flex-direction: column; 
+        gap: 4px; 
+      }
+      
+      .btn { 
+        padding: 0.6rem; 
+        font-size: 0.875rem; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="mainHeader">
+    <div class="header-container">
+      <div class="header-brand">
+        <div class="brand-logo">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">Vagas De Emprego</div>
+          <div class="brand-subtitle">Edição de Vagas</div>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <div class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="candidaturas.html" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Candidaturas</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="vagas.html" class="nav-link active">
+            <i class="fas fa-briefcase"></i>
+            <span>Vagas</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="notification-btn">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+
+        <div class="user-dropdown">
+          <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">
+              U
+              <span class="user-status"></span>
+            </div>
+            <div class="user-info">
+              <div class="user-name" id="userName">Carregando...</div>
+              <div class="user-role" id="userRole">Carregando...</div>
+            </div>
+            <i class="fas fa-chevron-down user-dropdown-icon"></i>
+          </div>
+          
+          <div class="dropdown-menu" id="userDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-user-info">
+                <div class="dropdown-avatar" id="dropdownAvatar">U</div>
+                <div class="dropdown-user-details">
+                  <h4 id="dropdownUserName">Usuário</h4>
+                  <p id="dropdownUserRole">Administrador</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="dropdown-body">
+              <a href="perfil.html" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Meu Perfil
+              </a>
+              <a href="configuracoes.html" class="dropdown-item">
+                <i class="fas fa-cog"></i>
+                Configurações
+              </a>
+              <a href="ajuda.html" class="dropdown-item">
+                <i class="fas fa-question-circle"></i>
+                Ajuda e Suporte
+              </a>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-footer">
+              <div class="dropdown-footer-item">
+                <span>Último acesso:</span>
+                <span id="lastLogin">Hoje</span>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-body">
+              <a href="#" class="dropdown-item" onclick="window.logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair do Sistema
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h3><i class="fas fa-plus-circle"></i> Nova vaga</h3>
+      <div class="filter-form">
+        <div>
+          <label for="input-nome">Nome da vaga</label>
+          <input id="input-nome" type="text" class="inline-input" placeholder="ex.: Atendente, Entregador..." />
+        </div>
+        <div>
+          <label for="input-ativa">Ativa?</label><br>
+          <label class="switch">
+            <input id="input-ativa" type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="filter-actions" style="align-items:end">
+          <button id="btn-add" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Adicionar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3><i class="fas fa-list"></i> Vagas</h3>
+        <div class="small muted" id="list-meta">Carregando...</div>
+      </div>
+
+      <div class="table-container">
+        <table class="table" id="vagas-table">
+          <thead>
+            <tr>
+              <th style="width:80px">ID</th>
+              <th>Nome</th>
+              <th style="width:120px;text-align:center;">Ativa</th>
+              <th style="width:180px">Criada em</th>
+              <th style="width:220px;text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="confirm-backdrop" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <strong>Confirmar exclusão</strong>
+        <button id="confirm-close" class="btn btn-ghost">Fechar</button>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir esta vaga? Esta ação não pode ser desfeita.</p>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+          <button id="confirm-cancel" class="btn btn-secondary">Cancelar</button>
+          <button id="confirm-ok" class="btn btn-primary">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="data-access.js"></script>
+  <script>
+    // Utilidades CRUD (sem alterações)
+    function ensureClient() {
+      if (!window.supabase || typeof window.supabase.from !== 'function') {
+        throw new Error('Cliente Supabase não inicializado.');
+      }
+    }
+    async function vagas_list() {
+      ensureClient();
+      const { data, error } = await window.supabase.from('vagas').select('*').order('criada_em', { ascending: false });
+      if (error) throw new Error(error.message);
+      return data || [];
+    }
+    async function vagas_create({ nome, ativa=true }) {
+      ensureClient();
+      if (!nome || !nome.trim()) throw new Error('Nome é obrigatório.');
+      const payload = { nome: nome.trim(), ativa: !!ativa };
+      const { data, error } = await window.supabase.from('vagas').insert([payload]).select().single();
+      if (error) throw new Error(error.message);
+      return data;
+    }
+    async function vagas_update(id, fields) {
+      ensureClient();
+      if (!id) throw new Error('ID é obrigatório.');
+      const { data, error } = await window.supabase.from('vagas').update(fields).eq('id', id).select().single();
+      if (error) throw new Error(error.message);
+      return data;
+    }
+    async function vagas_delete(id) {
+      ensureClient();
+      if (!id) throw new Error('ID é obrigatório.');
+      const { error } = await window.supabase.from('vagas').delete().eq('id', id);
+      if (error) throw new Error(error.message);
+      return true;
+    }
+  </script>
+
+  <script>
+    // Página
+    const tbody = document.querySelector('#vagas-table tbody');
+    const meta = document.getElementById('list-meta');
+    const inputNome = document.getElementById('input-nome');
+    const inputAtiva = document.getElementById('input-ativa');
+    const btnAdd = document.getElementById('btn-add');
+
+    // Elementos do usuário
+    const userCard = document.getElementById('userCard');
+    const userDropdown = document.getElementById('userDropdown');
+    const userName = document.getElementById('userName');
+    const userRole = document.getElementById('userRole');
+    const userAvatar = document.getElementById('userAvatar');
+    const dropdownAvatar = document.getElementById('dropdownAvatar');
+    const dropdownUserName = document.getElementById('dropdownUserName');
+    const dropdownUserRole = document.getElementById('dropdownUserRole');
+    const lastLogin = document.getElementById('lastLogin');
+    const mainHeader = document.getElementById('mainHeader');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+
+    // Modal
+    const confirmBackdrop = document.getElementById('confirm-backdrop');
+    const confirmClose = document.getElementById('confirm-close');
+    const confirmCancel = document.getElementById('confirm-cancel');
+    const confirmOk = document.getElementById('confirm-ok');
+    let toDeleteId = null;
+    let toDeleteRow = null;
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        mainHeader.classList.add('scrolled');
+      } else {
+        mainHeader.classList.remove('scrolled');
+      }
+    });
+
+    // Função para carregar informações do usuário
+    async function loadUserInfo() {
+      try {
+        if (window.authManager && window.authManager.isAuthenticated()) {
+          const userProfile = window.authManager.userProfile;
+          const currentUser = window.authManager.currentUser;
+          
+          if (userProfile) {
+            const name = userProfile.nome || userProfile.name || 'Usuário';
+            const role = userProfile.role || userProfile.funcao || 'Administrador';
+            
+            userName.textContent = name;
+            userRole.textContent = role;
+            dropdownUserName.textContent = name;
+            dropdownUserRole.textContent = role;
+            
+            // Iniciais do nome para o avatar
+            const initials = name.split(' ')
+              .map(word => word.charAt(0))
+              .join('')
+              .substring(0, 2)
+              .toUpperCase();
+            userAvatar.textContent = initials;
+            dropdownAvatar.textContent = initials;
+            
+            // Último acesso (simulado)
+            const now = new Date();
+            lastLogin.textContent = now.toLocaleString('pt-BR', { 
+              day: 'numeric', 
+              month: 'short', 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+          } else if (currentUser) {
+            const email = currentUser.email || 'Usuário';
+            userName.textContent = email;
+            userRole.textContent = 'Administrador';
+            dropdownUserName.textContent = email;
+            dropdownUserRole.textContent = 'Administrador';
+            userAvatar.textContent = email.charAt(0).toUpperCase();
+            dropdownAvatar.textContent = email.charAt(0).toUpperCase();
+          }
+        } else {
+          userName.textContent = 'Visitante';
+          userRole.textContent = 'Não autenticado';
+          dropdownUserName.textContent = 'Visitante';
+          dropdownUserRole.textContent = 'Não autenticado';
+          userAvatar.textContent = '?';
+          dropdownAvatar.textContent = '?';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar informações do usuário:', error);
+        userName.textContent = 'Erro';
+        userRole.textContent = 'Tente novamente';
+        dropdownUserName.textContent = 'Erro';
+        dropdownUserRole.textContent = 'Tente novamente';
+        userAvatar.textContent = '!';
+        dropdownAvatar.textContent = '!';
+      }
+    }
+
+    // Toggle do dropdown do usuário
+    userCard.addEventListener('click', function(e) {
+      e.stopPropagation();
+      userDropdown.classList.toggle('show');
+    });
+
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', function() {
+      if (userDropdown.classList.contains('show')) {
+        userDropdown.classList.remove('show');
+      }
+    });
+
+    // Mobile menu toggle
+    mobileMenuToggle.addEventListener('click', function() {
+      // Implementar menu mobile aqui
+      console.log('Menu mobile clicado');
+    });
+
+    function openConfirm(id, row){ 
+      toDeleteId = id; 
+      toDeleteRow = row;
+      confirmBackdrop.style.display='flex'; 
+    }
+    function closeConfirm(){ 
+      toDeleteId = null; 
+      toDeleteRow = null;
+      confirmBackdrop.style.display='none'; 
+    }
+    confirmClose.onclick = confirmCancel.onclick = closeConfirm;
+    confirmOk.onclick = async () => {
+      const id = toDeleteId; if (!id) return;
+      confirmOk.disabled = true; 
+      confirmOk.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Excluindo...';
+      
+      // Adiciona efeito de fade-out na linha antes de deletar
+      if(toDeleteRow) {
+        toDeleteRow.classList.add('fade-out');
+      }
+
+      try{
+        await vagas_delete(id);
+        // A atualização será feita pelo listener de Realtime, mas podemos forçar para feedback imediato
+        // await renderList(); 
+      }catch(e){ alert('Erro: '+e.message); }
+      finally{ 
+        confirmOk.disabled=false; 
+        confirmOk.innerHTML='<i class="fas fa-trash"></i> Excluir'; 
+        closeConfirm(); 
+      }
+    };
+
+    function rowTpl(v) {
+      const created = v.criada_em ? new Date(v.criada_em).toLocaleString('pt-BR') : '—';
+      const checked = v.ativa ? 'checked' : '';
+      return `
+        <tr data-id="${v.id}">
+          <td>${v.id}</td>
+          <td><input class="inline-input input-nome" value="${(v.nome||'').replace(/"/g,'&quot;')}"></td>
+          <td style="text-align:center">
+            <label class="switch">
+              <input class="input-ativa" type="checkbox" ${checked}>
+              <span class="slider"></span>
+            </label>
+          </td>
+          <td class="small">${created}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-secondary btn-save">
+                <i class="fas fa-save"></i>
+                Salvar
+              </button>
+              <button class="btn btn-ghost btn-delete">
+                <i class="fas fa-trash"></i>
+                Excluir
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    async function renderList() {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="skeleton" style="height:20px;margin:10px;"></div></td></tr>';
+      try{
+        const rows = await vagas_list();
+        meta.textContent = `${rows.length} registro(s)`;
+        if (!rows.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="small" style="text-align:center;padding: 2rem;">Nenhuma vaga cadastrada.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = rows.map(rowTpl).join('');
+
+        // Adiciona efeito de flash nas linhas após carregar
+        setTimeout(() => {
+            tbody.querySelectorAll('tr').forEach(row => row.classList.add('highlight-flash'));
+        }, 100);
+
+        // Wire events
+        tbody.querySelectorAll('.btn-save').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const tr = e.currentTarget.closest('tr');
+            const id = tr.dataset.id;
+            const nome = tr.querySelector('.input-nome').value.trim();
+            const ativa = tr.querySelector('.input-ativa').checked;
+            if (!nome) { alert('Nome é obrigatório'); return; }
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            try{
+              await vagas_update(id, { nome, ativa });
+              // Feedback visual de sucesso
+              tr.classList.add('highlight-flash');
+            }catch(err){ alert('Erro ao salvar: '+err.message); }
+            finally{ 
+              btn.disabled=false; 
+              btn.innerHTML='<i class="fas fa-save"></i> Salvar'; 
+            }
+          });
+        });
+
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const tr = e.currentTarget.closest('tr');
+            const id = tr.dataset.id;
+            openConfirm(id, tr);
+          });
+        });
+      }catch(err){
+        meta.textContent = 'Erro ao carregar';
+        tbody.innerHTML = `<tr><td colspan="5" class="small" style="text-align:center;padding: 2rem;">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    btnAdd.addEventListener('click', async () => {
+      const nome = inputNome.value.trim();
+      const ativa = inputAtiva.checked;
+      if (!nome) { alert('Informe um nome para a vaga.'); return; }
+      btnAdd.disabled = true; 
+      btnAdd.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adicionando...';
+      try{
+        await vagas_create({ nome, ativa });
+        inputNome.value = ''; inputAtiva.checked = true;
+        // A atualização será feita pelo listener de Realtime
+        // await renderList(); 
+      }catch(err){ alert('Erro ao adicionar: '+err.message); }
+      finally{ 
+        btnAdd.disabled=false; 
+        btnAdd.innerHTML='<i class="fas fa-plus"></i> Adicionar'; 
+      }
+    });
+
+    window.logout = async function(){ 
+      if (window.authManager) await window.authManager.logout();
+      else window.location.href = 'index.html';
+    };
+
+    // --- CONFIGURAÇÃO DA AUTO-ATUALIZAÇÃO EM TEMPO REAL ---
+    function setupRealtimeSubscription() {
+      if (!window.supabase) return;
+
+      const channel = window.supabase
+        .channel('public:vagas')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'vagas' },
+          (payload) => {
+            console.log('Mudança detectada!', payload);
+            renderList(); // Re-renderiza a tabela sempre que houver uma mudança
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Subscrição Realtime ativa!');
+          }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Carrega informações do usuário
+      loadUserInfo();
+      
+      // Carrega lista de vagas
+      renderList();
+      setupRealtimeSubscription();
+      
+      // Atualiza informações do usuário quando o estado de autenticação mudar
+      if (window.supabase && window.supabase.auth) {
+        window.supabase.auth.onAuthStateChange(() => {
+          loadUserInfo();
+          renderList();
+        });
+      }
+    });
+
+    // Se a sessão mudar, recarrega a lista (mantido do original)
+    const chk = setInterval(() => { if (window.supabase && window.supabase.auth) {
+      clearInterval(chk);
+      window.supabase.auth.onAuthStateChange(() => renderList());
+    }}, 200);
+  </script>
+</body>
+</html>

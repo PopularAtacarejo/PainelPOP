@@ -1,0 +1,2570 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Candidaturas | FormulárioBK Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-green: #2E7D32;
+      --light-green: #4CAF50;
+      --accent-green: #81C784;
+      --pale-green: #E8F5E9;
+      --dark-green: #1B5E20;
+      --white: #FFFFFF;
+      --light-gray: #F5F5F5;
+      --medium-gray: #E0E0E0;
+      --dark-gray: #424242;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+      --transition: all 0.2s ease;
+      --header-height: 70px;
+      --success-color: #4CAF50;
+      --error-color: #f44336;
+      --warning-color: #ff9800;
+      --info-color: #2196F3;
+      
+      /* Cores para status atualizadas */
+      --status-novo: rgba(76, 175, 80, 0.15);
+      --status-novo-border: #4CAF50;
+      --status-selecionado: rgba(33, 150, 243, 0.15);
+      --status-selecionado-border: #2196F3;
+      --status-nao-atendeu: rgba(244, 67, 54, 0.15);
+      --status-nao-atendeu-border: #f44336;
+      --status-desistiu: rgba(158, 158, 158, 0.15);
+      --status-desistiu-border: #9E9E9E;
+      --status-ja-trabalhou: rgba(255, 152, 0, 0.15);
+      --status-ja-trabalhou-border: #FF9800;
+      --status-passou-entrevista: rgba(156, 39, 176, 0.15);
+      --status-passou-entrevista-border: #9C27B0;
+      --status-ja-trabalhando: rgba(0, 188, 212, 0.15);
+      --status-ja-trabalhando-border: #00BCD4;
+      --status-contratado: rgba(46, 125, 50, 0.15);
+      --status-contratado-border: #2E7D32;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--pale-green) 0%, var(--white) 100%);
+      color: var(--dark-gray);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: var(--header-height);
+    }
+
+    /* Header Limpo e Moderno */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background-color: var(--primary-green);
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      height: 60px;
+      box-shadow: var(--shadow-hover);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+
+    /* Logo e Brand - Simplificado */
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 45px;
+      height: 45px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--white);
+      transition: var(--transition);
+    }
+
+    .brand-logo:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    /* Navegação Principal - Limpa */
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .nav-link i {
+      font-size: 0.9rem;
+    }
+
+    /* Área do Usuário - Simplificada */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Botão de Notificações - Limpo */
+    .notification-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notification-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      background-color: #ff4757;
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--primary-green);
+    }
+
+    /* Card do Usuário - Limpo */
+    .user-dropdown {
+      position: relative;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem 0.5rem 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-card:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--white);
+      font-size: 1rem;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .user-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background-color: #4CAF50;
+      border: 2px solid var(--primary-green);
+      border-radius: 50%;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      margin-right: 0.5rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1;
+    }
+
+    .user-dropdown-icon {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .user-card:hover .user-dropdown-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Dropdown Menu - Limpo */
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-hover);
+      min-width: 240px;
+      z-index: 2000;
+      display: none;
+      overflow: hidden;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .dropdown-header {
+      padding: 1rem 1.25rem;
+      background-color: var(--pale-green);
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dropdown-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--white);
+      font-size: 0.9rem;
+    }
+
+    .dropdown-user-details h4 {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      margin-bottom: 0.1rem;
+    }
+
+    .dropdown-user-details p {
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .dropdown-body {
+      padding: 0.5rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      color: var(--dark-gray);
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 0.85rem;
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--pale-green);
+    }
+
+    .dropdown-item i {
+      width: 18px;
+      text-align: center;
+      color: var(--primary-green);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: var(--medium-gray);
+      margin: 0.5rem 0;
+    }
+
+    .dropdown-footer {
+      padding: 0.75rem 1.25rem;
+      background-color: var(--light-gray);
+      border-top: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-footer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+    }
+
+    .dropdown-footer-item span:last-child {
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+
+    /* Menu Mobile */
+    .mobile-menu-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .mobile-menu-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background-color: var(--white);
+      margin: 4px auto;
+      transition: var(--transition);
+    }
+
+    /* Container Principal */
+    .container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    h3, h4 {
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    h4 {
+      font-size: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark-gray);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--medium-gray);
+      background-color: var(--white);
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--light-green);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+
+    .btn {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background-color: var(--light-green);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-secondary {
+      background-color: var(--medium-gray);
+      color: var(--dark-gray);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--dark-gray);
+      color: var(--white);
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--dark-gray);
+      border: 1px solid var(--medium-gray);
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--medium-gray);
+    }
+
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-loading {
+      color: transparent;
+    }
+
+    .btn-loading::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    .filter-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .filter-feedback {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      background-color: var(--pale-green);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--primary-green);
+      margin-left: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .filter-feedback.show {
+      opacity: 1;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 8px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background-color: var(--pale-green);
+      color: var(--primary-green);
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+      border-bottom: 2px solid var(--light-green);
+    }
+
+    .table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .table tbody tr {
+      transition: var(--transition);
+      border-left: 4px solid transparent;
+    }
+
+    .table tbody tr:hover {
+      filter: brightness(0.95);
+    }
+
+    /* Linhas coloridas por status atualizadas */
+    .table tbody tr.status-novo {
+      background-color: var(--status-novo);
+      border-left-color: var(--status-novo-border);
+    }
+
+    .table tbody tr.status-selecionado {
+      background-color: var(--status-selecionado);
+      border-left-color: var(--status-selecionado-border);
+    }
+
+    .table tbody tr.status-nao-atendeu {
+      background-color: var(--status-nao-atendeu);
+      border-left-color: var(--status-nao-atendeu-border);
+    }
+
+    .table tbody tr.status-desistiu {
+      background-color: var(--status-desistiu);
+      border-left-color: var(--status-desistiu-border);
+    }
+
+    .table tbody tr.status-ja-trabalhou {
+      background-color: var(--status-ja-trabalhou);
+      border-left-color: var(--status-ja-trabalhou-border);
+    }
+
+    .table tbody tr.status-passou-entrevista {
+      background-color: var(--status-passou-entrevista);
+      border-left-color: var(--status-passou-entrevista-border);
+    }
+
+    .table tbody tr.status-ja-trabalhando {
+      background-color: var(--status-ja-trabalhando);
+      border-left-color: var(--status-ja-trabalhando-border);
+    }
+
+    .table tbody tr.status-contratado {
+      background-color: var(--status-contratado);
+      border-left-color: var(--status-contratado-border);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Badges atualizados */
+    .badge.novo {
+      background-color: var(--status-novo-border);
+      color: white;
+    }
+
+    .badge.selecionado {
+      background-color: var(--status-selecionado-border);
+      color: white;
+    }
+
+    .badge.nao-atendeu {
+      background-color: var(--status-nao-atendeu-border);
+      color: white;
+    }
+
+    .badge.desistiu {
+      background-color: var(--status-desistiu-border);
+      color: white;
+    }
+
+    .badge.ja-trabalhou {
+      background-color: var(--status-ja-trabalhou-border);
+      color: white;
+    }
+
+    .badge.passou-entrevista {
+      background-color: var(--status-passou-entrevista-border);
+      color: white;
+    }
+
+    .badge.ja-trabalhando {
+      background-color: var(--status-ja-trabalhando-border);
+      color: white;
+    }
+
+    .badge.contratado {
+      background-color: var(--status-contratado-border);
+      color: white;
+    }
+
+    .small {
+      font-size: 0.875rem;
+      color: var(--dark-gray);
+      opacity: 0.8;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal {
+      background-color: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 95%;
+      max-width: 1000px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--medium-gray);
+      background: linear-gradient(135deg, var(--pale-green), var(--white));
+    }
+
+    .modal-header strong {
+      color: var(--primary-green);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 2rem;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+
+    .modal-section {
+      background-color: var(--light-gray);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .modal-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--dark-gray);
+      min-width: 100px;
+      font-size: 0.9rem;
+    }
+
+    .info-value {
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      flex: 1;
+    }
+
+    .status-section {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--medium-gray);
+    }
+
+    .status-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+
+    .status-controls > div {
+      flex: 1;
+    }
+
+    /* Histórico de Status */
+    .status-history {
+      margin-top: 1rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .status-history-item {
+      background-color: var(--light-gray);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--primary-green);
+    }
+
+    .status-history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .status-history-user {
+      font-weight: 600;
+      color: var(--dark-gray);
+      font-size: 0.85rem;
+    }
+
+    .status-history-date {
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .status-history-change {
+      font-size: 0.85rem;
+      color: var(--dark-gray);
+    }
+
+    .status-history-from {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
+    .status-history-to {
+      font-weight: 600;
+    }
+
+    /* Comentários melhorados */
+    .comments-section {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    .comment-item {
+      background-color: var(--white);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-left: 3px solid var(--light-green);
+      transition: var(--transition);
+    }
+
+    .comment-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comment-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--white);
+      font-size: 0.75rem;
+    }
+
+    .comment-date {
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .comment-text {
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-top: 0.5rem;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .comment-action-btn {
+      background: none;
+      border: none;
+      color: var(--dark-gray);
+      font-size: 0.75rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: var(--transition);
+    }
+
+    .comment-action-btn:hover {
+      opacity: 1;
+      color: var(--primary-green);
+    }
+
+    .comment-form {
+      margin-top: 1rem;
+    }
+
+    .comment-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--medium-gray);
+      resize: vertical;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .comment-textarea:focus {
+      outline: none;
+      border-color: var(--light-green);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+
+    .comment-form-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      align-items: flex-end;
+    }
+
+    .comment-type-select {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--medium-gray);
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--light-gray) 25%, var(--medium-gray) 50%, var(--light-gray) 75%);
+      background-size: 200% 100%;
+      animation: skeleton 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--light-gray);
+      border-top: 2px solid var(--primary-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Sistema de notificações toast */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      min-width: 300px;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-weight: 500;
+      animation: slideIn 0.3s ease-out;
+      transition: all 0.3s ease;
+    }
+
+    .toast.success {
+      background-color: var(--success-color);
+    }
+
+    .toast.error {
+      background-color: var(--error-color);
+    }
+
+    .toast.warning {
+      background-color: var(--warning-color);
+    }
+
+    .toast.info {
+      background-color: var(--info-color);
+    }
+
+    .toast-icon {
+      font-size: 20px;
+    }
+
+    .toast-close {
+      margin-left: auto;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .toast-close:hover {
+      opacity: 1;
+    }
+
+    .toast.hiding {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    /* Paginação */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      min-width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: 1px solid var(--medium-gray);
+      background-color: var(--white);
+      color: var(--dark-gray);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background-color: var(--pale-green);
+      border-color: var(--light-green);
+    }
+
+    .pagination button.active {
+      background-color: var(--light-green);
+      color: var(--white);
+      border-color: var(--light-green);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      margin: 0 10px;
+    }
+
+    /* Sugestões inline */
+    .suggestions { position: relative; }
+    .suggestions-list {
+      position: absolute; top: 100%; left: 0; right: 0; background: var(--white);
+      border:1px solid var(--medium-gray); box-shadow: var(--shadow);
+      border-radius: 8px; z-index: 1500; max-height: 220px; overflow:auto; margin-top:6px;
+    }
+    .suggestion-item { padding:8px 10px; cursor:pointer; font-size:0.95rem; border-bottom:1px solid var(--light-gray); }
+    .suggestion-item:hover, .suggestion-item.active { background-color: var(--pale-green); }
+    .suggestion-empty { padding:8px 10px; color: var(--dark-gray); font-size:0.9rem; }
+
+    /* Animações */
+    @keyframes skeleton {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @media (max-width: 1024px) {
+      .header-nav {
+        display: none;
+      }
+      
+      .mobile-menu-toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        padding: 0 1rem;
+      }
+      
+      .brand-text {
+        display: none;
+      }
+      
+      .notification-btn {
+        display: none;
+      }
+      
+      .user-info {
+        display: none;
+      }
+      
+      .user-card {
+        padding: 0.4rem;
+      }
+      
+      .filter-form { 
+        grid-template-columns: 1fr; 
+      }
+      
+      .table-container { 
+        font-size: 0.875rem; 
+      }
+      
+      .btn { 
+        padding: 0.5rem; 
+        font-size: 0.875rem; 
+      }
+      
+      .modal-body {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .toast-container {
+        right: 10px;
+        left: 10px;
+      }
+      
+      .toast {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="mainHeader">
+    <div class="header-container">
+      <div class="header-brand">
+        <div class="brand-logo">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">FormulárioBK</div>
+          <div class="brand-subtitle">Painel Administrativo</div>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <div class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="candidaturas.html" class="nav-link active">
+            <i class="fas fa-users"></i>
+            <span>Candidaturas</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="vagas.html" class="nav-link">
+            <i class="fas fa-briefcase"></i>
+            <span>Vagas</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="notification-btn">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+
+        <div class="user-dropdown">
+          <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">
+              U
+              <span class="user-status"></span>
+            </div>
+            <div class="user-info">
+              <div class="user-name" id="userName">Carregando...</div>
+              <div class="user-role" id="userRole">Carregando...</div>
+            </div>
+            <i class="fas fa-chevron-down user-dropdown-icon"></i>
+          </div>
+          
+          <div class="dropdown-menu" id="userDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-user-info">
+                <div class="dropdown-avatar" id="dropdownAvatar">U</div>
+                <div class="dropdown-user-details">
+                  <h4 id="dropdownUserName">Usuário</h4>
+                  <p id="dropdownUserRole">Administrador</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="dropdown-body">
+              <a href="perfil.html" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Meu Perfil
+              </a>
+              <a href="configuracoes.html" class="dropdown-item">
+                <i class="fas fa-cog"></i>
+                Configurações
+              </a>
+              <a href="ajuda.html" class="dropdown-item">
+                <i class="fas fa-question-circle"></i>
+                Ajuda e Suporte
+              </a>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-footer">
+              <div class="dropdown-footer-item">
+                <span>Último acesso:</span>
+                <span id="lastLogin">Hoje</span>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-body">
+              <a href="#" class="dropdown-item" onclick="window.logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair do Sistema
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h3 style="margin:0 0 12px 0">
+        <i class="fas fa-filter"></i>
+        Filtro Avançado
+        <span class="filter-feedback" id="filterFeedback">
+          <div class="loading-spinner"></div>
+          Atualizando dados...
+        </span>
+      </h3>
+      <form id="filter-form" class="filter-form">
+        <div>
+          <label for="vaga">Vaga</label>
+          <select id="vaga" name="vaga"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label for="cidade">Cidade</label>
+          <select id="cidade" name="cidade"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label for="bairro">Bairro</label>
+          <input id="bairro" name="bairro" type="text" placeholder="Bairro">
+        </div>
+        <div>
+          <label for="rua">Rua</label>
+          <input id="rua" name="rua" type="text" placeholder="Rua">
+        </div>
+
+        <div class="suggestions">
+          <label for="nome">Nome</label>
+          <input id="nome" name="nome" type="text" placeholder="Nome do candidato" autocomplete="off">
+          <div id="nome-suggestions" class="suggestions-list" style="display:none"></div>
+        </div>
+
+        <div>
+          <label for="cpf">CPF</label>
+          <input id="cpf" name="cpf" type="text" placeholder="CPF (com ou sem formatação)">
+        </div>
+
+        <div>
+          <label for="data_inicio">Data início</label>
+          <input id="data_inicio" name="data_inicio" type="date">
+        </div>
+        <div>
+          <label for="data_fim">Data fim</label>
+          <input id="data_fim" name="data_fim" type="date">
+        </div>
+
+        <div class="filter-actions" style="grid-column:1/-1">
+          <button type="button" id="reset-btn" class="btn btn-secondary">
+            <i class="fas fa-times"></i>
+            Limpar Filtros
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Resultados <span id="results-count" class="small"></span></h3>
+        <div class="small" id="table-controls">Ordenado por mais recentes</div>
+      </div>
+
+      <div class="table-container" style="margin-top:10px;">
+        <table class="table" id="candidaturas-table">
+          <thead>
+            <tr>
+              <th>Vaga</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Cidade</th>
+              <th>Status</th>
+              <th>Enviado</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      
+      <!-- Paginação -->
+      <div class="pagination" id="pagination">
+        <button id="prev-page" disabled><i class="fas fa-chevron-left"></i></button>
+        <div id="page-numbers"></div>
+        <button id="next-page" disabled><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Melhorado -->
+  <div id="modal-back" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <strong id="modal-title">
+          <i class="fas fa-user-circle"></i>
+          Detalhes da Candidatura
+        </strong>
+        <button id="modal-close" class="btn btn-ghost">
+          <i class="fas fa-times"></i>
+          Fechar
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Seção Principal - Informações do Candidato -->
+        <div>
+          <div class="modal-section">
+            <div class="modal-section-title">
+              <i class="fas fa-user"></i>
+              Informações Pessoais
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Nome:</div>
+                <div class="info-value" id="m-nome">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Email:</div>
+                <div class="info-value" id="m-email">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Telefone:</div>
+                <div class="info-value" id="m-tel">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">CPF:</div>
+                <div class="info-value" id="m-cpf">...</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-section" style="margin-top: 1rem;">
+            <div class="modal-section-title">
+              <i class="fas fa-briefcase"></i>
+              Informações da Vaga
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Vaga:</div>
+                <div class="info-value" id="m-vaga">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Cidade/Bairro:</div>
+                <div class="info-value" id="m-cidade">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Rua/CEP:</div>
+                <div class="info-value" id="m-rua-cep">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Transporte:</div>
+                <div class="info-value" id="m-transporte">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Observações:</div>
+                <div class="info-value" id="m-obs">...</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-section" style="margin-top: 1rem;">
+            <div class="modal-section-title">
+              <i class="fas fa-exchange-alt"></i>
+              Alterar Status
+            </div>
+            <div class="status-controls">
+              <div style="flex: 1;">
+                <label style="font-size: 0.9rem; font-weight: 500;">Status atual</label>
+                <select id="m-status-select" style="padding:8px;border-radius:8px;border:1px solid var(--medium-gray); width: 100%;">
+                  <option>Carregando...</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button id="m-save-status" class="btn btn-primary">
+                  <i class="fas fa-save"></i>
+                  Salvar
+                </button>
+              </div>
+            </div>
+            
+            <!-- Histórico de Status -->
+            <div class="status-history" id="status-history">
+              <div class="small">Carregando histórico...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção Lateral - Arquivo e Comentários -->
+        <div>
+          <div class="modal-section">
+            <div class="modal-section-title">
+              <i class="fas fa-file-alt"></i>
+              Currículo
+            </div>
+            <div id="preview-area" style="min-height: 200px; background: var(--light-gray); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+              <div class="small">Carregando arquivo...</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <a id="btn-open-new" class="btn btn-primary" target="_blank" rel="noopener" style="display:none">
+                <i class="fas fa-external-link-alt"></i>
+                Abrir
+              </a>
+              <a id="btn-download" class="btn btn-secondary" download style="display:none">
+                <i class="fas fa-download"></i>
+                Baixar
+              </a>
+            </div>
+          </div>
+
+          <div class="modal-section" style="margin-top: 1rem;">
+            <div class="modal-section-title">
+              <i class="fas fa-comments"></i>
+              Comentários
+            </div>
+            <div id="comments-list" class="comments-section">
+              <div class="small">Carregando comentários...</div>
+            </div>
+            <form id="comment-form" class="comment-form">
+              <textarea id="comment-text" class="comment-textarea" placeholder="Escreva um comentário ou observação..."></textarea>
+              <div class="comment-form-actions">
+                <select id="comment-type" class="comment-type-select">
+                  <option value="observacao">Observação</option>
+                  <option value="comentario">Comentário</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-paper-plane"></i>
+                  Enviar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container para notificações toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="data-access.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Elementos do usuário
+    const userCard = document.getElementById('userCard');
+    const userDropdown = document.getElementById('userDropdown');
+    const userName = document.getElementById('userName');
+    const userRole = document.getElementById('userRole');
+    const userAvatar = document.getElementById('userAvatar');
+    const dropdownAvatar = document.getElementById('dropdownAvatar');
+    const dropdownUserName = document.getElementById('dropdownUserName');
+    const dropdownUserRole = document.getElementById('dropdownUserRole');
+    const lastLogin = document.getElementById('lastLogin');
+    const mainHeader = document.getElementById('mainHeader');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        mainHeader.classList.add('scrolled');
+      } else {
+        mainHeader.classList.remove('scrolled');
+      }
+    });
+
+    // Função para carregar informações do usuário
+    async function loadUserInfo() {
+      try {
+        if (window.authManager && window.authManager.isAuthenticated()) {
+          const userProfile = window.authManager.userProfile;
+          const currentUser = window.authManager.currentUser;
+          
+          if (userProfile) {
+            const name = userProfile.nome || userProfile.name || 'Usuário';
+            const role = userProfile.role || userProfile.funcao || 'Administrador';
+            
+            userName.textContent = name;
+            userRole.textContent = role;
+            dropdownUserName.textContent = name;
+            dropdownUserRole.textContent = role;
+            
+            // Iniciais do nome para o avatar
+            const initials = name.split(' ')
+              .map(word => word.charAt(0))
+              .join('')
+              .substring(0, 2)
+              .toUpperCase();
+            userAvatar.textContent = initials;
+            dropdownAvatar.textContent = initials;
+            
+            // Último acesso (simulado)
+            const now = new Date();
+            lastLogin.textContent = now.toLocaleString('pt-BR', { 
+              day: 'numeric', 
+              month: 'short', 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+          } else if (currentUser) {
+            const email = currentUser.email || 'Usuário';
+            userName.textContent = email;
+            userRole.textContent = 'Administrador';
+            dropdownUserName.textContent = email;
+            dropdownUserRole.textContent = 'Administrador';
+            userAvatar.textContent = email.charAt(0).toUpperCase();
+            dropdownAvatar.textContent = email.charAt(0).toUpperCase();
+          }
+        } else {
+          userName.textContent = 'Visitante';
+          userRole.textContent = 'Não autenticado';
+          dropdownUserName.textContent = 'Visitante';
+          dropdownUserRole.textContent = 'Não autenticado';
+          userAvatar.textContent = '?';
+          dropdownAvatar.textContent = '?';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar informações do usuário:', error);
+        userName.textContent = 'Erro';
+        userRole.textContent = 'Tente novamente';
+        dropdownUserName.textContent = 'Erro';
+        dropdownUserRole.textContent = 'Tente novamente';
+        userAvatar.textContent = '!';
+        dropdownAvatar.textContent = '!';
+      }
+    }
+
+    // Toggle do dropdown do usuário
+    userCard.addEventListener('click', function(e) {
+      e.stopPropagation();
+      userDropdown.classList.toggle('show');
+    });
+
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', function() {
+      if (userDropdown.classList.contains('show')) {
+        userDropdown.classList.remove('show');
+      }
+    });
+
+    // Mobile menu toggle
+    mobileMenuToggle.addEventListener('click', function() {
+      // Implementar menu mobile aqui
+      console.log('Menu mobile clicado');
+    });
+
+    // Carrega informações do usuário
+    loadUserInfo();
+
+    // Atualiza informações do usuário quando o estado de autenticação mudar
+    if (window.supabase && window.supabase.auth) {
+      window.supabase.auth.onAuthStateChange(() => {
+        loadUserInfo();
+      });
+    }
+
+    // Sistema de notificações toast
+    const toastContainer = document.getElementById('toast-container');
+    
+    function showToast(message, type = 'info', duration = 5000) {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icon = document.createElement('i');
+      icon.className = `toast-icon fas ${getIconForType(type)}`;
+      
+      const text = document.createElement('div');
+      text.textContent = message;
+      
+      const close = document.createElement('i');
+      close.className = 'toast-close fas fa-times';
+      close.addEventListener('click', () => {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+      });
+      
+      toast.appendChild(icon);
+      toast.appendChild(text);
+      toast.appendChild(close);
+      
+      toastContainer.appendChild(toast);
+      
+      // Auto remove after duration
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.classList.add('hiding');
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, duration);
+    }
+    
+    function getIconForType(type) {
+      switch(type) {
+        case 'success': return 'fa-check-circle';
+        case 'error': return 'fa-exclamation-circle';
+        case 'warning': return 'fa-exclamation-triangle';
+        default: return 'fa-info-circle';
+      }
+    }
+
+    // Cache para dados
+    const cache = {
+      candidaturas: {
+        data: null,
+        timestamp: 0,
+        ttl: 5 * 60 * 1000 // 5 minutos
+      },
+      filterOptions: {
+        data: null,
+        timestamp: 0,
+        ttl: 10 * 60 * 1000 // 10 minutos
+      },
+      statusOptions: {
+        data: null,
+        timestamp: 0,
+        ttl: 10 * 60 * 1000 // 10 minutos
+      }
+    };
+
+    // Função para verificar se o cache é válido
+    function isCacheValid(cacheKey) {
+      const item = cache[cacheKey];
+      return item && item.data && (Date.now() - item.timestamp < item.ttl);
+    }
+
+    // Função para atualizar o cache
+    function updateCache(cacheKey, data) {
+      if (cache[cacheKey]) {
+        cache[cacheKey].data = data;
+        cache[cacheKey].timestamp = Date.now();
+      }
+    }
+
+    // Função para obter dados do cache ou da API
+    async function getCachedData(cacheKey, fetchFunction) {
+      if (isCacheValid(cacheKey)) {
+        return cache[cacheKey].data;
+      }
+      
+      try {
+        const data = await fetchFunction();
+        updateCache(cacheKey, data);
+        return data;
+      } catch (error) {
+        console.error(`Erro ao buscar dados para ${cacheKey}:`, error);
+        throw error;
+      }
+    }
+
+    // Paginação
+    const pagination = {
+      currentPage: 1,
+      itemsPerPage: 20,
+      totalPages: 1,
+      totalItems: 0
+    };
+
+    // Elementos da tabela e filtros
+    const tableBody = document.querySelector('#candidaturas-table tbody');
+    const resultsCount = document.getElementById('results-count');
+    const vagaSelect = document.getElementById('vaga');
+    const cidadeSelect = document.getElementById('cidade');
+    const filterForm = document.getElementById('filter-form');
+    const resetBtn = document.getElementById('reset-btn');
+    const filterFeedback = document.getElementById('filterFeedback');
+    
+    // Elementos de paginação
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const pageNumbers = document.getElementById('page-numbers');
+
+    const nomeInput = document.getElementById('nome');
+    const nomeSuggestionsEl = document.getElementById('nome-suggestions');
+
+    const modalBack = document.getElementById('modal-back');
+    const modalClose = document.getElementById('modal-close');
+    const commentsList = document.getElementById('comments-list');
+    const commentForm = document.getElementById('comment-form');
+    const commentText = document.getElementById('comment-text');
+    const commentType = document.getElementById('comment-type');
+    const statusHistory = document.getElementById('status-history');
+
+    const previewArea = document.getElementById('preview-area');
+    const btnDownload = document.getElementById('btn-download');
+    const btnOpenNew = document.getElementById('btn-open-new');
+
+    const mStatusSelect = document.getElementById('m-status-select');
+    const mSaveStatusBtn = document.getElementById('m-save-status');
+
+    let currentCandidaturaId = null;
+    let lastFilters = {};
+    let suggestionIndex = -1;
+    let currentSuggestions = [];
+
+    // Função para obter a classe CSS do status atualizada
+    function getStatusClass(status) {
+      if (!status) return '';
+      
+      const normalizedStatus = String(status).toLowerCase().trim();
+      
+      // Mapeamento exato dos status
+      if (normalizedStatus === 'novo') {
+        return 'status-novo';
+      } else if (normalizedStatus === 'selecionado') {
+        return 'status-selecionado';
+      } else if (normalizedStatus === 'não atendeu a ligação' || normalizedStatus === 'nao atendeu a ligacao') {
+        return 'status-nao-atendeu';
+      } else if (normalizedStatus === 'desistiu') {
+        return 'status-desistiu';
+      } else if (normalizedStatus === 'já trabalhou aqui' || normalizedStatus === 'ja trabalhou aqui') {
+        return 'status-ja-trabalhou';
+      } else if (normalizedStatus === 'passou na entrevista') {
+        return 'status-passou-entrevista';
+      } else if (normalizedStatus === 'já está trabalhando' || normalizedStatus === 'ja esta trabalhando') {
+        return 'status-ja-trabalhando';
+      } else if (normalizedStatus === 'contratado') {
+        return 'status-contratado';
+      }
+      
+      return '';
+    }
+
+    // Função para obter a classe do badge do status atualizada
+    function getStatusBadgeClass(status) {
+      if (!status) return '';
+      
+      const normalizedStatus = String(status).toLowerCase().trim();
+      
+      // Mapeamento exato dos status para badges
+      if (normalizedStatus === 'novo') {
+        return 'novo';
+      } else if (normalizedStatus === 'selecionado') {
+        return 'selecionado';
+      } else if (normalizedStatus === 'não atendeu a ligação' || normalizedStatus === 'nao atendeu a ligacao') {
+        return 'nao-atendeu';
+      } else if (normalizedStatus === 'desistiu') {
+        return 'desistiu';
+      } else if (normalizedStatus === 'já trabalhou aqui' || normalizedStatus === 'ja trabalhou aqui') {
+        return 'ja-trabalhou';
+      } else if (normalizedStatus === 'passou na entrevista') {
+        return 'passou-entrevista';
+      } else if (normalizedStatus === 'já está trabalhando' || normalizedStatus === 'ja esta trabalhando') {
+        return 'ja-trabalhando';
+      } else if (normalizedStatus === 'contratado') {
+        return 'contratado';
+      }
+      
+      return '';
+    }
+
+    // Função para mostrar estado de carregamento em um botão
+    function setButtonLoading(button, loading) {
+      if (!button) return;
+      
+      if (loading) {
+        button.disabled = true;
+        button.classList.add('btn-loading');
+        button.dataset.originalText = button.innerHTML;
+      } else {
+        button.disabled = false;
+        button.classList.remove('btn-loading');
+        if (button.dataset.originalText) {
+          button.innerHTML = button.dataset.originalText;
+        }
+      }
+    }
+
+    // Função para renderizar a paginação
+    function renderPagination() {
+      // Atualiza botões anterior/próximo
+      prevPageBtn.disabled = pagination.currentPage <= 1;
+      nextPageBtn.disabled = pagination.currentPage >= pagination.totalPages;
+      
+      // Limpa números de página
+      pageNumbers.innerHTML = '';
+      
+      // Calcula quais páginas mostrar
+      let startPage = Math.max(1, pagination.currentPage - 2);
+      let endPage = Math.min(pagination.totalPages, startPage + 4);
+      
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+      
+      // Adiciona primeira página se não estiver no range
+      if (startPage > 1) {
+        const firstPage = createPageButton(1);
+        pageNumbers.appendChild(firstPage);
+        
+        if (startPage > 2) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          ellipsis.style.padding = '0 8px';
+          pageNumbers.appendChild(ellipsis);
+        }
+      }
+      
+      // Adiciona páginas no range
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = createPageButton(i);
+        if (i === pagination.currentPage) {
+          pageBtn.classList.add('active');
+        }
+        pageNumbers.appendChild(pageBtn);
+      }
+      
+      // Adiciona última página se não estiver no range
+      if (endPage < pagination.totalPages) {
+        if (endPage < pagination.totalPages - 1) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          ellipsis.style.padding = '0 8px';
+          pageNumbers.appendChild(ellipsis);
+        }
+        
+        const lastPage = createPageButton(pagination.totalPages);
+        pageNumbers.appendChild(lastPage);
+      }
+      
+      // Adiciona informação de paginação
+      const paginationInfo = document.createElement('div');
+      paginationInfo.className = 'pagination-info';
+      paginationInfo.textContent = `${pagination.totalItems} itens`;
+      pageNumbers.appendChild(paginationInfo);
+    }
+    
+    // Função para criar botão de página
+    function createPageButton(pageNum) {
+      const button = document.createElement('button');
+      button.textContent = pageNum;
+      button.addEventListener('click', () => {
+        if (pageNum !== pagination.currentPage) {
+          pagination.currentPage = pageNum;
+          load(lastFilters);
+        }
+      });
+      return button;
+    }
+
+    // Event listeners para paginação
+    prevPageBtn.addEventListener('click', () => {
+      if (pagination.currentPage > 1) {
+        pagination.currentPage--;
+        load(lastFilters);
+      }
+    });
+    
+    nextPageBtn.addEventListener('click', () => {
+      if (pagination.currentPage < pagination.totalPages) {
+        pagination.currentPage++;
+        load(lastFilters);
+      }
+    });
+
+    function openModal(){ modalBack.style.display='flex' }
+    function closeModal(){ modalBack.style.display='none'; currentCandidaturaId = null; commentsList.innerHTML=''; commentText.value=''; previewArea.innerHTML='<div class="small">Carregando arquivo...</div>'; btnDownload.style.display='none'; btnOpenNew.style.display='none'; mStatusSelect.innerHTML=''; statusHistory.innerHTML=''; }
+
+    modalClose.addEventListener('click', closeModal);
+    modalBack.addEventListener('click', (e)=>{ if(e.target===modalBack) closeModal(); });
+
+    async function waitReady(){ return new Promise(r=>{
+      const it = setInterval(()=>{ if(window.dataAccess){ clearInterval(it); r(); } },100);
+      setTimeout(()=>{ clearInterval(it); r(); }, 8000);
+    });}
+    await waitReady();
+
+    // Popular filtros básicos com cache
+    try{
+      const filterOptions = await getCachedData('filterOptions', () => window.dataAccess.getFilterOptions());
+      (filterOptions.vagas || []).forEach(v => vagaSelect.add(new Option(v,v)));
+      (filterOptions.cidades || []).forEach(c => cidadeSelect.add(new Option(c,c)));
+    }catch(e){ 
+      console.warn('Erro filtros:', e);
+      showToast('Erro ao carregar opções de filtro', 'error');
+    }
+
+    // Utilitário (DEFINIDO UMA VEZ)
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // Função para renderizar o histórico de status
+    async function renderStatusHistory(candidaturaId) {
+      statusHistory.innerHTML = '<div class="small">Carregando histórico...</div>';
+      
+      try {
+        // Simulação de dados do histórico - substitua com sua API real
+        const historyData = await window.dataAccess.getStatusHistory(candidaturaId);
+        
+        if (!historyData || historyData.length === 0) {
+          statusHistory.innerHTML = '<div class="small">Nenhuma alteração de status registrada.</div>';
+          return;
+        }
+        
+        statusHistory.innerHTML = historyData.map(item => {
+          const user = item.usuario_nome || item.nome_usuario || 'Sistema';
+          const date = new Date(item.criado_em || item.created_at).toLocaleString('pt-BR');
+          const fromStatus = item.status_anterior || '—';
+          const toStatus = item.status_novo || item.status || '—';
+          
+          return `
+            <div class="status-history-item">
+              <div class="status-history-header">
+                <div class="status-history-user">${user}</div>
+                <div class="status-history-date">${date}</div>
+              </div>
+              <div class="status-history-change">
+                Alterou status de <span class="status-history-from">${fromStatus}</span> 
+                para <span class="status-history-to">${toStatus}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+      } catch (error) {
+        console.error('Erro ao carregar histórico de status:', error);
+        statusHistory.innerHTML = '<div class="small">Erro ao carregar histórico.</div>';
+      }
+    }
+
+    // Função para renderizar comentários melhorada
+    async function renderComments(candidaturaId){
+      commentsList.innerHTML = '<div class="small">Carregando comentários...</div>';
+      try{
+        const items = await window.dataAccess.getComentarios(candidaturaId);
+        if(!items || items.length === 0){
+          commentsList.innerHTML = '<div class="small">Nenhum comentário ainda.</div>';
+          return;
+        }
+        
+        commentsList.innerHTML = items.map(it => {
+          const who = it.nome_exibicao || it.owner_name || (it.usuario_id === null ? 'Sistema' : 'Usuário');
+          const when = new Date(it.criado_em || it.at || it.created_at || '').toLocaleString('pt-BR');
+          const tipoLabel = it.tipo === 'observacao' ? '<span class="badge warn">Observação</span>' : '<span class="badge new">Comentário</span>';
+          const initials = who.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
+          
+          return `
+            <div class="comment-item" data-comment-id="${it.id}">
+              <div class="comment-header">
+                <div class="comment-author">
+                  <div class="comment-avatar">${initials}</div>
+                  ${who}
+                </div>
+                <div class="comment-date">${when}</div>
+              </div>
+              <div class="comment-text">${tipoLabel} ${escapeHtml(it.comentario)}</div>
+              <div class="comment-actions">
+                <button class="comment-action-btn" onclick="replyToComment('${it.id}', '${who.replace(/'/g, "\\'")}')">
+                  <i class="fas fa-reply"></i> Responder
+                </button>
+                ${it.canEdit ? `<button class="comment-action-btn" onclick="editComment('${it.id}')">
+                  <i class="fas fa-edit"></i> Editar
+                </button>` : ''}
+                ${it.canDelete ? `<button class="comment-action-btn" onclick="deleteComment('${it.id}')">
+                  <i class="fas fa-trash"></i> Excluir
+                </button>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }catch(err){
+        commentsList.innerHTML = `<div class="small">Erro ao carregar comentários: ${err.message}</div>`;
+      }
+    }
+
+    // Funções de ação nos comentários
+    window.replyToComment = function(commentId, authorName) {
+      commentText.value = `@${authorName} `;
+      commentText.focus();
+    };
+
+    window.editComment = function(commentId) {
+      // Implementar edição de comentário
+      showToast('Funcionalidade de edição em desenvolvimento', 'info');
+    };
+
+    window.deleteComment = function(commentId) {
+      if (confirm('Tem certeza que deseja excluir este comentário?')) {
+        // Implementar exclusão
+        showToast('Funcionalidade de exclusão em desenvolvimento', 'info');
+      }
+    };
+
+    // --- MECANISMO DE AUTO-ATUALIZAÇÃO COM DEBOUNCE MELHORADO ---
+    let filterTimeout;
+    function scheduleRefresh() {
+      clearTimeout(filterTimeout); // Cancela a atualização anterior
+      
+      // Mostra feedback visual
+      filterFeedback.classList.add('show');
+      
+      // Agenda uma nova atualização após 800ms
+      filterTimeout = setTimeout(() => {
+        loadFiltersData().finally(() => {
+          // Esconde o feedback após a atualização
+          setTimeout(() => {
+            filterFeedback.classList.remove('show');
+          }, 500);
+        });
+      }, 800);
+    }
+
+    // Função única para atualizar dados dos filtros
+    async function loadFiltersData() {
+      const fd = new FormData(filterForm);
+      const filters = {};
+      for(const [k,v] of fd.entries()){ if(v) filters[k] = v; }
+      
+      // Reseta para primeira página ao aplicar filtros
+      pagination.currentPage = 1;
+      await load(filters);
+    }
+
+    async function load(filters = {}) {
+      lastFilters = filters;
+      
+      // Adiciona paginação aos filtros
+      filters.page = pagination.currentPage;
+      filters.limit = pagination.itemsPerPage;
+      
+      // Mostra estado de carregamento
+      tableBody.innerHTML = '<tr><td colspan="7"><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
+      
+      try{
+        const res = await window.dataAccess.getCandidaturas(filters);
+        const rows = res.data || [];
+        
+        // Atualiza informações de paginação
+        pagination.totalItems = res.total || rows.length;
+        pagination.totalPages = res.totalPages || Math.ceil(pagination.totalItems / pagination.itemsPerPage);
+        
+        // Atualiza contador de resultados
+        resultsCount.textContent = `(${pagination.totalItems} resultados)`;
+        
+        // Renderiza paginação
+        renderPagination();
+        
+        // Limpa tabela
+        tableBody.innerHTML = '';
+        
+        if(rows.length === 0){
+          tableBody.innerHTML = '<tr><td colspan="7" class="small">Nenhuma candidatura encontrada.</td></tr>';
+          return;
+        }
+        
+        // Renderiza linhas
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          const sent = new Date(r.enviado_em || r.criado_em || r.created_at).toLocaleDateString('pt-BR');
+          
+          // Aplica a classe CSS baseada no status
+          const statusClass = getStatusClass(r.status);
+          if (statusClass) {
+            tr.classList.add(statusClass);
+          }
+          
+          const statusBadgeClass = getStatusBadgeClass(r.status);
+
+          tr.innerHTML = `
+            <td>${r.vaga || ''}</td>
+            <td>${r.nome_completo || r.nome || ''}</td>
+            <td>${r.telefone || r.tel || ''}</td>
+            <td>${r.cidade || ''}${r.bairro ? ' / ' + r.bairro : ''}</td>
+            <td>${r.status ? `<span class="badge ${statusBadgeClass}">${r.status}</span>` : '—'}</td>
+            <td class="small">${sent}</td>
+            <td style="text-align:right">
+              <button class="btn btn-ghost btn-open" data-id="${r.id}">
+                <i class="fas fa-eye"></i>
+                Ver
+              </button>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        // abrir modal
+        document.querySelectorAll('.btn-open').forEach(b => {
+          b.addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            const id = btn.dataset.id;
+            if (btn.dataset.loading === '1') return;
+            btn.dataset.loading = '1';
+            setButtonLoading(btn, true);
+
+            // abre modal com skeleton
+            currentCandidaturaId = id;
+            openModal();
+            
+            // Preenche com skeletons
+            document.getElementById('m-nome').textContent = '...';
+            document.getElementById('m-email').textContent = '...';
+            document.getElementById('m-tel').textContent = '...';
+            document.getElementById('m-cpf').textContent = '...';
+            document.getElementById('m-vaga').textContent = '...';
+            document.getElementById('m-cidade').textContent = '...';
+            document.getElementById('m-rua-cep').textContent = '...';
+            document.getElementById('m-transporte').textContent = '...';
+            document.getElementById('m-obs').textContent = '...';
+            previewArea.innerHTML = '<div class="small">Carregando arquivo...</div>';
+            btnDownload.style.display = 'none';
+            btnOpenNew.style.display = 'none';
+            mStatusSelect.innerHTML = '<option>Carregando...</option>';
+
+            try {
+              // Carrega status options com cache
+              const statusOptions = await getCachedData('statusOptions', () => window.dataAccess.getStatusOptions());
+              
+              const tasks = [
+                window.dataAccess.getCandidaturaById(id),
+                window.dataAccess.getComentarios(id),
+                Promise.resolve(statusOptions),
+                (async () => { try { return await window.dataAccess.getSignedCurriculo(id); } catch(e){ return null; } })(),
+                renderStatusHistory(id) // Carrega histórico de status
+              ];
+
+              const [detRes, commentsRes, statusesRes, signedRes] = await Promise.allSettled(tasks);
+
+              // detalhes
+              if (detRes.status === 'fulfilled') {
+                const { data } = detRes.value;
+                document.getElementById('m-nome').textContent = data.nome || '';
+                document.getElementById('m-email').textContent = data.email || '';
+                document.getElementById('m-tel').textContent = data.telefone || '';
+                document.getElementById('m-cpf').textContent = data.cpf || '';
+                document.getElementById('m-vaga').textContent = data.vaga || '';
+                document.getElementById('m-cidade').textContent = (data.bairro? data.bairro + ' - ' : '') + (data.cidade||'');
+                document.getElementById('m-rua-cep').textContent = (data.rua? data.rua + ' • ' : '') + (data.cep||'');
+                document.getElementById('m-transporte').textContent = data.transporte || '';
+                document.getElementById('m-obs').textContent = data.observacao || '-';
+
+                // status
+                const selected = data.status || '';
+                if (statusesRes.status === 'fulfilled') {
+                  const statuses = statusesRes.value || [];
+                  mStatusSelect.innerHTML = '';
+                  statuses.forEach(s => {
+                    const opt = new Option(s, s);
+                    if (s === selected) opt.selected = true;
+                    mStatusSelect.add(opt);
+                  });
+                } else {
+                  mStatusSelect.innerHTML = `<option value="${selected}">${selected||'—'}</option>`;
+                }
+              } else {
+                document.getElementById('m-obs').textContent = 'Falha ao carregar detalhes.';
+              }
+
+              // comentários
+              if (commentsRes.status === 'fulfilled') {
+                const items = commentsRes.value || [];
+                if (!items.length) {
+                  commentsList.innerHTML = '<div class="small">Nenhum comentário ainda.</div>';
+                } else {
+                  commentsList.innerHTML = items.map(it => {
+                    const who = it.nome_exibicao || it.owner_name || (it.usuario_id === null ? 'Sistema' : 'Usuário');
+                    const when = new Date(it.criado_em || it.at || it.created_at || '').toLocaleString('pt-BR');
+                    const tipoLabel = it.tipo === 'observacao' ? '<span class="badge warn">Observação</span>' : '<span class="badge new">Comentário</span>';
+                    const initials = who.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
+                    
+                    return `
+                      <div class="comment-item" data-comment-id="${it.id}">
+                        <div class="comment-header">
+                          <div class="comment-author">
+                            <div class="comment-avatar">${initials}</div>
+                            ${who}
+                          </div>
+                          <div class="comment-date">${when}</div>
+                        </div>
+                        <div class="comment-text">${tipoLabel} ${escapeHtml(it.comentario)}</div>
+                        <div class="comment-actions">
+                          <button class="comment-action-btn" onclick="replyToComment('${it.id}', '${who.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-reply"></i> Responder
+                          </button>
+                          ${it.canEdit ? `<button class="comment-action-btn" onclick="editComment('${it.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                          </button>` : ''}
+                          ${it.canDelete ? `<button class="comment-action-btn" onclick="deleteComment('${it.id}')">
+                            <i class="fas fa-trash"></i> Excluir
+                          </button>` : ''}
+                        </div>
+                      </div>
+                    `;
+                  }).join('');
+                }
+              } else {
+                commentsList.innerHTML = '<div class="small">Erro ao carregar comentários.</div>';
+              }
+
+              // preview do arquivo (se houver)
+              previewArea.innerHTML = '';
+              btnDownload.style.display = 'none';
+              btnOpenNew.style.display = 'none';
+              const signed = (signedRes.status === 'fulfilled') ? signedRes.value : null;
+              const fileUrl = signed?.url || null;
+              if (fileUrl) {
+                const isPdf = (signed?.tipo && String(signed.tipo).toLowerCase().includes('pdf')) || fileUrl.toLowerCase().includes('.pdf');
+                if (isPdf) {
+                  previewArea.innerHTML = `<iframe src="${fileUrl}" style="width:100%;height:400px;border:1px solid var(--medium-gray);border-radius:8px"></iframe>`;
+                } else {
+                  previewArea.innerHTML = `<div class="small">Arquivo disponível: <a href="${fileUrl}" target="_blank" rel="noopener">Abrir arquivo</a></div>`;
+                }
+                btnOpenNew.href = fileUrl;
+                btnOpenNew.style.display = 'inline-block';
+                btnDownload.href = fileUrl;
+                if (signed?.nome_arquivo) btnDownload.setAttribute('download', signed.nome_arquivo); else btnDownload.removeAttribute('download');
+                btnDownload.style.display = 'inline-block';
+              } else {
+                previewArea.innerHTML = '<div class="small">Nenhum arquivo disponível</div>';
+              }
+
+            } catch (err) {
+              showToast('Erro ao abrir a candidatura: ' + (err.message||err), 'error');
+            } finally {
+              btn.dataset.loading = '0';
+              setButtonLoading(btn, false);
+            }
+          });
+        });
+
+      }catch(err){
+        tableBody.innerHTML = `<tr><td colspan="7" class="small">Erro: ${err.message}</td></tr>`;
+        showToast('Erro ao carregar candidaturas: ' + err.message, 'error');
+      }
+    }
+
+    // Salvar status com feedback visual e registro no histórico
+    mSaveStatusBtn.addEventListener('click', async () => {
+      if (!currentCandidaturaId) {
+        showToast('Selecione uma candidatura', 'warning');
+        return;
+      }
+      
+      const newStatus = mStatusSelect.value;
+      
+      if (!newStatus) {
+        showToast('Selecione um status válido', 'warning');
+        return;
+      }
+      
+      setButtonLoading(mSaveStatusBtn, true);
+      
+      try {
+        // Obter status anterior antes de atualizar
+        const currentStatusData = await window.dataAccess.getCandidaturaById(currentCandidaturaId);
+        const previousStatus = currentStatusData.data.status || '';
+        
+        await window.dataAccess.updateCandidaturaStatus(currentCandidaturaId, newStatus);
+        showToast('Status atualizado com sucesso', 'success');
+
+        // Atualiza a linha inteira com a nova cor
+        try {
+          const btn = document.querySelector(`.btn-open[data-id="${currentCandidaturaId}"]`);
+          if (btn) {
+            const tr = btn.closest('tr');
+            if (tr) {
+              // Remove todas as classes de status
+              tr.className = '';
+              
+              // Adiciona a nova classe de status
+              const newStatusClass = getStatusClass(newStatus);
+              if (newStatusClass) {
+                tr.classList.add(newStatusClass);
+              }
+              
+              // Atualiza o badge
+              const statusCellIndex = 4;
+              const statusBadgeClass = getStatusBadgeClass(newStatus);
+              tr.cells[statusCellIndex].innerHTML = `<span class="badge ${statusBadgeClass}">${newStatus}</span>`;
+            }
+          }
+        } catch (e) {
+          console.warn('Falha ao atualizar linha localmente:', e);
+        }
+
+        // Atualiza o histórico de status
+        await renderStatusHistory(currentCandidaturaId);
+        
+        // Adiciona comentário automático sobre a mudança de status
+        const userName = window.authManager?.userProfile?.nome || window.authManager?.currentUser?.email || 'Usuário';
+        const statusComment = `Status alterado de "${previousStatus}" para "${newStatus}"`;
+        await window.dataAccess.createComentario(currentCandidaturaId, statusComment, 'sistema');
+        
+        await renderComments(currentCandidaturaId);
+      } catch (err) {
+        showToast('Falha ao atualizar status: ' + (err.message || err), 'error');
+      } finally {
+        setButtonLoading(mSaveStatusBtn, false);
+      }
+    });
+
+    // Debounce util
+    function debounce(fn, wait) {
+      let t;
+      return function(...args){
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // Sugestões de nomes com cache
+    async function fetchNameSuggestions(q) {
+      if (!window.dataAccess || typeof window.dataAccess.getNameSuggestions !== 'function') {
+        if (!q || q.length < 2) return [];
+        try {
+          const res = await window.dataAccess.getCandidaturas({ search: q, limit: 10 });
+          return [...new Set((res.data || []).map(r => r.nome).filter(Boolean))];
+        } catch (e) { return []; }
+      }
+      try {
+        return await window.dataAccess.getNameSuggestions(q, 10);
+      } catch { return []; }
+    }
+
+    function renderSuggestions(list) {
+      currentSuggestions = list || [];
+      suggestionIndex = -1;
+      if (!list || list.length === 0) {
+        nomeSuggestionsEl.innerHTML = `<div class="suggestion-empty">Nenhuma sugestão</div>`;
+        nomeSuggestionsEl.style.display = 'block';
+        return;
+      }
+      nomeSuggestionsEl.innerHTML = list.map((n, i) => `<div class="suggestion-item" data-idx="${i}">${n}</div>`).join('');
+      nomeSuggestionsEl.style.display = 'block';
+      nomeSuggestionsEl.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const val = item.textContent;
+          nomeInput.value = val;
+          nomeSuggestionsEl.style.display = 'none';
+          scheduleRefresh();
+        });
+      });
+    }
+
+    const debouncedSuggest = debounce(async () => {
+      const q = String(nomeInput.value || '').trim();
+      if (!q || q.length < 2) { nomeSuggestionsEl.style.display = 'none'; return; }
+      nomeSuggestionsEl.innerHTML = `<div class="suggestion-empty">Carregando...</div>`;
+      nomeSuggestionsEl.style.display = 'block';
+      const suggestions = await fetchNameSuggestions(q);
+      renderSuggestions(suggestions);
+    }, 300);
+
+    nomeInput.addEventListener('keydown', (e) => {
+      if (nomeSuggestionsEl.style.display === 'none' || currentSuggestions.length === 0) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter') {
+        e.preventDefault();
+        const items = nomeSuggestionsEl.querySelectorAll('.suggestion-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') {
+          suggestionIndex = Math.min(suggestionIndex + 1, items.length - 1);
+        } else if (e.key === 'ArrowUp') {
+          suggestionIndex = Math.max(suggestionIndex - 1, 0);
+        } else if (e.key === 'Enter') {
+          const sel = items[suggestionIndex] || items[0];
+          if (sel) {
+            nomeInput.value = sel.textContent;
+            nomeSuggestionsEl.style.display = 'none';
+            scheduleRefresh();
+          }
+          return;
+        }
+        items.forEach(it => it.classList.remove('active'));
+        const cur = items[suggestionIndex];
+        if (cur) cur.classList.add('active');
+      }
+    });
+
+    nomeInput.addEventListener('input', () => {
+      debouncedSuggest();
+      scheduleRefresh();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!nomeInput.contains(e.target) && !nomeSuggestionsEl.contains(e.target)) {
+        nomeSuggestionsEl.style.display = 'none';
+      }
+    });
+
+    // --- LISTENERS COM AUTO-ATUALIZAÇÃO ---
+    vagaSelect.addEventListener('change', scheduleRefresh);
+    cidadeSelect.addEventListener('change', scheduleRefresh);
+    document.getElementById('bairro').addEventListener('input', scheduleRefresh);
+    document.getElementById('rua').addEventListener('input', scheduleRefresh);
+    document.getElementById('cpf').addEventListener('input', scheduleRefresh);
+    document.getElementById('data_inicio').addEventListener('change', scheduleRefresh);
+    document.getElementById('data_fim').addEventListener('change', scheduleRefresh);
+
+    resetBtn.addEventListener('click', () => {
+      filterForm.reset();
+      nomeSuggestionsEl.style.display = 'none';
+      scheduleRefresh();
+    });
+
+    // Envio de comentário com feedback visual
+    const commentFormHandler = async (e) => {
+      e.preventDefault();
+      if(!currentCandidaturaId) {
+        showToast('Candidatura não selecionada', 'warning');
+        return;
+      }
+      
+      const text = commentText.value.trim();
+      const tipo = commentType.value;
+      
+      if(!text) {
+        showToast('Comentário vazio', 'warning');
+        return;
+      }
+      
+      const submitBtn = commentForm.querySelector('button[type="submit"]');
+      setButtonLoading(submitBtn, true);
+      
+      try{
+        await window.dataAccess.createComentario(currentCandidaturaId, text, tipo);
+        commentText.value = '';
+        await renderComments(currentCandidaturaId);
+        showToast('Comentário adicionado com sucesso', 'success');
+      }catch(err){
+        showToast('Erro ao enviar comentário: ' + (err.message||err), 'error');
+      } finally {
+        setButtonLoading(submitBtn, false);
+      }
+    };
+    commentForm.addEventListener('submit', commentFormHandler);
+
+    // Inicial
+    load({});
+  });
+
+  // Pré-aquecimento
+  let __prewarmed = false;
+  const _tbl = document.getElementById('candidaturas-table');
+  if (_tbl) {
+    _tbl.addEventListener('mouseenter', () => {
+      if (__prewarmed) return;
+      __prewarmed = true;
+      if (window.authManager && typeof window.authManager.warmUpServer === 'function') {
+        window.authManager.warmUpServer();
+      }
+    }, { passive: true });
+  }
+
+  // Integração básica com auth.js: expõe logout se estiver disponível
+  window.logout = async function(){ 
+    if (window.authManager) await window.authManager.logout();
+    else window.location.href = 'index.html';
+  };
+  </script>
+</body>
+</html>

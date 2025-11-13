@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CurrículoPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-green: #2E7D32;
+      --light-green: #4CAF50;
+      --accent-green: #81C784;
+      --pale-green: #E8F5E9;
+      --dark-green: #1B5E20;
+      --white: #FFFFFF;
+      --light-gray: #F5F5F5;
+      --medium-gray: #E0E0E0;
+      --dark-gray: #424242;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+      --transition: all 0.2s ease;
+      --header-height: 70px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--pale-green) 0%, var(--white) 100%);
+      color: var(--dark-gray);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: var(--header-height);
+    }
+
+    /* Header Limpo e Moderno */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background-color: var(--primary-green);
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      height: 60px;
+      box-shadow: var(--shadow-hover);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+
+    /* Logo e Brand - Simplificado */
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 45px;
+      height: 45px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--white);
+      transition: var(--transition);
+    }
+
+    .brand-logo:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    /* Navegação Principal - Limpa */
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .nav-link i {
+      font-size: 0.9rem;
+    }
+
+    /* Área do Usuário - Simplificada */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Botão de Notificações - Limpo */
+    .notification-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notification-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      background-color: #ff4757;
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--primary-green);
+    }
+
+    /* Card do Usuário - Limpo */
+    .user-dropdown {
+      position: relative;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem 0.5rem 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-card:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--white);
+      font-size: 1rem;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .user-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background-color: #4CAF50;
+      border: 2px solid var(--primary-green);
+      border-radius: 50%;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      margin-right: 0.5rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1;
+    }
+
+    .user-dropdown-icon {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .user-card:hover .user-dropdown-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Dropdown Menu - Limpo */
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-hover);
+      min-width: 240px;
+      z-index: 2000;
+      display: none;
+      overflow: hidden;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .dropdown-header {
+      padding: 1rem 1.25rem;
+      background-color: var(--pale-green);
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dropdown-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--white);
+      font-size: 0.9rem;
+    }
+
+    .dropdown-user-details h4 {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      margin-bottom: 0.1rem;
+    }
+
+    .dropdown-user-details p {
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .dropdown-body {
+      padding: 0.5rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      color: var(--dark-gray);
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 0.85rem;
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--pale-green);
+    }
+
+    .dropdown-item i {
+      width: 18px;
+      text-align: center;
+      color: var(--primary-green);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: var(--medium-gray);
+      margin: 0.5rem 0;
+    }
+
+    .dropdown-footer {
+      padding: 0.75rem 1.25rem;
+      background-color: var(--light-gray);
+      border-top: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-footer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+    }
+
+    .dropdown-footer-item span:last-child {
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+
+    /* Menu Mobile */
+    .mobile-menu-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .mobile-menu-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background-color: var(--white);
+      margin: 4px auto;
+      transition: var(--transition);
+    }
+
+    /* Container Principal */
+    .container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    h3, h4 {
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    h4 {
+      font-size: 1.2rem;
+    }
+
+    h5 {
+      color: var(--dark-green);
+      margin-bottom: 0.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark-gray);
+    }
+
+    input[type="date"], select {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--medium-gray);
+      background-color: var(--white);
+      transition: var(--transition);
+    }
+
+    input[type="date"]:focus, select:focus {
+      outline: none;
+      border-color: var(--light-green);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+
+    .btn {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background-color: var(--light-green);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--dark-gray);
+      border: 1px solid var(--medium-gray);
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--medium-gray);
+    }
+    
+    .btn-icon {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 8px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background-color: var(--pale-green);
+      color: var(--primary-green);
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+      border-bottom: 2px solid var(--light-green);
+    }
+
+    .table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .table tbody tr {
+      transition: var(--transition);
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(232, 245, 233, 0.5);
+      transform: scale(1.01);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    ol li {
+      margin-bottom: 0.5rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px dashed var(--medium-gray);
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--light-gray) 25%, var(--medium-gray) 50%, var(--light-gray) 75%);
+      background-size: 200% 100%;
+      animation: skeleton 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    /* Animações */
+    @keyframes skeleton {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1024px) {
+      .header-nav {
+        display: none;
+      }
+      
+      .mobile-menu-toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        padding: 0 1rem;
+      }
+      
+      .brand-text {
+        display: none;
+      }
+      
+      .notification-btn {
+        display: none;
+      }
+      
+      .user-info {
+        display: none;
+      }
+      
+      .user-card {
+        padding: 0.4rem;
+      }
+      
+      .grid-3 { 
+        grid-template-columns: 1fr; 
+      }
+      
+      .table-container { 
+        font-size: 0.875rem; 
+      }
+      
+      .btn { 
+        padding: 0.5rem; 
+        font-size: 0.875rem; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="mainHeader">
+    <div class="header-container">
+      <div class="header-brand">
+        <div class="brand-logo">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">Dashboard</div>
+          <div class="brand-subtitle">Análise de Dados</div>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <div class="nav-item">
+          <a href="dashboard.html" class="nav-link active">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="candidaturas.html" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Candidaturas</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="vagas.html" class="nav-link">
+            <i class="fas fa-briefcase"></i>
+            <span>Vagas</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="notification-btn">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+
+        <div class="user-dropdown">
+          <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">
+              U
+              <span class="user-status"></span>
+            </div>
+            <div class="user-info">
+              <div class="user-name" id="userName">Carregando...</div>
+              <div class="user-role" id="userRole">Carregando...</div>
+            </div>
+            <i class="fas fa-chevron-down user-dropdown-icon"></i>
+          </div>
+          
+          <div class="dropdown-menu" id="userDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-user-info">
+                <div class="dropdown-avatar" id="dropdownAvatar">U</div>
+                <div class="dropdown-user-details">
+                  <h4 id="dropdownUserName">Usuário</h4>
+                  <p id="dropdownUserRole">Administrador</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="dropdown-body">
+              <a href="perfil.html" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Meu Perfil
+              </a>
+              <a href="configuracoes.html" class="dropdown-item">
+                <i class="fas fa-cog"></i>
+                Configurações
+              </a>
+              <a href="ajuda.html" class="dropdown-item">
+                <i class="fas fa-question-circle"></i>
+                Ajuda e Suporte
+              </a>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-footer">
+              <div class="dropdown-footer-item">
+                <span>Último acesso:</span>
+                <span id="lastLogin">Hoje</span>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-body">
+              <a href="#" class="dropdown-item" onclick="window.logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair do Sistema
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h3>
+        <i class="fas fa-filter"></i>
+        Filtros de Estatísticas
+      </h3>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div style="min-width: 180px;">
+          <label class="small">Período início</label><br>
+          <input id="stat-data-inicio" type="date" />
+        </div>
+        <div style="min-width: 180px;">
+          <label class="small">Período fim</label><br>
+          <input id="stat-data-fim" type="date" />
+        </div>
+        <div style="min-width: 200px;">
+          <label class="small">Vaga (filtro)</label><br>
+          <select id="stat-vaga"><option value="">Todas</option></select>
+        </div>
+        <div style="min-width: 200px;">
+          <label class="small">Cidade (filtro)</label><br>
+          <select id="stat-cidade"><option value="">Todas</option></select>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <div class="card">
+        <h4>
+          <i class="fas fa-chart-bar"></i>
+          Top Vagas (barra)
+        </h4>
+        <canvas id="chart-vagas" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <h4>
+          <i class="fas fa-chart-line"></i>
+          Evolução (linha)
+        </h4>
+        <canvas id="chart-evolucao" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <h4>
+          <i class="fas fa-map-marker-alt"></i>
+          Top Cidades/Bairros
+        </h4>
+        <div>
+          <h5 class="small">Cidades</h5>
+          <ol id="top-cidades"></ol>
+          <h5 class="small" style="margin-top:8px">Bairros</h5>
+          <ol id="top-bairros"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>
+        <i class="fas fa-table"></i>
+        Lista paginada de candidaturas
+      </h3>
+
+      <div style="margin-top:12px">
+        <div class="table-container">
+          <table class="table" id="pag-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Vaga</th>
+                <th>Cidade</th>
+                <th>Telefone</th>
+                <th>Status</th>
+                <th>Ver Currículo</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+          <div class="small" id="page-info">Página 1</div>
+          <div>
+            <button id="prev-page" class="btn btn-ghost">
+              <i class="fas fa-chevron-left"></i>
+              Anterior
+            </button>
+            <button id="next-page" class="btn btn-ghost">
+              Próxima
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="data-access.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Elementos do usuário
+      const userCard = document.getElementById('userCard');
+      const userDropdown = document.getElementById('userDropdown');
+      const userName = document.getElementById('userName');
+      const userRole = document.getElementById('userRole');
+      const userAvatar = document.getElementById('userAvatar');
+      const dropdownAvatar = document.getElementById('dropdownAvatar');
+      const dropdownUserName = document.getElementById('dropdownUserName');
+      const dropdownUserRole = document.getElementById('dropdownUserRole');
+      const lastLogin = document.getElementById('lastLogin');
+      const mainHeader = document.getElementById('mainHeader');
+      const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+
+      // Header scroll effect
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          mainHeader.classList.add('scrolled');
+        } else {
+          mainHeader.classList.remove('scrolled');
+        }
+      });
+
+      // Função para carregar informações do usuário
+      async function loadUserInfo() {
+        try {
+          if (window.authManager && window.authManager.isAuthenticated()) {
+            const userProfile = window.authManager.userProfile;
+            const currentUser = window.authManager.currentUser;
+            
+            if (userProfile) {
+              const name = userProfile.nome || userProfile.name || 'Usuário';
+              const role = userProfile.role || userProfile.funcao || 'Administrador';
+              
+              userName.textContent = name;
+              userRole.textContent = role;
+              dropdownUserName.textContent = name;
+              dropdownUserRole.textContent = role;
+              
+              // Iniciais do nome para o avatar
+              const initials = name.split(' ')
+                .map(word => word.charAt(0))
+                .join('')
+                .substring(0, 2)
+                .toUpperCase();
+              userAvatar.textContent = initials;
+              dropdownAvatar.textContent = initials;
+              
+              // Último acesso (simulado)
+              const now = new Date();
+              lastLogin.textContent = now.toLocaleString('pt-BR', { 
+                day: 'numeric', 
+                month: 'short', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              });
+            } else if (currentUser) {
+              const email = currentUser.email || 'Usuário';
+              userName.textContent = email;
+              userRole.textContent = 'Administrador';
+              dropdownUserName.textContent = email;
+              dropdownUserRole.textContent = 'Administrador';
+              userAvatar.textContent = email.charAt(0).toUpperCase();
+              dropdownAvatar.textContent = email.charAt(0).toUpperCase();
+            }
+          } else {
+            userName.textContent = 'Visitante';
+            userRole.textContent = 'Não autenticado';
+            dropdownUserName.textContent = 'Visitante';
+            dropdownUserRole.textContent = 'Não autenticado';
+            userAvatar.textContent = '?';
+            dropdownAvatar.textContent = '?';
+          }
+        } catch (error) {
+          console.error('Erro ao carregar informações do usuário:', error);
+          userName.textContent = 'Erro';
+          userRole.textContent = 'Tente novamente';
+          dropdownUserName.textContent = 'Erro';
+          dropdownUserRole.textContent = 'Tente novamente';
+          userAvatar.textContent = '!';
+          dropdownAvatar.textContent = '!';
+        }
+      }
+
+      // Toggle do dropdown do usuário
+      userCard.addEventListener('click', function(e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show');
+      });
+
+      // Fechar dropdown ao clicar fora
+      document.addEventListener('click', function() {
+        if (userDropdown.classList.contains('show')) {
+          userDropdown.classList.remove('show');
+        }
+      });
+
+      // Mobile menu toggle
+      mobileMenuToggle.addEventListener('click', function() {
+        // Implementar menu mobile aqui
+        console.log('Menu mobile clicado');
+      });
+
+      // Carrega informações do usuário
+      loadUserInfo();
+
+      // Atualiza informações do usuário quando o estado de autenticação mudar
+      if (window.supabase && window.supabase.auth) {
+        window.supabase.auth.onAuthStateChange(() => {
+          loadUserInfo();
+        });
+      }
+
+      async function waitReady(){ 
+        return new Promise(r=>{
+          const it = setInterval(()=>{ 
+            if(window.dataAccess){ 
+              clearInterval(it); 
+              r(); 
+            } 
+          },100);
+          setTimeout(()=>{ 
+            clearInterval(it); 
+            r(); 
+          }, 8000);
+        });
+      }
+      await waitReady();
+
+      const statVaga = document.getElementById('stat-vaga');
+      const statCidade = document.getElementById('stat-cidade');
+      const dataInicio = document.getElementById('stat-data-inicio');
+      const dataFim = document.getElementById('stat-data-fim');
+
+      const topCidadesEl = document.getElementById('top-cidades');
+      const topBairrosEl = document.getElementById('top-bairros');
+
+      const canvasVagas = document.getElementById('chart-vagas');
+      const canvasEvol = document.getElementById('chart-evolucao');
+      let chartVagas = null;
+      let chartEvol = null;
+
+      const tableBody = document.querySelector('#pag-table tbody');
+      const prevBtn = document.getElementById('prev-page');
+      const nextBtn = document.getElementById('next-page');
+      const pageInfo = document.getElementById('page-info');
+
+      // --- CONFIGURAÇÃO DA PAGINAÇÃO ---
+      let page = 1;
+      const limit = 30; // A página já está configurada para 30 itens por página
+      let totalPages = 1;
+
+      // --- FUNÇÃO PARA VISUALIZAR CURRÍCULO ---
+      async function handleViewCurriculum(event) {
+        const button = event.currentTarget;
+        const candidaturaId = button.dataset.id;
+        const originalIcon = button.innerHTML;
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+          const response = await window.dataAccess.getSignedCurriculo(candidaturaId);
+          const signedUrl = response.url; 
+          if (signedUrl) {
+            window.open(signedUrl, '_blank');
+          } else {
+            throw new Error('URL do currículo não encontrada na resposta do servidor.');
+          }
+        } catch (error) {
+          console.error('Erro ao obter currículo:', error);
+          alert(`Não foi possível abrir o currículo: ${error.message}`);
+        } finally {
+          button.disabled = false;
+          button.innerHTML = originalIcon;
+        }
+      }
+
+      async function populateFilters() {
+        try {
+          const opts = await window.dataAccess.getFilterOptions();
+          statVaga.innerHTML = '<option value="">Todas</option>' + (opts.vagas || []).map(v => `<option value="${v}">${v}</option>`).join('');
+          statCidade.innerHTML = '<option value="">Todas</option>' + (opts.cidades || []).map(c => `<option value="${c}">${c}</option>`).join('');
+        } catch (err) {
+          console.warn('Erro ao popular filtros:', err);
+        }
+      }
+
+      function buildFiltersForStats() {
+        const f = {};
+        if (statVaga.value) f.vaga = statVaga.value;
+        if (statCidade.value) f.cidade = statCidade.value;
+        if (dataInicio.value) f.data_inicio = dataInicio.value;
+        if (dataFim.value) f.data_fim = dataFim.value;
+        return f;
+      }
+      
+      // --- MECANISMO DE AUTO-ATUALIZAÇÃO COM DEBOUNCE ---
+      let filterTimeout;
+      function scheduleRefresh() {
+        clearTimeout(filterTimeout); // Cancela a atualização anterior
+        pageInfo.textContent = 'Aguardando alterações...';
+        filterTimeout = setTimeout(refreshAllData, 500); // Agenda uma nova atualização
+      }
+      
+      // Função única para atualizar todos os dados
+      async function refreshAllData() {
+        const filters = buildFiltersForStats();
+        await drawTopVagas(filters);
+        await drawEvolution(filters);
+        await drawCitiesAndNeighborhoods(filters);
+        await loadPage(1); // Reseta para a primeira página ao filtrar
+      }
+
+      async function drawTopVagas(filters) {
+        try {
+          const stats = await window.dataAccess.getTopStats({ limitVagas: 15, limitCidades: 0, limitBairros: 0, filters });
+          const labels = stats.vagas.map(v => v.key);
+          const values = stats.vagas.map(v => v.count);
+
+          if (chartVagas) chartVagas.destroy();
+          chartVagas = new Chart(canvasVagas.getContext('2d'), {
+            type: 'bar',
+            data: { 
+              labels, 
+              datasets: [{ 
+                label: 'Candidaturas', 
+                data: values, 
+                backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                borderColor: 'rgba(46, 125, 50, 1)',
+                borderWidth: 1
+              }] 
+            },
+            options: {
+              responsive: true,
+              plugins: { 
+                legend: { display: false } 
+              },
+              scales: {
+                x: { 
+                  ticks: { maxRotation: 40, minRotation: 0 },
+                  grid: { display: false }
+                },
+                y: { 
+                  beginAtZero: true,
+                  grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                }
+              }
+            }
+          });
+        } catch (err) {
+          console.error('Erro drawTopVagas', err);
+        }
+      }
+
+      async function drawEvolution(filters) {
+        try {
+          const evo = await window.dataAccess.getEvolution(filters);
+          const labels = evo.labels;
+          const data = evo.counts;
+
+          if (chartEvol) chartEvol.destroy();
+          chartEvol = new Chart(canvasEvol.getContext('2d'), {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [{
+                label: 'Candidaturas por dia',
+                data,
+                fill: true,
+                borderColor: 'rgba(46, 125, 50, 0.9)',
+                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                tension: 0.3,
+                pointRadius: 4,
+                pointBackgroundColor: 'rgba(46, 125, 50, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointHoverRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { 
+                legend: { display: false } 
+              },
+              scales: {
+                x: { 
+                  ticks: { maxRotation: 45 },
+                  grid: { display: false }
+                },
+                y: { 
+                  beginAtZero: true,
+                  grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                }
+              }
+            }
+          });
+        } catch (err) {
+          console.error('Erro drawEvolution', err);
+        }
+      }
+
+      async function drawCitiesAndNeighborhoods(filters) {
+        try {
+          const stats = await window.dataAccess.getTopStats({ limitVagas: 0, limitCidades: 10, limitBairros: 10, filters });
+          topCidadesEl.innerHTML = stats.cidades.map((c, index) => 
+            `<li><span style="color: var(--primary-green); font-weight: bold;">${index + 1}.</span> ${c.key} <span class="small" style="color: var(--dark-gray);">(${c.count})</span></li>`
+          ).join('') || '<li class="small">Sem dados</li>';
+          
+          topBairrosEl.innerHTML = stats.bairros.map((b, index) => 
+            `<li><span style="color: var(--primary-green); font-weight: bold;">${index + 1}.</span> ${b.key} <span class="small" style="color: var(--dark-gray);">(${b.count})</span></li>`
+          ).join('') || '<li class="small">Sem dados</li>';
+        } catch (err) {
+          console.error('Erro drawCitiesAndNeighborhoods', err);
+        }
+      }
+
+      async function loadPage(p = 1) {
+        const filters = buildFiltersForStats();
+        page = p;
+        pageInfo.textContent = 'Carregando...';
+        tableBody.innerHTML = '<tr><td colspan="6"><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
+        try {
+          const res = await window.dataAccess.getCandidaturas({ ...filters, page, limit });
+          const rows = res.data || [];
+          const total = res.total || 0;
+          totalPages = res.totalPages || Math.max(1, Math.ceil((total || 0) / limit));
+          tableBody.innerHTML = '';
+          if (!rows.length) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="small">Nenhuma candidatura nesta página.</td></tr>';
+          } else {
+            rows.forEach(r => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td><strong>${r.nome_completo || r.nome || ''}</strong></td>
+                <td>${r.vaga || ''}</td>
+                <td>${r.cidade || ''}${r.bairro ? ' / ' + r.bairro : ''}</td>
+                <td>${r.telefone || '—'}</td>
+                <td>${r.status || '—'}</td>
+                <td>
+                  <button class="btn btn-primary btn-icon btn-view-curriculum" data-id="${r.id}" title="Ver Currículo">
+                    <i class="fas fa-file-pdf"></i>
+                  </button>
+                </td>
+              `;
+              tableBody.appendChild(tr);
+            });
+
+            tableBody.querySelectorAll('.btn-view-curriculum').forEach(btn => {
+              btn.addEventListener('click', handleViewCurriculum);
+            });
+          }
+          pageInfo.textContent = `Página ${page} de ${totalPages} • ${total.toLocaleString ? total.toLocaleString('pt-BR') : total} candidaturas`;
+          prevBtn.disabled = page <= 1;
+          nextBtn.disabled = page >= totalPages;
+        } catch (err) {
+          console.error('Erro ao carregar página:', err);
+          tableBody.innerHTML = `<tr><td colspan="6" class="small">Erro: ${err.message || err}</td></tr>`;
+          pageInfo.textContent = 'Erro ao carregar';
+        }
+      }
+
+      prevBtn.addEventListener('click', () => { if (page > 1) loadPage(page - 1); });
+      nextBtn.addEventListener('click', () => { if (page < totalPages) loadPage(page + 1); });
+
+      // --- LISTENERS COM DEBOUNCE ---
+      dataInicio.addEventListener('change', scheduleRefresh);
+      dataFim.addEventListener('change', scheduleRefresh);
+      statVaga.addEventListener('change', scheduleRefresh);
+      statCidade.addEventListener('change', scheduleRefresh);
+
+      // inicial
+      await populateFilters();
+      await refreshAllData();
+    });
+
+    // Integração básica com auth.js: expõe logout se estiver disponível
+    window.logout = async function(){ 
+      if (window.authManager) await window.authManager.logout();
+      else window.location.href = 'index.html';
+    };
+  </script>
+</body>
+</html>
