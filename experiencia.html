@@ -1,0 +1,2578 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Experiência de Trabalho | FormulárioBK Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-green: #2E7D32;
+      --light-green: #4CAF50;
+      --accent-green: #81C784;
+      --pale-green: #E8F5E9;
+      --dark-green: #1B5E20;
+      --white: #FFFFFF;
+      --light-gray: #F5F5F5;
+      --medium-gray: #E0E0E0;
+      --dark-gray: #424242;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+      --transition: all 0.2s ease;
+      --header-height: 70px;
+      --success-color: #4CAF50;
+      --error-color: #f44336;
+      --warning-color: #ff9800;
+      --info-color: #2196F3;
+      
+      /* Cores para períodos de experiência */
+      --period-40days: rgba(33, 150, 243, 0.15);
+      --period-40days-border: #2196F3;
+      --period-80days: rgba(156, 39, 176, 0.15);
+      --period-80days-border: #9C27B0;
+      --period-renewal: rgba(255, 152, 0, 0.15);
+      --period-renewal-border: #FF9800;
+      --period-completed: rgba(76, 175, 80, 0.15);
+      --period-completed-border: #4CAF50;
+      --period-expired: rgba(244, 67, 54, 0.15);
+      --period-expired-border: #f44336;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--pale-green) 0%, var(--white) 100%);
+      color: var(--dark-gray);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: var(--header-height);
+    }
+
+    /* Header Limpo e Moderno */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background-color: var(--primary-green);
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      height: 60px;
+      box-shadow: var(--shadow-hover);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+
+    /* Logo e Brand - Simplificado */
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 45px;
+      height: 45px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--white);
+      transition: var(--transition);
+    }
+
+    .brand-logo:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    /* Navegação Principal - Limpa */
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .nav-link i {
+      font-size: 0.9rem;
+    }
+
+    /* Área do Usuário - Simplificada */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Botão de Notificações - Limpo */
+    .notification-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notification-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      background-color: #ff4757;
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--primary-green);
+    }
+
+    /* Card do Usuário - Limpo */
+    .user-dropdown {
+      position: relative;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem 0.5rem 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-card:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--white);
+      font-size: 1rem;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .user-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background-color: #4CAF50;
+      border: 2px solid var(--primary-green);
+      border-radius: 50%;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      margin-right: 0.5rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1;
+    }
+
+    .user-dropdown-icon {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .user-card:hover .user-dropdown-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Dropdown Menu - Limpo */
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-hover);
+      min-width: 240px;
+      z-index: 2000;
+      display: none;
+      overflow: hidden;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .dropdown-header {
+      padding: 1rem 1.25rem;
+      background-color: var(--pale-green);
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dropdown-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--white);
+      font-size: 0.9rem;
+    }
+
+    .dropdown-user-details h4 {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      margin-bottom: 0.1rem;
+    }
+
+    .dropdown-user-details p {
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .dropdown-body {
+      padding: 0.5rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      color: var(--dark-gray);
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 0.85rem;
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--pale-green);
+    }
+
+    .dropdown-item i {
+      width: 18px;
+      text-align: center;
+      color: var(--primary-green);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: var(--medium-gray);
+      margin: 0.5rem 0;
+    }
+
+    .dropdown-footer {
+      padding: 0.75rem 1.25rem;
+      background-color: var(--light-gray);
+      border-top: 1px solid var(--medium-gray);
+    }
+
+    .dropdown-footer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+    }
+
+    .dropdown-footer-item span:last-child {
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+
+    /* Menu Mobile */
+    .mobile-menu-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .mobile-menu-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background-color: var(--white);
+      margin: 4px auto;
+      transition: var(--transition);
+    }
+
+    /* Container Principal */
+    .container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    h3, h4 {
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    h4 {
+      font-size: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark-gray);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--medium-gray);
+      background-color: var(--white);
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--light-green);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+
+    .btn {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background-color: var(--light-green);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-secondary {
+      background-color: var(--medium-gray);
+      color: var(--dark-gray);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--dark-gray);
+      color: var(--white);
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--dark-gray);
+      border: 1px solid var(--medium-gray);
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--medium-gray);
+    }
+
+    .btn-whatsapp {
+      background-color: #25D366;
+      color: var(--white);
+    }
+
+    .btn-whatsapp:hover {
+      background-color: #128C7E;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(37, 211, 102, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-loading {
+      color: transparent;
+    }
+
+    .btn-loading::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    .filter-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .filter-feedback {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      background-color: var(--pale-green);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--primary-green);
+      margin-left: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .filter-feedback.show {
+      opacity: 1;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: 8px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background-color: var(--pale-green);
+      color: var(--primary-green);
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+      border-bottom: 2px solid var(--light-green);
+    }
+
+    .table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .table tbody tr {
+      transition: var(--transition);
+      border-left: 4px solid transparent;
+    }
+
+    .table tbody tr:hover {
+      filter: brightness(0.95);
+    }
+
+    /* Linhas coloridas por período */
+    .table tbody tr.period-40days {
+      background-color: var(--period-40days);
+      border-left-color: var(--period-40days-border);
+    }
+
+    .table tbody tr.period-80days {
+      background-color: var(--period-80days);
+      border-left-color: var(--period-80days-border);
+    }
+
+    .table tbody tr.period-renewal {
+      background-color: var(--period-renewal);
+      border-left-color: var(--period-renewal-border);
+    }
+
+    .table tbody tr.period-completed {
+      background-color: var(--period-completed);
+      border-left-color: var(--period-completed-border);
+    }
+
+    .table tbody tr.period-expired {
+      background-color: var(--period-expired);
+      border-left-color: var(--period-expired-border);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Badges para períodos */
+    .badge.period-40days {
+      background-color: var(--period-40days-border);
+      color: white;
+    }
+
+    .badge.period-80days {
+      background-color: var(--period-80days-border);
+      color: white;
+    }
+
+    .badge.period-renewal {
+      background-color: var(--period-renewal-border);
+      color: white;
+    }
+
+    .badge.period-completed {
+      background-color: var(--period-completed-border);
+      color: white;
+    }
+
+    .badge.period-expired {
+      background-color: var(--period-expired-border);
+      color: white;
+    }
+
+    .small {
+      font-size: 0.875rem;
+      color: var(--dark-gray);
+      opacity: 0.8;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background-color: var(--medium-gray);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--light-green);
+      transition: width 0.3s ease;
+      border-radius: 4px;
+    }
+
+    .progress-bar.warning {
+      background-color: var(--warning-color);
+    }
+
+    .progress-bar.danger {
+      background-color: var(--error-color);
+    }
+
+    .progress-bar.success {
+      background-color: var(--success-color);
+    }
+
+    /* Cards de estatísticas */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--primary-green);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .stat-card.warning {
+      border-left-color: var(--warning-color);
+    }
+
+    .stat-card.danger {
+      border-left-color: var(--error-color);
+    }
+
+    .stat-card.success {
+      border-left-color: var(--success-color);
+    }
+
+    .stat-card.renewal {
+      border-left-color: var(--warning-color);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-card.primary .stat-icon {
+      background-color: var(--pale-green);
+      color: var(--primary-green);
+    }
+
+    .stat-card.warning .stat-icon {
+      background-color: rgba(255, 152, 0, 0.1);
+      color: var(--warning-color);
+    }
+
+    .stat-card.danger .stat-icon {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--error-color);
+    }
+
+    .stat-card.success .stat-icon {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--success-color);
+    }
+
+    .stat-card.renewal .stat-icon {
+      background-color: rgba(255, 152, 0, 0.1);
+      color: var(--warning-color);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--dark-gray);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      opacity: 0.8;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal {
+      background-color: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 95%;
+      max-width: 1000px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--medium-gray);
+      background: linear-gradient(135deg, var(--pale-green), var(--white));
+    }
+
+    .modal-header strong {
+      color: var(--primary-green);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 2rem;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+
+    .modal-section {
+      background-color: var(--light-gray);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .modal-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--dark-gray);
+      min-width: 100px;
+      font-size: 0.9rem;
+    }
+
+    .info-value {
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      flex: 1;
+    }
+
+    .profile-section {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--medium-gray);
+      margin-bottom: 1.5rem;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: var(--medium-gray);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--light-green);
+      border: 2px solid var(--primary-green);
+    }
+
+    .timeline-date {
+      font-size: 0.85rem;
+      color: var(--dark-gray);
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-content {
+      background-color: var(--light-gray);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .timeline-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--primary-green);
+    }
+
+    .timeline-description {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+    }
+
+    .comment-item {
+      background-color: var(--white);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-left: 3px solid var(--light-green);
+      transition: var(--transition);
+    }
+
+    .comment-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comment-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--white);
+      font-size: 0.75rem;
+    }
+
+    .comment-date {
+      font-size: 0.75rem;
+      color: var(--dark-gray);
+      opacity: 0.7;
+    }
+
+    .comment-text {
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-top: 0.5rem;
+    }
+
+    .contact-info {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .contact-label {
+      font-weight: 600;
+      color: var(--dark-gray);
+      min-width: 80px;
+      font-size: 0.9rem;
+    }
+
+    .contact-value {
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+    }
+
+    /* Sistema de notificações toast */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      min-width: 300px;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-weight: 500;
+      animation: slideIn 0.3s ease-out;
+      transition: all 0.3s ease;
+    }
+
+    .toast.success {
+      background-color: var(--success-color);
+    }
+
+    .toast.error {
+      background-color: var(--error-color);
+    }
+
+    .toast.warning {
+      background-color: var(--warning-color);
+    }
+
+    .toast.info {
+      background-color: var(--info-color);
+    }
+
+    .toast-icon {
+      font-size: 20px;
+    }
+
+    .toast-close {
+      margin-left: auto;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .toast-close:hover {
+      opacity: 1;
+    }
+
+    .toast.hiding {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    /* Paginação */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      min-width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: 1px solid var(--medium-gray);
+      background-color: var(--white);
+      color: var(--dark-gray);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background-color: var(--pale-green);
+      border-color: var(--light-green);
+    }
+
+    .pagination button.active {
+      background-color: var(--light-green);
+      color: var(--white);
+      border-color: var(--light-green);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      margin: 0 10px;
+    }
+
+    /* Animações */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @media (max-width: 1024px) {
+      .header-nav {
+        display: none;
+      }
+      
+      .mobile-menu-toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        padding: 0 1rem;
+      }
+      
+      .brand-text {
+        display: none;
+      }
+      
+      .notification-btn {
+        display: none;
+      }
+      
+      .user-info {
+        display: none;
+      }
+      
+      .user-card {
+        padding: 0.4rem;
+      }
+      
+      .filter-form { 
+        grid-template-columns: 1fr; 
+      }
+      
+      .table-container { 
+        font-size: 0.875rem; 
+      }
+      
+      .btn { 
+        padding: 0.5rem; 
+        font-size: 0.875rem; 
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-body {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .toast-container {
+        right: 10px;
+        left: 10px;
+      }
+      
+      .toast {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="mainHeader">
+    <div class="header-container">
+      <div class="header-brand">
+        <div class="brand-logo">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">Candidaturas Recebidas</div>
+          <div class="brand-subtitle">Painel Administrativo</div>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <div class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="candidaturas.html" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Candidaturas</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="selecao.html" class="nav-link">
+            <i class="fas fa-user-check"></i>
+            <span>Em Seleção</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="experiencia.html" class="nav-link">
+            <i class="fas fa-briefcase"></i>
+            <span>Experiência</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="vagas.html" class="nav-link">
+            <i class="fas fa-briefcase"></i>
+            <span>Vagas</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="notification-btn">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+
+        <div class="user-dropdown">
+          <div class="user-card" id="userCard">
+            <div class="user-avatar" id="userAvatar">
+              U
+              <span class="user-status"></span>
+            </div>
+            <div class="user-info">
+              <div class="user-name" id="userName">Carregando...</div>
+              <div class="user-role" id="userRole">Carregando...</div>
+            </div>
+            <i class="fas fa-chevron-down user-dropdown-icon"></i>
+          </div>
+          
+          <div class="dropdown-menu" id="userDropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-user-info">
+                <div class="dropdown-avatar" id="dropdownAvatar">U</div>
+                <div class="dropdown-user-details">
+                  <h4 id="dropdownUserName">Usuário</h4>
+                  <p id="dropdownUserRole">Administrador</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="dropdown-body">
+              <a href="perfil.html" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Meu Perfil
+              </a>
+              <a href="configuracoes.html" class="dropdown-item">
+                <i class="fas fa-cog"></i>
+                Configurações
+              </a>
+              <a href="ajuda.html" class="dropdown-item">
+                <i class="fas fa-question-circle"></i>
+                Ajuda e Suporte
+              </a>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-footer">
+              <div class="dropdown-footer-item">
+                <span>Último acesso:</span>
+                <span id="lastLogin">Hoje</span>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-body">
+              <a href="#" class="dropdown-item" onclick="window.logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair do Sistema
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Cards de Estatísticas -->
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-value" id="totalEmployees">0</div>
+        <div class="stat-label">Total em Experiência</div>
+      </div>
+      
+      <div class="stat-card warning">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-value" id="period40Days">0</div>
+        <div class="stat-label">Período de 40 dias</div>
+      </div>
+      
+      <div class="stat-card danger">
+        <div class="stat-icon">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+        <div class="stat-value" id="period80Days">0</div>
+        <div class="stat-label">Período de 80 dias</div>
+      </div>
+      
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-value" id="completedPeriod">0</div>
+        <div class="stat-label">Período Concluído</div>
+      </div>
+      
+      <div class="stat-card renewal">
+        <div class="stat-icon">
+          <i class="fas fa-sync-alt"></i>
+        </div>
+        <div class="stat-value" id="renewalCount">0</div>
+        <div class="stat-label">Renovações</div>
+      </div>
+    </div>
+
+    <section class="card">
+      <h3 style="margin:0 0 12px 0">
+        <i class="fas fa-filter"></i>
+        Filtro de Funcionários em Experiência
+        <span class="filter-feedback" id="filterFeedback">
+          <div class="loading-spinner"></div>
+          Atualizando dados...
+        </span>
+      </h3>
+      <form id="filter-form" class="filter-form">
+        <div>
+          <label for="period">Período</label>
+          <select id="period" name="period">
+            <option value="">Todos</option>
+            <option value="40days">40 dias</option>
+            <option value="80days">80 dias</option>
+            <option value="renewal">Renovação</option>
+            <option value="completed">Concluído</option>
+            <option value="expired">Expirado</option>
+          </select>
+        </div>
+        <div>
+          <label for="phase">Fase</label>
+          <select id="phase" name="phase">
+            <option value="">Todas</option>
+            <option value="first">Primeira fase</option>
+            <option value="second">Segunda fase</option>
+            <option value="single">Período único</option>
+          </select>
+        </div>
+        <div>
+          <label for="vaga">Vaga</label>
+          <select id="vaga" name="vaga">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div>
+          <label for="cidade">Cidade</label>
+          <select id="cidade" name="cidade">
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="nome">Nome</label>
+          <input id="nome" name="nome" type="text" placeholder="Nome do funcionário">
+        </div>
+
+        <div>
+          <label for="data_inicio">Data início</label>
+          <input id="data_inicio" name="data_inicio" type="date">
+        </div>
+        <div>
+          <label for="data_fim">Data fim</label>
+          <input id="data_fim" name="data_fim" type="date">
+        </div>
+
+        <div class="filter-actions" style="grid-column:1/-1">
+          <button type="button" id="reset-btn" class="btn btn-secondary">
+            <i class="fas fa-times"></i>
+            Limpar Filtros
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Funcionários em Experiência <span id="results-count" class="small"></span></h3>
+        <div class="small" id="table-controls">Ordenado por mais recentes</div>
+      </div>
+
+      <div class="table-container" style="margin-top:10px;">
+        <table class="table" id="experience-table">
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>Vaga</th>
+              <th>Período</th>
+              <th>Fase</th>
+              <th>Dias Restantes</th>
+              <th>Progresso</th>
+              <th>Início</th>
+              <th>Término</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      
+      <!-- Paginação -->
+      <div class="pagination" id="pagination">
+        <button id="prev-page" disabled><i class="fas fa-chevron-left"></i></button>
+        <div id="page-numbers"></div>
+        <button id="next-page" disabled><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de Perfil do Funcionário -->
+  <div id="profile-modal" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <strong id="profile-modal-title">
+          <i class="fas fa-user-circle"></i>
+          Perfil do Funcionário
+        </strong>
+        <button id="profile-modal-close" class="btn btn-ghost">
+          <i class="fas fa-times"></i>
+          Fechar
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Seção Principal - Informações do Funcionário -->
+        <div>
+          <div class="profile-section">
+            <div class="modal-section-title">
+              <i class="fas fa-user"></i>
+              Informações Pessoais
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Nome:</div>
+                <div class="info-value" id="p-nome">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Email:</div>
+                <div class="info-value" id="p-email-modal">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Telefone:</div>
+                <div class="info-value" id="p-telefone-modal">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">CPF:</div>
+                <div class="info-value" id="p-cpf">...</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="modal-section-title">
+              <i class="fas fa-briefcase"></i>
+              Informações da Vaga
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Vaga:</div>
+                <div class="info-value" id="p-vaga">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Cidade/Bairro:</div>
+                <div class="info-value" id="p-cidade">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Rua/CEP:</div>
+                <div class="info-value" id="p-rua-cep">...</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Transporte:</div>
+                <div class="info-value" id="p-transporte">...</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="modal-section-title">
+              <i class="fas fa-sync-alt"></i>
+              Histórico de Experiência
+            </div>
+            <div class="timeline" id="p-experience-history">
+              <div class="small">Carregando histórico...</div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="modal-section-title">
+              <i class="fas fa-comments"></i>
+              Comentários
+            </div>
+            <div id="p-comments-list" class="comments-section">
+              <div class="small">Carregando comentários...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção Lateral - Contato -->
+        <div>
+          <div class="profile-section">
+            <div class="modal-section-title">
+              <i class="fas fa-phone"></i>
+              Contato
+            </div>
+            <div class="contact-info">
+              <div class="contact-item">
+                <div class="contact-label">Telefone:</div>
+                <div class="contact-value" id="p-telefone-contact">...</div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-label">Email:</div>
+                <div class="contact-value" id="p-email-contact">...</div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-label">WhatsApp:</div>
+                <div class="contact-value" id="p-whatsapp">
+                  <button class="btn btn-whatsapp btn-whatsapp-contact">
+                    <i class="fab fa-whatsapp"></i>
+                    Abrir WhatsApp
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Renovação -->
+  <div id="renewal-modal" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <strong id="renewal-modal-title">
+          <i class="fas fa-sync-alt"></i>
+          Renovar Experiência
+        </strong>
+        <button id="renewal-modal-close" class="btn btn-ghost">
+          <i class="fas fa-times"></i>
+          Fechar
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding: 2rem;">
+        <div class="modal-section">
+          <div class="modal-section-title">
+            <i class="fas fa-info-circle"></i>
+            Informações da Renovação
+          </div>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Funcionário:</div>
+              <div class="info-value" id="renewal-employee-name">...</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Vaga:</div>
+              <div class="info-value" id="renewal-vaga">...</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Período atual:</div>
+              <div class="info-value" id="renewal-current-period">...</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Novo período:</div>
+              <div class="info-value">40 dias (segunda fase)</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Data de término atual:</div>
+              <div class="info-value" id="renewal-current-end">...</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Novo término:</div>
+              <div class="info-value" id="renewal-new-end">...</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end;">
+          <button id="renewal-cancel-btn" class="btn btn-secondary">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+          <button id="renewal-confirm-btn" class="btn btn-primary">
+            <i class="fas fa-check"></i>
+            Confirmar Renovação
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container para notificações toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="data-access.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    
+    // =================================================================
+    // INÍCIO DAS CORREÇÕES (FUNÇÕES REDEFINIDAS PARA CORRIGIR O BUG)
+    // =================================================================
+    // O problema principal era que as funções em data-access.js não faziam
+    // o join com a tabela 'candidaturas', resultando em dados incompletos.
+    // Redefinimos aqui para garantir o funcionamento correto.
+
+    function checkSupabaseClient() {
+      if (!window.supabase || typeof window.supabase.from !== 'function') {
+        throw new Error('Cliente Supabase não inicializado. Verifique auth.js/config.js.');
+      }
+    }
+
+    // CORREÇÃO: Função getExperienceEmployees com JOIN para buscar dados da candidatura
+    async function getExperienceEmployees(filters = {}) {
+      checkSupabaseClient();
+
+      let query = window.supabase
+        .from('employee_experience')
+        .select(`
+          *,
+          candidatura:candidatura_id (
+            id,
+            nome,
+            email,
+            telefone,
+            vaga,
+            cidade,
+            bairro,
+            cpf,
+            rua,
+            cep,
+            transporte
+          )
+        `, { count: 'exact' })
+        .order('created_at', { ascending: false });
+
+      // Aplica filtros
+      if (filters.period) query = query.eq('period', filters.period);
+      if (filters.phase) query = query.eq('phase', filters.phase);
+      if (filters.vaga) query = query.ilike('candidatura.vaga', `%${filters.vaga}%`);
+      if (filters.cidade) query = query.ilike('candidatura.cidade', `%${filters.cidade}%`);
+      if (filters.nome) query = query.ilike('candidatura.nome', `%${filters.nome}%`);
+      if (filters.data_inicio) query = query.gte('start_date', new Date(filters.data_inicio).toISOString());
+      if (filters.data_fim) {
+        const endDate = new Date(filters.data_fim);
+        endDate.setHours(23, 59, 59, 999);
+        query = query.lte('end_date', endDate.toISOString());
+      }
+      
+      // Paginação
+      if (filters.page && filters.limit) {
+        const page = Number(filters.page) || 1;
+        const limit = Number(filters.limit) || 20;
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
+        
+        const { data, error, count } = await query.range(from, to);
+        if (error) throw error;
+        
+        const processedData = processExperienceData(data || []);
+        const stats = calculateStats(processedData);
+        
+        return { 
+          data: processedData, 
+          page: Number(page), 
+          limit: Number(limit), 
+          total: count || 0, 
+          totalPages: Math.ceil((count || 0) / limit),
+          stats 
+        };
+      }
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+
+      const processedData = processExperienceData(data || []);
+      const stats = calculateStats(processedData);
+
+      return { 
+        data: processedData, 
+        total: count || 0,
+        stats 
+      };
+    }
+    
+    // CORREÇÃO: Função processExperienceData ajustada para usar dados do JOIN
+    function processExperienceData(data) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return data.map(item => {
+        const candidatura = item.candidatura || {};
+        const startDate = new Date(item.start_date);
+        const endDate = new Date(item.end_date);
+        const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        const daysPassed = Math.ceil((today - startDate) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+
+        let period = item.period;
+        let status = item.status || 'active';
+
+        if (daysRemaining < 0) { status = 'expired'; period = 'expired'; }
+        else if (daysRemaining <= 0) { status = 'completed'; period = 'completed'; }
+
+        let progress = 0;
+        if (daysPassed >= 0 && totalDays > 0) {
+          progress = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100));
+        }
+
+        let canRenew = false;
+        if (item.phase === 'first' && daysRemaining <= 5 && daysRemaining > 0 && status !== 'completed') {
+          canRenew = true;
+        }
+
+        return {
+          ...item,
+          nome: candidatura.nome || item.nome || '—',
+          vaga: candidatura.vaga || item.vaga || '—',
+          email: candidatura.email || item.email || '—',
+          telefone: candidatura.telefone || item.telefone || '—',
+          cidade: candidatura.cidade || item.cidade || '—',
+          bairro: candidatura.bairro || item.bairro || '—',
+          cpf: candidatura.cpf || item.cpf || '—',
+          rua: candidatura.rua || item.rua || '—',
+          cep: candidatura.cep || item.cep || '—',
+          transporte: candidatura.transporte || item.transporte || '—',
+          candidatura_id: candidatura.id || item.candidatura_id,
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+          totalDays,
+          daysPassed,
+          daysRemaining,
+          progress: Math.round(progress),
+          period,
+          status,
+          canRenew,
+          phase: item.phase || 'unknown'
+        };
+      });
+    }
+    
+    // CORREÇÃO: Função getEmployeeProfile com JOIN para otimizar consultas
+    async function getEmployeeProfile(experienceId) {
+      checkSupabaseClient();
+      if (!experienceId) throw new Error('ID da experiência é obrigatório.');
+
+      try {
+        const { data: experience, error: expError } = await window.supabase
+          .from('employee_experience')
+          .select(`
+            *,
+            candidatura:candidatura_id (
+              id,
+              nome,
+              email,
+              telefone,
+              vaga,
+              cidade,
+              bairro,
+              cpf,
+              rua,
+              cep,
+              transporte
+            )
+          `)
+          .eq('id', experienceId)
+          .single();
+
+        if (expError) throw new Error('Experiência não encontrada: ' + expError.message);
+        
+        const candidaturaId = experience.candidatura_id;
+        const [renewalHistory, comentarios] = await Promise.all([
+          getRenewalHistory(candidaturaId),
+          getComentarios(candidaturaId)
+        ]);
+
+        return {
+          experience: processExperienceData([experience])[0],
+          candidatura: normalizeCandidatura(experience.candidatura),
+          renewalHistory: renewalHistory || [],
+          comentarios: comentarios || []
+        };
+      } catch (error) {
+        console.error('Erro ao obter perfil do funcionário:', error);
+        throw new Error('Falha ao obter perfil do funcionário: ' + error.message);
+      }
+    }
+    
+    // Funções auxiliares necessárias para as correções
+    function normalizeCandidatura(rec) {
+      return { ...rec, nome_completo: rec.nome || rec.nome_completo || '', criado_em: rec.enviado_em || rec.criado_em || rec.created_at || null };
+    }
+    async function getRenewalHistory(candidaturaId) {
+      checkSupabaseClient();
+      const { data, error } = await window.supabase.from('employee_experience').select('*').eq('candidatura_id', candidaturaId).order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    }
+    async function getComentarios(candidaturaId) {
+      checkSupabaseClient();
+      const { data, error } = await window.supabase.from('comentarios').select('*').eq('candidatura_id', candidaturaId).order('criado_em', { ascending: false });
+      if (error) throw error;
+      return (data || []).map(it => ({ ...it, nome_exibicao: it.owner_name || (it.usuario_id === null ? 'Sistema' : 'Usuário') }));
+    }
+    function calculateStats(data) {
+      const stats = { total: data.length, period40Days: 0, period80Days: 0, renewal: 0, completed: 0, expired: 0, firstPhase: 0, secondPhase: 0, canRenew: 0 };
+      data.forEach(item => {
+        switch (item.period) { case '40days': stats.period40Days++; break; case '80days': stats.period80Days++; break; case 'renewal': stats.renewal++; break; case 'completed': stats.completed++; break; case 'expired': stats.expired++; break; }
+        switch (item.phase) { case 'first': stats.firstPhase++; break; case 'second': stats.secondPhase++; break; }
+        if (item.canRenew) stats.canRenew++;
+      });
+      return stats;
+    }
+
+    // Aplica as correções ao objeto global window.dataAccess
+    if (window.dataAccess) {
+      window.dataAccess.getExperienceEmployees = getExperienceEmployees;
+      window.dataAccess.getEmployeeProfile = getEmployeeProfile;
+    } else {
+      console.error("window.dataAccess não encontrado. As correções não puderam ser aplicadas.");
+    }
+
+    // =================================================================
+    // FIM DAS CORREÇÕES
+    // =================================================================
+
+    // Elementos do usuário
+    const userCard = document.getElementById('userCard');
+    const userDropdown = document.getElementById('userDropdown');
+    const userName = document.getElementById('userName');
+    const userRole = document.getElementById('userRole');
+    const userAvatar = document.getElementById('userAvatar');
+    const dropdownAvatar = document.getElementById('dropdownAvatar');
+    const dropdownUserName = document.getElementById('dropdownUserName');
+    const dropdownUserRole = document.getElementById('dropdownUserRole');
+    const lastLogin = document.getElementById('lastLogin');
+    const mainHeader = document.getElementById('mainHeader');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        mainHeader.classList.add('scrolled');
+      } else {
+        mainHeader.classList.remove('scrolled');
+      }
+    });
+
+    // Função para carregar informações do usuário
+    async function loadUserInfo() {
+      try {
+        if (window.authManager && window.authManager.isAuthenticated()) {
+          const userProfile = window.authManager.userProfile;
+          const currentUser = window.authManager.currentUser;
+          
+          if (userProfile) {
+            const name = userProfile.nome || userProfile.name || 'Usuário';
+            const role = userProfile.role || userProfile.funcao || 'Administrador';
+            
+            userName.textContent = name;
+            userRole.textContent = role;
+            dropdownUserName.textContent = name;
+            dropdownUserRole.textContent = role;
+            
+            // Iniciais do nome para o avatar
+            const initials = name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
+            userAvatar.textContent = initials;
+            dropdownAvatar.textContent = initials;
+            
+            // Último acesso (simulado)
+            const now = new Date();
+            lastLogin.textContent = now.toLocaleString('pt-BR', { 
+              day: 'numeric', 
+              month: 'short', 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+          } else if (currentUser) {
+            const email = currentUser.email || 'Usuário';
+            userName.textContent = email;
+            userRole.textContent = 'Administrador';
+            dropdownUserName.textContent = email;
+            dropdownUserRole.textContent = 'Administrador';
+            userAvatar.textContent = email.charAt(0).toUpperCase();
+            dropdownAvatar.textContent = email.charAt(0).toUpperCase();
+          }
+        } else {
+          userName.textContent = 'Visitante';
+          userRole.textContent = 'Não autenticado';
+          dropdownUserName.textContent = 'Visitante';
+          dropdownUserRole.textContent = 'Não autenticado';
+          userAvatar.textContent = '?';
+          dropdownAvatar.textContent = '?';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar informações do usuário:', error);
+        userName.textContent = 'Erro';
+        userRole.textContent = 'Tente novamente';
+        dropdownUserName.textContent = 'Erro';
+        dropdownUserRole.textContent = 'Tente novamente';
+        userAvatar.textContent = '!';
+        dropdownAvatar.textContent = '!';
+      }
+    }
+
+    // Toggle do dropdown do usuário
+    userCard.addEventListener('click', function(e) {
+      e.stopPropagation();
+      userDropdown.classList.toggle('show');
+    });
+
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', function() {
+      if (userDropdown.classList.contains('show')) {
+        userDropdown.classList.remove('show');
+      }
+    });
+
+    // Mobile menu toggle
+    mobileMenuToggle.addEventListener('click', function() {
+      // Implementar menu mobile aqui
+      console.log('Menu mobile clicado');
+    });
+
+    // Carrega informações do usuário
+    loadUserInfo();
+
+    // Atualiza informações do usuário quando o estado de autenticação mudar
+    if (window.supabase && window.supabase.auth) {
+      window.supabase.auth.onAuthStateChange(() => {
+        loadUserInfo();
+      });
+    }
+
+    // Sistema de notificações toast
+    const toastContainer = document.getElementById('toast-container');
+    
+    function showToast(message, type = 'info', duration = 5000) {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icon = document.createElement('i');
+      icon.className = `toast-icon fas ${getIconForType(type)}`;
+      
+      const text = document.createElement('div');
+      text.textContent = message;
+      
+      const close = document.createElement('i');
+      close.className = 'toast-close fas fa-times';
+      close.addEventListener('click', () => {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+      });
+      
+      toast.appendChild(icon);
+      toast.appendChild(text);
+      toast.appendChild(close);
+      
+      toastContainer.appendChild(toast);
+      
+      // Auto remove after duration
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.classList.add('hiding');
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, duration);
+    }
+    
+    function getIconForType(type) {
+      switch(type) {
+        case 'success': return 'fa-check-circle';
+        case 'error': return 'fa-exclamation-circle';
+        case 'warning': return 'fa-exclamation-triangle';
+        default: return 'fa-info-circle';
+      }
+    }
+
+    // Paginação
+    const pagination = {
+      currentPage: 1,
+      itemsPerPage: 20,
+      totalPages: 1,
+      totalItems: 0
+    };
+
+    // Elementos da tabela e filtros
+    const tableBody = document.querySelector('#experience-table tbody');
+    const resultsCount = document.getElementById('results-count');
+    const periodSelect = document.getElementById('period');
+    const phaseSelect = document.getElementById('phase');
+    const vagaSelect = document.getElementById('vaga');
+    const cidadeSelect = document.getElementById('cidade');
+    const filterForm = document.getElementById('filter-form');
+    const resetBtn = document.getElementById('reset-btn');
+    const filterFeedback = document.getElementById('filterFeedback');
+    
+    // Elementos de paginação
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const pageNumbers = document.getElementById('page-numbers');
+
+    // Elementos de estatísticas
+    const totalEmployeesEl = document.getElementById('totalEmployees');
+    const period40DaysEl = document.getElementById('period40Days');
+    const period80DaysEl = document.getElementById('period80Days');
+    const completedPeriodEl = document.getElementById('completedPeriod');
+    const renewalCountEl = document.getElementById('renewalCount');
+
+    // Elementos do modal de perfil
+    const profileModal = document.getElementById('profile-modal');
+    const profileModalClose = document.getElementById('profile-modal-close');
+    const pNome = document.getElementById('p-nome');
+    const pEmailModal = document.getElementById('p-email-modal');
+    const pTelefoneModal = document.getElementById('p-telefone-modal');
+    const pCpf = document.getElementById('p-cpf');
+    const pVaga = document.getElementById('p-vaga');
+    const pCidade = document.getElementById('p-cidade');
+    const pRuaCep = document.getElementById('p-rua-cep');
+    const pTransporte = document.getElementById('p-transporte');
+    const pExperienceHistory = document.getElementById('p-experience-history');
+    const pCommentsList = document.getElementById('p-comments-list');
+    const pWhatsapp = document.getElementById('p-whatsapp');
+    const pTelefoneContact = document.getElementById('p-telefone-contact');
+    const pEmailContact = document.getElementById('p-email-contact');
+
+    // Elementos do modal de renovação
+    const renewalModal = document.getElementById('renewal-modal');
+    const renewalModalClose = document.getElementById('renewal-modal-close');
+    const renewalCancelBtn = document.getElementById('renewal-cancel-btn');
+    const renewalConfirmBtn = document.getElementById('renewal-confirm-btn');
+
+    let lastFilters = {};
+    let currentProfileId = null;
+    let currentRenewalId = null;
+    let currentRenewalData = null;
+
+    // Funções auxiliares para períodos
+    function getPeriodClass(period) {
+      switch(period) { case '40days': return 'period-40days'; case '80days': return 'period-80days'; case 'renewal': return 'period-renewal'; case 'completed': return 'period-completed'; case 'expired': return 'period-expired'; default: return ''; }
+    }
+    function getPeriodBadgeClass(period) {
+      switch(period) { case '40days': return 'period-40days'; case '80days': return 'period-80days'; case 'renewal': return 'period-renewal'; case 'completed': return 'period-completed'; case 'expired': return 'period-expired'; default: return ''; }
+    }
+    function getPeriodLabel(period) {
+      switch(period) { case '40days': return '40 dias'; case '80days': return '80 dias'; case 'renewal': return 'Renovação'; case 'completed': return 'Concluído'; case 'expired': return 'Expirado'; default: return period || '—'; }
+    }
+    function getPhaseLabel(phase) {
+      switch(phase) { case 'first': return 'Primeira fase'; case 'second': return 'Segunda fase'; case 'single': return 'Período único'; default: return '—'; }
+    }
+    function getProgressClass(daysRemaining) {
+      if (daysRemaining < 0) return 'danger';
+      if (daysRemaining <= 5) return 'warning';
+      return 'success';
+    }
+
+    // Função para mostrar estado de carregamento em um botão
+    function setButtonLoading(button, loading) {
+      if (!button) return;
+      if (loading) {
+        button.disabled = true;
+        button.classList.add('btn-loading');
+        button.dataset.originalText = button.innerHTML;
+      } else {
+        button.disabled = false;
+        button.classList.remove('btn-loading');
+        if (button.dataset.originalText) {
+          button.innerHTML = button.dataset.originalText;
+        }
+      }
+    }
+
+    // Função para renderizar a paginação
+    function renderPagination() {
+      prevPageBtn.disabled = pagination.currentPage <= 1;
+      nextPageBtn.disabled = pagination.currentPage >= pagination.totalPages;
+      pageNumbers.innerHTML = '';
+      
+      let startPage = Math.max(1, pagination.currentPage - 2);
+      let endPage = Math.min(pagination.totalPages, startPage + 4);
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+      
+      if (startPage > 1) {
+        const firstPage = createPageButton(1);
+        pageNumbers.appendChild(firstPage);
+        if (startPage > 2) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          ellipsis.style.padding = '0 8px';
+          pageNumbers.appendChild(ellipsis);
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = createPageButton(i);
+        if (i === pagination.currentPage) {
+          pageBtn.classList.add('active');
+        }
+        pageNumbers.appendChild(pageBtn);
+      }
+      
+      if (endPage < pagination.totalPages) {
+        if (endPage < pagination.totalPages - 1) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          ellipsis.style.padding = '0 8px';
+          pageNumbers.appendChild(ellipsis);
+        }
+        const lastPage = createPageButton(pagination.totalPages);
+        pageNumbers.appendChild(lastPage);
+      }
+      
+      const paginationInfo = document.createElement('div');
+      paginationInfo.className = 'pagination-info';
+      paginationInfo.textContent = `${pagination.totalItems} itens`;
+      pageNumbers.appendChild(paginationInfo);
+    }
+    
+    function createPageButton(pageNum) {
+      const button = document.createElement('button');
+      button.textContent = pageNum;
+      button.addEventListener('click', () => {
+        if (pageNum !== pagination.currentPage) {
+          pagination.currentPage = pageNum;
+          load(lastFilters);
+        }
+      });
+      return button;
+    }
+
+    prevPageBtn.addEventListener('click', () => { if (pagination.currentPage > 1) { pagination.currentPage--; load(lastFilters); } });
+    nextPageBtn.addEventListener('click', () => { if (pagination.currentPage < pagination.totalPages) { pagination.currentPage++; load(lastFilters); } });
+
+    function openProfileModal() { profileModal.style.display = 'flex'; }
+    function closeProfileModal() { 
+      profileModal.style.display = 'none'; 
+      currentProfileId = null; 
+      // Resetar campos para o estado inicial
+      pNome.textContent = '...'; pEmailModal.textContent = '...'; pTelefoneModal.textContent = '...'; pCpf.textContent = '...';
+      pVaga.textContent = '...'; pCidade.textContent = '...'; pRuaCep.textContent = '...'; pTransporte.textContent = '...';
+      pExperienceHistory.innerHTML = '<div class="small">Carregando histórico...</div>';
+      pCommentsList.innerHTML = '<div class="small">Carregando comentários...</div>';
+      pWhatsapp.innerHTML = ''; pTelefoneContact.textContent = '...'; pEmailContact.textContent = '...';
+    }
+
+    function openRenewalModal(experienceData) {
+      currentRenewalId = experienceData.id;
+      currentRenewalData = experienceData;
+      document.getElementById('renewal-employee-name').textContent = experienceData.nome || '—';
+      document.getElementById('renewal-vaga').textContent = experienceData.vaga || '—';
+      document.getElementById('renewal-current-period').textContent = getPeriodLabel(experienceData.period);
+      document.getElementById('renewal-current-end').textContent = experienceData.endDate || '—';
+      const currentEndDate = new Date(experienceData.endDate);
+      const newEndDate = new Date(currentEndDate);
+      newEndDate.setDate(newEndDate.getDate() + 40);
+      document.getElementById('renewal-new-end').textContent = newEndDate.toLocaleDateString('pt-BR');
+      renewalModal.style.display = 'flex';
+    }
+
+    function closeRenewalModal() {
+      renewalModal.style.display = 'none';
+      currentRenewalId = null;
+      currentRenewalData = null;
+    }
+
+    profileModalClose.addEventListener('click', closeProfileModal);
+    profileModal.addEventListener('click', (e) => { if (e.target === profileModal) { closeProfileModal(); } });
+    renewalModalClose.addEventListener('click', closeRenewalModal);
+    renewalCancelBtn.addEventListener('click', closeRenewalModal);
+    renewalModal.addEventListener('click', (e) => { if (e.target === renewalModal) { closeRenewalModal(); } });
+
+    renewalConfirmBtn.addEventListener('click', async () => {
+      if (!currentRenewalId) { showToast('Nenhuma experiência selecionada para renovação', 'warning'); return; }
+      setButtonLoading(renewalConfirmBtn, true);
+      try {
+        await window.dataAccess.renewExperience(currentRenewalId);
+        showToast('Experiência renovada com sucesso por mais 40 dias!', 'success');
+        closeRenewalModal();
+        await load(lastFilters);
+      } catch (error) {
+        console.error('Erro ao renovar experiência:', error);
+        showToast('Erro ao renovar experiência: ' + error.message, 'error');
+      } finally {
+        setButtonLoading(renewalConfirmBtn, false);
+      }
+    });
+
+    async function waitReady() { 
+      console.log('Aguardando inicialização do dataAccess...');
+      return new Promise((resolve, reject) => {
+        const maxAttempts = 80;
+        let attempts = 0;
+        const it = setInterval(() => { 
+          attempts++;
+          if (window.dataAccess) { 
+            console.log('dataAccess carregado com sucesso após', attempts * 100, 'ms');
+            clearInterval(it); resolve(); 
+          } else if (attempts >= maxAttempts) {
+            clearInterval(it);
+            console.error('window.dataAccess não foi carregado após 8 segundos');
+            showToast('Erro ao carregar módulos de dados. Verifique o console para mais detalhes.', 'error');
+            reject(new Error('window.dataAccess não foi carregado'));
+          }
+        }, 100);
+      });
+    }
+
+    async function renderProfileComments(candidaturaId) {
+      pCommentsList.innerHTML = '<div class="small">Carregando comentários...</div>';
+      try {
+        const items = await window.dataAccess.getComentarios(candidaturaId);
+        if (!items || items.length === 0) { pCommentsList.innerHTML = '<div class="small">Nenhum comentário ainda.</div>'; return; }
+        pCommentsList.innerHTML = items.map(it => {
+          const who = it.nome_exibicao || it.owner_name || (it.usuario_id === null ? 'Sistema' : 'Usuário');
+          const when = new Date(it.criado_em || it.at || it.created_at || '').toLocaleString('pt-BR');
+          const tipoLabel = it.tipo === 'observacao' ? '<span class="badge warn">Observação</span>' : '<span class="badge new">Comentário</span>';
+          const initials = who.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
+          return `
+            <div class="comment-item" data-comment-id="${it.id}">
+              <div class="comment-header">
+                <div class="comment-author">
+                  <div class="comment-avatar">${initials}</div>
+                  ${who}
+                </div>
+                <div class="comment-date">${when}</div>
+              </div>
+              <div class="comment-text">${tipoLabel} ${escapeHtml(it.comentario)}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Erro ao carregar comentários:', error);
+        pCommentsList.innerHTML = `<div class="small">Erro ao carregar comentários: ${error.message}</div>`;
+      }
+    }
+
+    function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+    async function loadEmployeeProfile(id, buttonElement) {
+      if (buttonElement.dataset.loading === '1') return;
+      buttonElement.dataset.loading = '1';
+      setButtonLoading(buttonElement, true);
+
+      try {
+        openProfileModal();
+        const profileData = await window.dataAccess.getEmployeeProfile(id);
+        currentProfileId = id;
+        
+        // Preenche informações pessoais
+        pNome.textContent = profileData.candidatura.nome || '—';
+        pEmailModal.textContent = profileData.candidatura.email || '—';
+        pTelefoneModal.textContent = profileData.candidatura.telefone || '—';
+        pCpf.textContent = profileData.candidatura.cpf || '—';
+        
+        // Preenche informações da vaga
+        pVaga.textContent = profileData.candidatura.vaga || '—';
+        pCidade.textContent = profileData.candidatura.cidade ? 
+          (profileData.candidatura.bairro ? `${profileData.candidatura.bairro} - ${profileData.candidatura.cidade || ''}` : profileData.candidatura.cidade || '—') : '—';
+        // CORREÇÃO: Adicionado o parêntese de fechamento que faltava
+        pRuaCep.textContent = (profileData.candidatura.rua ? `${profileData.candidatura.rua} • ${profileData.candidatura.cep || ''}` : profileData.candidatura.cep || '—');
+        pTransporte.textContent = profileData.candidatura.transporte || '—';
+        
+        // Preenche informações de contato na seção lateral
+        pTelefoneContact.textContent = profileData.candidatura.telefone || '—';
+        pEmailContact.textContent = profileData.candidatura.email || '—';
+        
+        // Preenche informações da experiência
+        const experience = profileData.experience;
+        pExperienceHistory.innerHTML = `
+          <div class="timeline-item">
+            <div class="timeline-date">${new Date(experience.start_date).toLocaleDateString('pt-BR')}</div>
+            <div class="timeline-content">
+              <div class="timeline-title">${getPeriodLabel(experience.period)} - ${getPhaseLabel(experience.phase)}</div>
+              <div class="timeline-description">
+                ${experience.status === 'renewed' ? 'Período renovado' : experience.status === 'active' ? 'Período ativo' : experience.status === 'completed' ? 'Período concluído' : 'Período expirado'}
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Configura botão WhatsApp
+        if (profileData.candidatura.telefone) {
+          const cleanPhone = profileData.candidatura.telefone.replace(/\D/g, '');
+          pWhatsapp.innerHTML = `
+            <button class="btn btn-whatsapp btn-whatsapp-contact" data-phone="${cleanPhone}">
+              <i class="fab fa-whatsapp"></i>
+              Abrir WhatsApp
+            </button>
+          `;
+        }
+        
+        // Renderiza comentários
+        renderProfileComments(profileData.candidatura.id);
+
+      } catch (error) {
+        console.error('Erro ao carregar perfil do funcionário:', error);
+        showToast('Erro ao carregar perfil: ' + error.message, 'error');
+      } finally {
+        buttonElement.dataset.loading = '0';
+        setButtonLoading(buttonElement, false);
+      }
+    }
+
+    // --- MECANISMO DE AUTO-ATUALIZAÇÃO COM DEBOUNCE ---
+    let filterTimeout;
+    function scheduleRefresh() {
+      clearTimeout(filterTimeout);
+      filterFeedback.classList.add('show');
+      filterTimeout = setTimeout(() => {
+        loadFiltersData().finally(() => {
+          setTimeout(() => { filterFeedback.classList.remove('show'); }, 500);
+        });
+      }, 800);
+    }
+
+    async function loadFiltersData() {
+      const fd = new FormData(filterForm);
+      const filters = {};
+      for (const [k, v] of fd.entries()) { if (v) filters[k] = v; }
+      pagination.currentPage = 1;
+      await load(filters);
+    }
+
+    async function load(filters = {}) {
+      console.log('Iniciando carregamento com filtros:', filters);
+      if (!window.dataAccess) { console.error('window.dataAccess não está disponível'); showToast('Módulo de dados não carregado. Recarregue a página.', 'error'); return; }
+      if (typeof window.dataAccess.getExperienceEmployees !== 'function') { console.error('Método getExperienceEmployees não encontrado'); showToast('Método de carregamento de dados não encontrado.', 'error'); return; }
+      
+      lastFilters = filters;
+      filters.page = pagination.currentPage;
+      filters.limit = pagination.itemsPerPage;
+      
+      tableBody.innerHTML = '<tr><td colspan="9"><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
+      
+      try {
+        const res = await window.dataAccess.getExperienceEmployees(filters);
+        const rows = res.data || [];
+        
+        pagination.totalItems = res.total || rows.length;
+        pagination.totalPages = res.totalPages || Math.ceil(pagination.totalItems / pagination.itemsPerPage);
+        resultsCount.textContent = `(${pagination.totalItems} resultados)`;
+        renderPagination();
+        updateStatistics(res.stats || {});
+        tableBody.innerHTML = '';
+        
+        if (rows.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="9" class="small">Nenhum funcionário em experiência encontrado.</td></tr>';
+          return;
+        }
+        
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          const periodClass = getPeriodClass(r.period);
+          if (periodClass) tr.classList.add(periodClass);
+          const periodBadgeClass = getPeriodBadgeClass(r.period);
+          const progressClass = getProgressClass(r.daysRemaining);
+
+          tr.innerHTML = `
+            <td>${r.nome || ''}</td>
+            <td>${r.vaga || ''}</td>
+            <td>${r.period ? `<span class="badge ${periodBadgeClass}">${getPeriodLabel(r.period)}</span>` : '—'}</td>
+            <td>${getPhaseLabel(r.phase)}</td>
+            <td>${r.daysRemaining !== undefined ? r.daysRemaining + ' dias' : '—'}</td>
+            <td>
+              <div class="progress-container">
+                <div class="progress-bar ${progressClass}" style="width: ${r.progress || 0}%"></div>
+              </div>
+              <div class="small">${r.progress || 0}%</div>
+            </td>
+            <td class="small">${r.startDate ? new Date(r.startDate).toLocaleDateString('pt-BR') : '—'}</td>
+            <td class="small">${r.endDate ? new Date(r.endDate).toLocaleDateString('pt-BR') : '—'}</td>
+            <td style="text-align:right">
+              <button class="btn btn-ghost btn-view" data-id="${r.id}">
+                <i class="fas fa-eye"></i>
+                Ver
+              </button>
+              ${r.canRenew ? `
+                <button class="btn btn-primary btn-renew" data-id="${r.id}" data-data='${JSON.stringify(r).replace(/'/g, '&apos;')}'>
+                  <i class="fas fa-sync-alt"></i>
+                  Renovar
+                </button>
+              ` : ''}
+              <button class="btn btn-primary btn-profile" data-id="${r.id}" data-candidatura-id="${r.candidatura_id}">
+                <i class="fas fa-user"></i>
+                Perfil
+              </button>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.btn-view, .btn-profile').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            await loadEmployeeProfile(id, e.currentTarget);
+          });
+        });
+
+        document.querySelectorAll('.btn-renew').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const experienceData = JSON.parse(e.currentTarget.dataset.data);
+            openRenewalModal(experienceData);
+          });
+        });
+
+        document.querySelectorAll('.btn-whatsapp-contact').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const phone = e.currentTarget.dataset.phone;
+            if (!phone) { showToast('Telefone não disponível', 'warning'); return; }
+            window.open(`https://wa.me/${phone}`, '_blank');
+          });
+        });
+
+      } catch (err) {
+        console.error('Erro ao carregar funcionários:', err);
+        tableBody.innerHTML = `<tr><td colspan="9" class="small">Erro: ${err.message}</td></tr>`;
+        showToast('Erro ao carregar funcionários: ' + err.message, 'error');
+      }
+    }
+
+    function updateStatistics(stats) {
+      totalEmployeesEl.textContent = stats.total || 0;
+      period40DaysEl.textContent = stats.period40Days || 0;
+      period80DaysEl.textContent = stats.period80Days || 0;
+      completedPeriodEl.textContent = stats.completed || 0;
+      renewalCountEl.textContent = stats.renewal || 0;
+    }
+
+    periodSelect.addEventListener('change', scheduleRefresh);
+    phaseSelect.addEventListener('change', scheduleRefresh);
+    vagaSelect.addEventListener('change', scheduleRefresh);
+    cidadeSelect.addEventListener('change', scheduleRefresh);
+    document.getElementById('nome').addEventListener('input', scheduleRefresh);
+    document.getElementById('data_inicio').addEventListener('change', scheduleRefresh);
+    document.getElementById('data_fim').addEventListener('change', scheduleRefresh);
+    resetBtn.addEventListener('click', () => { filterForm.reset(); scheduleRefresh(); });
+
+    // Inicialização
+    try {
+      console.log('Iniciando waitReady...');
+      await waitReady();
+      console.log('waitReady concluído, carregando filtros...');
+      
+      try {
+        const filterOptions = await window.dataAccess.getFilterOptions();
+        console.log('Opções de filtro carregadas:', filterOptions);
+        (filterOptions.vagas || []).forEach(v => vagaSelect.add(new Option(v, v)));
+        (filterOptions.cidades || []).forEach(c => cidadeSelect.add(new Option(c, c)));
+      } catch(e) { 
+        console.warn('Erro filtros:', e);
+        showToast('Erro ao carregar opções de filtro', 'error');
+      }
+      
+      console.log('Carregando dados iniciais...');
+      await load({});
+      console.log('Dados iniciais carregados com sucesso');
+    } catch (error) {
+      console.error('Erro durante inicialização:', error);
+      showToast('Erro ao inicializar a página: ' + error.message, 'error');
+    }
+  });
+
+  // Pré-aquecimento
+  let __prewarmed = false;
+  const _tbl = document.getElementById('experience-table');
+  if (_tbl) {
+    _tbl.addEventListener('mouseenter', () => {
+      if (__prewarmed) return;
+      __prewarmed = true;
+      if (window.authManager && typeof window.authManager.warmUpServer === 'function') {
+        window.authManager.warmUpServer();
+      }
+    }, { passive: true });
+  }
+
+  // Integração básica com auth.js: expõe logout se estiver disponível
+  window.logout = async function() { 
+    if (window.authManager) await window.authManager.logout();
+    else window.location.href = 'index.html';
+  };
+  </script>
+</body>
+</html>
