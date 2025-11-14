@@ -5,6 +5,9 @@
 // - presets e estatísticas existentes
 // - sugestões de nomes
 // - histórico de status com quem alterou e quando
+// - gestão de experiência de trabalho para funcionários contratados
+// - renovação de experiência por mais 40 dias
+// - visualização de perfil completo do funcionário
 
 // Cache simples para opções de status (reduz chamadas e melhora latência)
 let __statusOptionsCache = null;
@@ -251,6 +254,15 @@ async function updateCandidaturaStatus(id, status, observacao = null) {
     await createStatusHistoryEntry(id, statusAnterior, status);
   } catch (historyError) {
     console.warn('Não foi possível registrar no histórico:', historyError);
+  }
+
+  // Se o status for "Contratado", iniciar experiência de trabalho
+  if (status === 'Contratado') {
+    try {
+      await window.experienceManager.startExperience(id);
+    } catch (expError) {
+      console.warn('Não foi possível iniciar experiência de trabalho:', expError);
+    }
   }
 
   return { data };
@@ -703,6 +715,428 @@ async function getNameSuggestions(query, limit = 10) {
 }
 
 /* =========================
+   Experiência de Trabalho
+========================= */
+async function getExperienceEmployees(filters = {}) {
+  checkSupabaseClient();
+
+  let query = window.supabase
+    .from('employee_experience')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  // Aplica filtros
+  if (filters.period) {
+    query = query.eq('period', filters.period);
+  }
+
+  if (filters.phase) {
+    query = query.eq('phase', filters.phase);
+  }
+
+  if (filters.vaga) {
+    query = query.eq('vaga', filters.vaga);
+  }
+
+  if (filters.cidade) {
+    query = query.ilike('cidade', `%${filters.cidade}%`);
+  }
+
+  if (filters.nome) {
+    query = query.ilike('nome', `%${filters.nome}%`);
+  }
+
+  if (filters.data_inicio) {
+    const startDate = new Date(filters.data_inicio);
+    query = query.gte('start_date', startDate.toISOString());
+  }
+
+  if (filters.data_fim) {
+    const endDate = new Date(filters.data_fim);
+    endDate.setHours(23, 59, 59, 999);
+    query = query.lte('end_date', endDate.toISOString());
+  }
+
+  // Paginação
+  if (filters.page && filters.limit) {
+    const page = Number(filters.page) || 1;
+    const limit = Number(filters.limit) || 20;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    
+    const { data, error, count } = await query.range(from, to);
+    if (error) throw error;
+    
+    const processedData = processExperienceData(data || []);
+    const stats = calculateStats(processedData);
+    
+    return { 
+      data: processedData, 
+      page: Number(page), 
+      limit: Number(limit), 
+      total: count || 0, 
+      totalPages: Math.ceil((count || 0) / limit),
+      stats 
+    };
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  const processedData = processExperienceData(data || []);
+  const stats = calculateStats(processedData);
+
+  return { data: processedData, stats };
+}
+
+// Processa dados de experiência para calcular dias restantes e progresso
+function processExperienceData(data) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return data.map(item => {
+    const startDate = new Date(item.start_date);
+    const endDate = new Date(item.end_date);
+    const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+    const daysPassed = Math.ceil((today - startDate) / (1000 * 60 * 60 * 24));
+    const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+
+    let period = item.period;
+    let status = item.status;
+
+    // Atualiza status baseado nas datas
+    if (daysRemaining < 0) {
+      status = 'expired';
+      period = 'expired';
+    } else if (daysRemaining === 0) {
+      status = 'completed';
+      period = 'completed';
+    }
+
+    // Calcula progresso
+    let progress = 0;
+    if (daysPassed >= 0 && totalDays > 0) {
+      progress = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100));
+    }
+
+    // Determina se pode ser renovado
+    let canRenew = false;
+    if (item.phase === 'first' && daysRemaining <= 5 && daysRemaining >= 0 && status !== 'completed') {
+      canRenew = true;
+    }
+
+    return {
+      ...item,
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      totalDays,
+      daysPassed,
+      daysRemaining,
+      progress: Math.round(progress),
+      period,
+      status,
+      canRenew,
+      phase: item.phase || 'unknown'
+    };
+  });
+}
+
+// Calcula estatísticas
+function calculateStats(data) {
+  const stats = {
+    total: data.length,
+    period40Days: 0,
+    period80Days: 0,
+    renewal: 0,
+    completed: 0,
+    expired: 0,
+    firstPhase: 0,
+    secondPhase: 0,
+    canRenew: 0
+  };
+
+  data.forEach(item => {
+    switch (item.period) {
+      case '40days':
+        stats.period40Days++;
+        break;
+      case '80days':
+        stats.period80Days++;
+        break;
+      case 'renewal':
+        stats.renewal++;
+        break;
+      case 'completed':
+        stats.completed++;
+        break;
+      case 'expired':
+        stats.expired++;
+        break;
+    }
+
+    switch (item.phase) {
+      case 'first':
+        stats.firstPhase++;
+        break;
+      case 'second':
+        stats.secondPhase++;
+        break;
+    }
+
+    if (item.canRenew) {
+      stats.canRenew++;
+    }
+  });
+
+  return stats;
+}
+
+async function startExperience(candidaturaId, contractType = '40days') {
+  checkSupabaseClient();
+  if (!candidaturaId) throw new Error('ID da candidatura é obrigatório.');
+
+  try {
+    const candidatura = await getCandidaturaById(candidaturaId);
+    if (!candidatura || !candidatura.data) {
+      throw new Error('Candidatura não encontrada');
+    }
+
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    const periodDays = contractType === '80days' ? 80 : 40;
+    endDate.setDate(endDate.getDate() + periodDays);
+
+    const experienceData = {
+      candidatura_id: candidaturaId,
+      nome: candidatura.data.nome,
+      vaga: candidatura.data.vaga,
+      cidade: candidatura.data.cidade,
+      contract_type: contractType,
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+      period: contractType,
+      status: 'active',
+      phase: contractType === '80days' ? 'single' : 'first', // 'first', 'second', 'single'
+      created_at: new Date().toISOString()
+    };
+
+    // Salva no Supabase
+    const { data, error } = await window.supabase
+      .from('employee_experience')
+      .insert([experienceData])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao iniciar experiência:', error);
+      throw new Error('Falha ao iniciar período de experiência: ' + error.message);
+    }
+
+    console.log('Experiência iniciada com sucesso:', data);
+    return data;
+  } catch (error) {
+    console.error('Erro em startExperience:', error);
+    throw error;
+  }
+}
+
+async function renewExperience(experienceId) {
+  checkSupabaseClient();
+  if (!experienceId) throw new Error('ID da experiência é obrigatório.');
+
+  try {
+    // Primeiro, obtém a experiência atual
+    const { data: currentExperience, error } = await window.supabase
+      .from('employee_experience')
+      .select('*')
+      .eq('id', experienceId)
+      .single();
+
+    if (error) {
+      throw new Error('Experiência não encontrada: ' + error.message);
+    }
+
+    if (currentExperience.phase === 'second') {
+      throw new Error('Esta experiência já está na segunda fase e não pode ser renovada');
+    }
+
+    if (currentExperience.phase === 'single') {
+      throw new Error('Experiências de 80 dias não podem ser renovadas');
+    }
+
+    const newStartDate = new Date(currentExperience.end_date);
+    const newEndDate = new Date(newStartDate);
+    newEndDate.setDate(newEndDate.getDate() + 40);
+
+    const renewalData = {
+      original_experience_id: experienceId, // Referência à experiência original
+      candidatura_id: currentExperience.candidatura_id,
+      nome: currentExperience.nome,
+      vaga: currentExperience.vaga,
+      cidade: currentExperience.cidade,
+      contract_type: 'renewal',
+      start_date: newStartDate.toISOString(),
+      end_date: newEndDate.toISOString(),
+      period: 'renewal',
+      status: 'active',
+      phase: 'second',
+      renewal_number: 1, // Primeira renovação
+      created_at: new Date().toISOString()
+    };
+
+    // Insere a nova experiência (renovação)
+    const { data: renewalExperience, error: renewalError } = await window.supabase
+      .from('employee_experience')
+      .insert([renewalData])
+      .select()
+      .single();
+
+    if (renewalError) {
+      throw new Error('Falha ao criar renovação: ' + renewalError.message);
+    }
+
+    // Atualiza a experiência original para 'renewed'
+    const { error: updateError } = await window.supabase
+      .from('employee_experience')
+      .update({ 
+        status: 'renewed',
+        renewed_at: new Date().toISOString(),
+        renewed_to_id: renewalExperience.id
+      })
+      .eq('id', experienceId);
+
+    if (updateError) {
+      console.warn('Erro ao atualizar experiência original:', updateError);
+    }
+
+    console.log('Experiência renovada com sucesso:', renewalExperience);
+    return renewalExperience;
+  } catch (error) {
+    console.error('Erro em renewExperience:', error);
+    throw error;
+  }
+}
+
+async function updateExperienceStatus(experienceId, newStatus) {
+  checkSupabaseClient();
+  if (!experienceId) throw new Error('ID da experiência é obrigatório.');
+
+  const { data, error } = await window.supabase
+    .from('employee_experience')
+    .update({ 
+      status: newStatus,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', experienceId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Erro ao atualizar status:', error);
+    throw new Error('Falha ao atualizar status: ' + error.message);
+  }
+
+  return data;
+}
+
+async function removeExperience(experienceId) {
+  checkSupabaseClient();
+  if (!experienceId) throw new Error('ID da experiência é obrigatório.');
+
+  const { error } = await window.supabase
+    .from('employee_experience')
+    .delete()
+    .eq('id', experienceId);
+
+  if (error) {
+    console.error('Erro ao remover experiência:', error);
+    throw new Error('Falha ao remover experiência: ' + error.message);
+  }
+
+  return true;
+}
+
+// Obtém histórico de renovações de um funcionário
+async function getRenewalHistory(candidaturaId) {
+  checkSupabaseClient();
+
+  try {
+    const { data, error } = await window.supabase
+      .from('employee_experience')
+      .select('*')
+      .eq('candidatura_id', candidaturaId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error('Erro ao obter histórico de renovações:', error);
+    throw error;
+  }
+}
+
+// Obtém perfil completo do funcionário
+async function getEmployeeProfile(experienceId) {
+  checkSupabaseClient();
+  if (!experienceId) throw new Error('ID da experiência é obrigatório.');
+
+  try {
+    // Obtém a experiência atual
+    const { data: experience, error: expError } = await window.supabase
+      .from('employee_experience')
+      .select('*')
+      .eq('id', experienceId)
+      .single();
+
+    if (expError) {
+      throw new Error('Experiência não encontrada: ' + expError.message);
+    }
+
+    // Obtém a candidatura original
+    const { data: candidatura, error: candError } = await window.supabase
+      .from('candidaturas')
+      .select('*')
+      .eq('id', experience.candidatura_id)
+      .single();
+
+    if (candError) {
+      throw new Error('Candidatura não encontrada: ' + candError.message);
+    }
+
+    // Obtém histórico de renovações
+    const renewalHistory = await getRenewalHistory(experience.candidatura_id);
+
+    // Obtém comentários da candidatura
+    const { data: comentarios, error: commError } = await window.supabase
+      .from('comentarios')
+      .select('*')
+      .eq('candidatura_id', experience.candidatura_id)
+      .order('criado_em', { ascending: false });
+
+    if (commError) {
+      console.warn('Erro ao carregar comentários:', commError);
+    }
+
+    // Processa os comentários
+    const processedComments = (comentarios || []).map(it => ({
+      ...it,
+      nome_exibicao: it.owner_name || (it.usuario_id === null ? 'Sistema' : 'Usuário'),
+    }));
+
+    return {
+      experience: processExperienceData([experience])[0],
+      candidatura: normalizeCandidatura(candidatura),
+      renewalHistory: renewalHistory || [],
+      comentarios: processedComments || []
+    };
+  } catch (error) {
+    console.error('Erro ao obter perfil do funcionário:', error);
+    throw new Error('Falha ao obter perfil do funcionário: ' + error.message);
+  }
+}
+
+/* =========================
    Export global
 ========================= */
 window.dataAccess = {
@@ -711,8 +1145,8 @@ window.dataAccess = {
   getCandidaturaById,
   updateCandidatura,
   updateCandidaturaStatus,
-  getStatusHistory,        // NOVO: Função para obter histórico de status
-  createStatusHistoryEntry, // NOVO: Função para criar entrada no histórico
+  getStatusHistory,        // Função para obter histórico de status
+  createStatusHistoryEntry, // Função para criar entrada no histórico
   getStatusOptions,
   getSignedCurriculo,
   getComentarios,          // <- sem join; já traz nome_exibicao
@@ -729,5 +1163,25 @@ window.dataAccess = {
   getUserFilterPresets,
   deleteFilterPreset,
   updateFilterPreset,
-  getNameSuggestions
+  getNameSuggestions,
+  // Funções de experiência de trabalho
+  getExperienceEmployees,
+  startExperience,
+  renewExperience,
+  updateExperienceStatus,
+  removeExperience,
+  getRenewalHistory,
+  getEmployeeProfile
+};
+
+// Instancia global do gerenciador de experiência (compatibilidade)
+window.experienceManager = {
+  startExperience,
+  getExperienceEmployees,
+  updateExperienceStatus,
+  removeExperience,
+  renewExperience,
+  getRenewalHistory,
+  processExperienceData,
+  calculateStats
 };
