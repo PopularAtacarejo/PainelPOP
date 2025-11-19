@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -917,13 +918,20 @@
       opacity: 0;
       transform: translateX(100%);
     }
-    /* Paginação */
+    /* Paginação - Estilo Vertical */
     .pagination {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 12px; /* Espaço entre os botões laterais e a coluna central */
       margin-top: 20px;
+      padding: 10px 0;
+    }
+    .pagination .pagination-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px; /* Espaço entre os números da página */
     }
     .pagination button {
       min-width: 36px;
@@ -931,30 +939,54 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid var(--medium-gray);
       background-color: var(--white);
       color: var(--dark-gray);
       cursor: pointer;
       transition: var(--transition);
+      font-weight: 500;
+      box-shadow: var(--shadow);
     }
     .pagination button:hover:not(:disabled) {
       background-color: var(--pale-green);
       border-color: var(--light-green);
+      color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
     }
     .pagination button.active {
-      background-color: var(--light-green);
+      background-color: var(--primary-green);
       color: var(--white);
-      border-color: var(--light-green);
+      border-color: var(--primary-green);
+      font-weight: 600;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
     }
     .pagination button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      background-color: var(--light-gray);
+      color: var(--dark-gray);
     }
+    .pagination button:not(.active):not(:disabled):not(#prev-page):not(#next-page) {
+      font-size: 0.95rem;
+    }
+    /* Botões de navegação lateral */
+    #prev-page,
+    #next-page {
+      width: 40px; /* Ligeiramente maior que os números */
+      height: 40px;
+      align-self: center; /* Alinha verticalmente ao centro */
+    }
+    /* Estilo para o contador de itens (opcional, pode ser colocado na coluna central ou abaixo) */
     .pagination-info {
       font-size: 0.9rem;
       color: var(--dark-gray);
-      margin: 0 10px;
+      margin-top: 8px; /* Espaço acima se estiver abaixo da coluna */
+      background-color: var(--light-gray);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
     }
     /* Sugestões inline */
     .suggestions { position: relative; }
@@ -1035,6 +1067,35 @@
       .toast {
         min-width: auto;
       }
+    }
+    /* Estilo para os botões de ação na célula de contato */
+    .contact-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .contact-btn {
+      background: none;
+      border: none;
+      color: var(--dark-gray);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    .contact-btn:hover {
+      background-color: var(--light-gray);
+      color: var(--primary-green);
+    }
+    .contact-btn.whatsapp:hover {
+      color: #25D366; /* Cor do WhatsApp */
+    }
+    .contact-btn.email:hover {
+      color: #D14836; /* Cor do Gmail */
+    }
+    .contact-btn.copy:hover {
+      color: var(--light-green);
     }
   </style>
 </head>
@@ -1224,7 +1285,8 @@
             <tr>
               <th>Vaga</th>
               <th>Nome</th>
-              <th>Telefone</th>
+              <!-- NOVA COLUNA: Contato -->
+              <th>Contato</th>
               <th>Cidade</th>
               <th>Status</th>
               <th>Enviado</th>
@@ -1237,7 +1299,7 @@
       <!-- Paginação -->
       <div class="pagination" id="pagination">
         <button id="prev-page" disabled><i class="fas fa-chevron-left"></i></button>
-        <div id="page-numbers"></div>
+        <div class="pagination-controls" id="page-numbers"></div>
         <button id="next-page" disabled><i class="fas fa-chevron-right"></i></button>
       </div>
     </section>
@@ -1897,6 +1959,39 @@
       pagination.currentPage = 1;
       await load(filters);
     }
+    // Funções para manipular contatos
+    window.openWhatsApp = function(phoneNumber, name = 'olá') {
+        // Remove tudo que não é número
+        const cleanedNumber = phoneNumber.replace(/\D/g, '');
+        // Formatação pode variar, aqui assumimos DDD + número
+        // Se o número começar com 0, ignora
+        let formattedNumber = cleanedNumber;
+        if (cleanedNumber.startsWith('0')) {
+            formattedNumber = cleanedNumber.substring(1);
+        }
+        // Garante o código do país (Brasil = 55)
+        if (!formattedNumber.startsWith('55')) {
+            formattedNumber = '55' + formattedNumber;
+        }
+        // Codifica o texto da mensagem
+        const encodedMessage = encodeURIComponent(`Olá ${name}!`);
+        // Abre o link do WhatsApp Web
+        window.open(`https://wa.me/${formattedNumber}?text=${encodedMessage}`, '_blank');
+    };
+    window.copyToClipboard = async function(textToCopy, label = 'Valor') {
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            showToast(`${label} copiado para a área de transferência!`, 'success');
+        } catch (err) {
+            console.error('Falha ao copiar: ', err);
+            showToast(`Falha ao copiar ${label}.`, 'error');
+        }
+    };
+    window.copyCPF = function(cpf) {
+        // Remove formatação do CPF
+        const cleanCPF = cpf.replace(/\D/g, '');
+        copyToClipboard(cleanCPF, 'CPF');
+    };
     async function load(filters = {}) {
       lastFilters = filters;
       // Adiciona paginação aos filtros
@@ -1910,7 +2005,6 @@
         let rows = [];
         let totalItemsFromApi = 0;
         let totalPagesFromApi = 1;
-
         if (res && typeof res === 'object') {
             // Verifica se os campos esperados da paginação existem
             if (res.hasOwnProperty('total')) {
@@ -1920,7 +2014,6 @@
                 console.warn("Campo 'total' não encontrado na resposta da API. Usando comprimento do array como fallback.");
                 totalItemsFromApi = Array.isArray(res.data) ? res.data.length : 0;
             }
-
             if (res.hasOwnProperty('totalPages')) {
                 totalPagesFromApi = parseInt(res.totalPages) || 1;
             } else if (res.hasOwnProperty('pageCount')) { // Exemplo de outro nome comum
@@ -1931,10 +2024,8 @@
                 console.warn("Campo 'totalPages' não encontrado na resposta da API. Calculando localmente.");
                 totalPagesFromApi = Math.ceil(totalItemsFromApi / pagination.itemsPerPage) || 1;
             }
-
             // Garante que totalPages não seja 0 ou negativo
             totalPagesFromApi = Math.max(1, totalPagesFromApi);
-
             rows = Array.isArray(res.data) ? res.data : [];
         } else {
             console.error("Resposta da API inesperada ou vazia:", res);
@@ -1942,11 +2033,9 @@
             totalItemsFromApi = 0;
             totalPagesFromApi = 1;
         }
-
         // Atualiza informações de paginação com os valores validados
         pagination.totalItems = totalItemsFromApi;
         pagination.totalPages = totalPagesFromApi;
-
         // Atualiza contador de resultados
         resultsCount.textContent = `(${pagination.totalItems} resultados)`;
         // Renderiza paginação
@@ -1967,10 +2056,26 @@
             tr.classList.add(statusClass);
           }
           const statusBadgeClass = getStatusBadgeClass(r.status);
+          // --- NOVO CONTEÚDO DA CÉLULA DE CONTATO ---
+          const contactCellContent = `
+            <div class="contact-actions">
+              <span class="small">${r.telefone || r.tel || 'N/A'}</span>
+              <button class="contact-btn whatsapp" onclick="openWhatsApp('${r.telefone || r.tel || ''}', '${r.nome_completo || r.nome || 'candidato'}')" title="Abrir WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+              </button>
+              <a class="contact-btn email" href="mailto:${r.email || ''}" title="Enviar e-mail">
+                <i class="fas fa-envelope"></i>
+              </a>
+              <button class="contact-btn copy" onclick="copyCPF('${r.cpf || ''}')" title="Copiar CPF">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          `;
           tr.innerHTML = `
             <td>${r.vaga || ''}</td>
             <td>${r.nome_completo || r.nome || ''}</td>
-            <td>${r.telefone || r.tel || ''}</td>
+            <!-- NOVA COLUNA: Contato -->
+            <td>${contactCellContent}</td>
             <td>${r.cidade || ''}${r.bairro ? ' / ' + r.bairro : ''}</td>
             <td>${r.status ? `<span class="badge ${statusBadgeClass}">${r.status}</span>` : '—'}</td>
             <td class="small">${sent}</td>
@@ -2157,7 +2262,7 @@
                 tr.classList.add(newStatusClass);
               }
               // Atualiza o badge
-              const statusCellIndex = 4;
+              const statusCellIndex = 4; // Ajustado para refletir a nova posição da coluna de status
               const statusBadgeClass = getStatusBadgeClass(newStatus);
               tr.cells[statusCellIndex].innerHTML = `<span class="badge ${statusBadgeClass}">${newStatus}</span>`;
             }
@@ -2186,18 +2291,29 @@
         t = setTimeout(() => fn.apply(this, args), wait);
       };
     }
-    // Sugestões de nomes com cache
+    // --- CORREÇÃO: Função fetchNameSuggestions ajustada ---
     async function fetchNameSuggestions(q) {
-      if (!window.dataAccess || typeof window.dataAccess.getNameSuggestions !== 'function') {
+        // Verifica primeiro se a função existe no window.dataAccess
+        if (window.dataAccess && typeof window.dataAccess.getNameSuggestions === 'function') {
+            try {
+                return await window.dataAccess.getNameSuggestions(q, 10); // Passa o limite se a função suportar
+            } catch (e) {
+                console.error("Erro ao chamar window.dataAccess.getNameSuggestions:", e);
+                // Se falhar, tenta o fallback abaixo
+            }
+        }
+        // Fallback: tenta getCandidaturas com filtro de busca
         if (!q || q.length < 2) return [];
         try {
-          const res = await window.dataAccess.getCandidaturas({ search: q, limit: 10 });
-          return [...new Set((res.data || []).map(r => r.nome).filter(Boolean))];
-        } catch (e) { return []; }
-      }
-      try {
-        return await window.dataAccess.getNameSuggestions(q, 10);
-      } catch { return []; }
+            // Certifique-se de que getCandidaturas aceita 'search' como filtro
+            const res = await window.dataAccess.getCandidaturas({ search: q, limit: 10 });
+            // Extrai nomes únicos do resultado
+            const uniqueNames = [...new Set((res.data || []).map(r => r.nome).filter(Boolean))];
+            return uniqueNames;
+        } catch (e) {
+            console.error("Erro ao buscar sugestões de nomes via getCandidaturas:", e);
+            return [];
+        }
     }
     function renderSuggestions(list) {
       currentSuggestions = list || [];
@@ -2323,4 +2439,3 @@
   </script>
 </body>
 </html>
-```
