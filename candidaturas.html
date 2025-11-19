@@ -1097,6 +1097,19 @@
     .contact-btn.copy:hover {
       color: var(--light-green);
     }
+    /* Estilo para a célula de visualização */
+    .view-info {
+      font-size: 0.85rem;
+      color: var(--dark-gray);
+    }
+    .view-info-date {
+      font-weight: 500;
+      opacity: 0.9;
+    }
+    .view-info-user {
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
@@ -1290,6 +1303,8 @@
               <th>Cidade</th>
               <th>Status</th>
               <th>Enviado</th>
+              <!-- NOVA COLUNA: Visto -->
+              <th>Visto</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -1341,6 +1356,11 @@
               <div class="info-item">
                 <div class="info-label">CPF:</div>
                 <div class="info-value" id="m-cpf">...</div>
+              </div>
+              <!-- NOVO ITEM: Informação de Visualização -->
+              <div class="info-item">
+                <div class="info-label">Visto:</div>
+                <div class="info-value" id="m-visto">...</div>
               </div>
             </div>
           </div>
@@ -1665,6 +1685,9 @@
     const btnOpenNew = document.getElementById('btn-open-new');
     const mStatusSelect = document.getElementById('m-status-select');
     const mSaveStatusBtn = document.getElementById('m-save-status');
+    // NOVO ELEMENTO: Campo de informação de visualização no modal
+    const mVisto = document.getElementById('m-visto');
+
     let currentCandidaturaId = null;
     let lastFilters = {};
     let suggestionIndex = -1;
@@ -1815,7 +1838,7 @@
       }
     });
     function openModal(){ modalBack.style.display='flex' }
-    function closeModal(){ modalBack.style.display='none'; currentCandidaturaId = null; commentsList.innerHTML=''; commentText.value=''; previewArea.innerHTML='<div class="small">Carregando arquivo...</div>'; btnDownload.style.display='none'; btnOpenNew.style.display='none'; mStatusSelect.innerHTML=''; statusHistory.innerHTML=''; }
+    function closeModal(){ modalBack.style.display='none'; currentCandidaturaId = null; commentsList.innerHTML=''; commentText.value=''; previewArea.innerHTML='<div class="small">Carregando arquivo...</div>'; btnDownload.style.display='none'; btnOpenNew.style.display='none'; mStatusSelect.innerHTML=''; statusHistory.innerHTML=''; mVisto.textContent = '...'; }
     modalClose.addEventListener('click', closeModal);
     modalBack.addEventListener('click', (e)=>{ if(e.target===modalBack) closeModal(); });
     async function waitReady(){ return new Promise(r=>{
@@ -1998,7 +2021,7 @@
       filters.page = pagination.currentPage;
       filters.limit = pagination.itemsPerPage;
       // Mostra estado de carregamento
-      tableBody.innerHTML = '<tr><td colspan="7"><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="8"><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
       try{
         const res = await window.dataAccess.getCandidaturas(filters);
         // --- CORREÇÃO: Validação e tratamento robusto da resposta da API ---
@@ -2043,9 +2066,17 @@
         // Limpa tabela
         tableBody.innerHTML = '';
         if(rows.length === 0){
-          tableBody.innerHTML = '<tr><td colspan="7" class="small">Nenhuma candidatura encontrada.</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="8" class="small">Nenhuma candidatura encontrada.</td></tr>';
           return;
         }
+        // Helper para formatar CPF e renderiza linhas
+        function formatCPF(cpfRaw) {
+          if (!cpfRaw) return '';
+          const s = String(cpfRaw).replace(/\D/g, '');
+          if (s.length !== 11) return cpfRaw;
+          return `${s.slice(0,3)}.${s.slice(3,6)}.${s.slice(6,9)}-${s.slice(9)}`;
+        }
+
         // Renderiza linhas
         rows.forEach(r => {
           const tr = document.createElement('tr');
@@ -2071,14 +2102,38 @@
               </button>
             </div>
           `;
+          // --- NOVO CONTEÚDO DA CÉLULA DE VISUALIZAÇÃO ---
+          const visualizacao = r.ultima_visualizacao;
+          let vistoCellContent = `<span class="small">—</span>`;
+          if (visualizacao) {
+            try {
+              const dt = new Date(visualizacao.data || visualizacao.visto_em || visualizacao);
+              if (!isNaN(dt)) {
+                const dateStr = dt.toLocaleString('pt-BR');
+                vistoCellContent = `<div class="view-info"><span class="badge view">${dateStr}</span><div class="view-info-user small">por ${visualizacao.nome || 'Usuário'}</div></div>`;
+              } else {
+                vistoCellContent = `<span class="small">—</span>`;
+              }
+            } catch (e) {
+              vistoCellContent = `<span class="small">—</span>`;
+            }
+          }
+
           tr.innerHTML = `
             <td>${r.vaga || ''}</td>
-            <td>${r.nome_completo || r.nome || ''}</td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div>${r.nome_completo || r.nome || ''}</div>
+                <div class="small" style="color:var(--muted)">CPF: ${formatCPF(r.cpf || r.cpf_format || r.cpf_raw || '') || '—'}</div>
+              </div>
+            </td>
             <!-- NOVA COLUNA: Contato -->
             <td>${contactCellContent}</td>
             <td>${r.cidade || ''}${r.bairro ? ' / ' + r.bairro : ''}</td>
             <td>${r.status ? `<span class="badge ${statusBadgeClass}">${r.status}</span>` : '—'}</td>
             <td class="small">${sent}</td>
+            <!-- NOVA COLUNA: Visto -->
+            <td class="small">${vistoCellContent}</td>
             <td style="text-align:right">
               <button class="btn btn-ghost btn-open" data-id="${r.id}">
                 <i class="fas fa-eye"></i>
@@ -2109,11 +2164,16 @@
             document.getElementById('m-rua-cep').textContent = '...';
             document.getElementById('m-transporte').textContent = '...';
             document.getElementById('m-obs').textContent = '...';
+            // Preenche skeleton para informação de visualização
+            mVisto.textContent = '...';
             previewArea.innerHTML = '<div class="small">Carregando arquivo...</div>';
             btnDownload.style.display = 'none';
             btnOpenNew.style.display = 'none';
             mStatusSelect.innerHTML = '<option>Carregando...</option>';
             try {
+              // Registra a visualização ANTES de carregar os detalhes
+              await window.dataAccess.updateUltimaVisualizacao(id);
+
               // Carrega status options com cache
               const statusOptions = await getCachedData('statusOptions', () => window.dataAccess.getStatusOptions());
               const tasks = [
@@ -2136,6 +2196,23 @@
                 document.getElementById('m-rua-cep').textContent = (data.rua? data.rua + ' • ' : '') + (data.cep||'');
                 document.getElementById('m-transporte').textContent = data.transporte || '';
                 document.getElementById('m-obs').textContent = data.observacao || '-';
+                // NOVO: Preenche informação de visualização no modal
+                const visualizacaoModal = data.ultima_visualizacao;
+                if (visualizacaoModal) {
+                  try {
+                    const dt = new Date(visualizacaoModal.data || visualizacaoModal.visto_em || visualizacaoModal);
+                    if (!isNaN(dt)) {
+                      mVisto.innerHTML = `<span class="badge view">${dt.toLocaleString('pt-BR')}</span> <span class="small">por ${visualizacaoModal.nome || 'Usuário'}</span>`;
+                    } else {
+                      mVisto.textContent = '—';
+                    }
+                  } catch (e) {
+                    mVisto.textContent = '—';
+                  }
+                } else {
+                  mVisto.textContent = '—';
+                }
+
                 // status
                 const selected = data.status || '';
                 if (statusesRes.status === 'fulfilled') {
@@ -2151,6 +2228,7 @@
                 }
               } else {
                 document.getElementById('m-obs').textContent = 'Falha ao carregar detalhes.';
+                mVisto.textContent = 'Erro ao carregar visualização.';
               }
               // comentários
               if (commentsRes.status === 'fulfilled') {
@@ -2222,7 +2300,7 @@
         });
       }catch(err){
         console.error("Erro ao carregar candidaturas:", err);
-        tableBody.innerHTML = `<tr><td colspan="7" class="small">Erro: ${err.message || 'Falha desconhecida'}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="8" class="small">Erro: ${err.message || 'Falha desconhecida'}</td></tr>`;
         showToast('Erro ao carregar candidaturas: ' + (err.message || 'Falha desconhecida'), 'error');
         // Atualiza paginação para mostrar erro
         pagination.totalItems = 0;
