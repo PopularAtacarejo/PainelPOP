@@ -8,6 +8,7 @@
 // - gestão de experiência de trabalho para funcionários contratados
 // - renovação de experiência por mais 40 dias
 // - visualização de perfil completo do funcionário
+// - NOVO: Armazenamento de última visualização
 
 // Cache simples para opções de status (reduz chamadas e melhora latência)
 let __statusOptionsCache = null;
@@ -129,9 +130,10 @@ function normalizeCandidatura(rec) {
 async function getCandidaturas(filters = {}) {
   checkSupabaseClient();
 
+  // Modificação: Adiciona a coluna ultima_visualizacao à seleção
   let query = window.supabase
     .from('candidaturas')
-    .select('*', { count: 'exact' }) // Importante para paginação
+    .select('*, ultima_visualizacao') // <-- Adicionado ultima_visualizacao
     .order('enviado_em', { ascending: false });
 
   if (filters.vaga) { query = query.eq('vaga', filters.vaga); }
@@ -175,12 +177,12 @@ async function getCandidaturas(filters = {}) {
       throw new Error(`Falha ao carregar candidaturas: ${error.message}`);
     }
     const normalized = (data || []).map(normalizeCandidatura);
-    return { 
-      data: normalized, 
-      page: Number(page), 
-      limit: Number(limit), 
-      total: count || 0, 
-      totalPages: Math.ceil((count || 0) / limit) || 1 // Garante totalPages >= 1
+    return {
+      data: normalized,
+      page: Number(page),
+      limit: Number(limit),
+      total: count || 0,
+      totalPages: Math.ceil((count || 0) / limit) || 1
     };
   }
 
@@ -201,9 +203,10 @@ async function getCandidaturas(filters = {}) {
 async function getCandidaturaById(id) {
   checkSupabaseClient();
 
+  // Modificação: Adiciona a coluna ultima_visualizacao à seleção
   const { data, error } = await window.supabase
     .from('candidaturas')
-    .select('*')
+    .select('*, ultima_visualizacao') // <-- Adicionado ultima_visualizacao
     .eq('id', id)
     .single();
 
@@ -232,11 +235,15 @@ async function updateCandidaturaStatus(id, status, observacao = null) {
   if (!status) throw new Error('Status é obrigatório.');
 
   // Primeiro, obter o status atual para registrar no histórico
-  const { data: currentData } = await window.supabase
+  const { data: currentData, error: currentDataError } = await window.supabase
     .from('candidaturas')
     .select('status')
     .eq('id', id)
     .single();
+
+  if (currentDataError) {
+    console.warn('Não foi possível obter status atual:', currentDataError);
+  }
 
   const statusAnterior = currentData?.status || null;
 
@@ -368,7 +375,7 @@ async function getStatusHistory(candidaturaId) {
 
     // Criar mapa de ID para nome/email
     const userMap = {};
-    usersData.users.forEach(user => {
+    (usersData?.users || []).forEach(user => {
       userMap[user.id] = user.user_metadata?.nome || user.user_metadata?.name || user.email || 'Usuário';
     });
 
@@ -507,6 +514,53 @@ async function deleteComentario(comentario_id) {
   if (error) throw new Error(error.message);
   return true;
 }
+
+/* =========================
+   NOVA FUNÇÃO: Atualiza a última visualização
+========================= */
+async function updateUltimaVisualizacao(id) {
+  checkSupabaseClient();
+  if (!id) throw new Error('ID é obrigatório para atualizar visualização.');
+
+  // Obter informações do usuário autenticado
+  let userName = 'Usuário Desconhecido';
+  let userEmail = 'N/A';
+  try {
+    const am = window.authManager;
+    if (am && am.userProfile) {
+      userName = am.userProfile.nome || am.userProfile.name || 'Usuário';
+      userEmail = am.currentUser?.email || 'N/A';
+    } else {
+      const sess = await window.supabase.auth.getSession();
+      userName = sess?.data?.session?.user?.user_metadata?.nome || sess?.data?.session?.user?.user_metadata?.name || sess?.data?.session?.user?.email || userName;
+      userEmail = sess?.data?.session?.user?.email || userEmail;
+    }
+  } catch (e) {
+    console.warn('Não foi possível obter o nome do usuário para visualização:', e);
+  }
+
+  const visualizacaoData = {
+    nome: userName,
+    email: userEmail, // Pode ser útil para auditoria
+    visto_em: new Date().toISOString(),
+    data: new Date().toISOString()
+  };
+
+  const { data, error } = await window.supabase
+    .from('candidaturas')
+    .update({ ultima_visualizacao: visualizacaoData })
+    .eq('id', id)
+    .select('ultima_visualizacao')
+    .single();
+
+  if (error) {
+    console.error('Erro ao atualizar ultima_visualizacao:', error);
+    throw new Error(`Falha ao registrar visualização: ${error.message}`);
+  }
+
+  return data;
+}
+
 
 /* =========================
    Stats / evolução
@@ -791,7 +845,6 @@ async function getExperienceEmployees(filters = {}) {
 
   const processedData = processExperienceData(data || []);
   const stats = calculateStats(processedData);
-
   return { data: processedData, stats };
 }
 
@@ -1177,7 +1230,9 @@ window.dataAccess = {
   updateExperienceStatus,
   removeExperience,
   getRenewalHistory,
-  getEmployeeProfile
+  getEmployeeProfile,
+  // NOVA FUNÇÃO
+  updateUltimaVisualizacao
 };
 
 // Instancia global do gerenciador de experiência (compatibilidade)
