@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -20,6 +20,9 @@
       --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
       --transition: all 0.2s ease;
       --header-height: 70px;
+      --success-color: #4CAF50;
+      --error-color: #f44336;
+      --warning-color: #FFC107;
     }
 
     * {
@@ -65,7 +68,6 @@
       padding: 0 2rem;
     }
 
-    /* Logo e Brand - Simplificado */
     .header-brand {
       display: flex;
       align-items: center;
@@ -109,7 +111,6 @@
       font-weight: 500;
     }
 
-    /* Navegação Principal - Limpa */
     .header-nav {
       display: flex;
       align-items: center;
@@ -148,14 +149,12 @@
       font-size: 0.9rem;
     }
 
-    /* Área do Usuário - Simplificada */
     .header-actions {
       display: flex;
       align-items: center;
       gap: 1rem;
     }
 
-    /* Botão de Notificações - Limpo */
     .notification-btn {
       position: relative;
       width: 40px;
@@ -193,7 +192,6 @@
       border: 2px solid var(--primary-green);
     }
 
-    /* Card do Usuário - Limpo */
     .user-dropdown {
       position: relative;
     }
@@ -269,7 +267,6 @@
       transform: rotate(180deg);
     }
 
-    /* Dropdown Menu - Limpo */
     .dropdown-menu {
       position: absolute;
       top: calc(100% + 0.5rem);
@@ -375,7 +372,6 @@
       font-weight: 600;
     }
 
-    /* Menu Mobile */
     .mobile-menu-toggle {
       display: none;
       width: 40px;
@@ -401,7 +397,6 @@
       transition: var(--transition);
     }
 
-    /* Container Principal */
     .container {
       max-width: 1200px;
       margin: 2rem auto;
@@ -486,10 +481,17 @@
       color: var(--white);
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       background-color: var(--primary-green);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-primary:disabled {
+      background-color: #a5d6a7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .btn-secondary {
@@ -497,9 +499,15 @@
       color: var(--dark-gray);
     }
 
-    .btn-secondary:hover {
+    .btn-secondary:hover:not(:disabled) {
       background-color: var(--dark-gray);
       color: var(--white);
+    }
+
+    .btn-secondary:disabled {
+      background-color: #bdbdbd;
+      cursor: not-allowed;
+      opacity: 0.6;
     }
 
     .btn-ghost {
@@ -508,10 +516,16 @@
       border: 1px solid var(--medium-gray);
     }
 
-    .btn-ghost:hover {
-      background-color: #f44336;
+    .btn-ghost:hover:not(:disabled) {
+      background-color: var(--error-color);
       color: var(--white);
-      border-color: #f44336;
+      border-color: var(--error-color);
+    }
+
+    .btn-ghost:disabled {
+      background-color: #e0e0e0;
+      cursor: not-allowed;
+      opacity: 0.6;
     }
 
     .table-container {
@@ -539,10 +553,10 @@
       padding: 1rem;
       border-bottom: 1px solid var(--medium-gray);
     }
-    
+
     .table tbody tr {
       transition: var(--transition);
-      animation: fadeIn 0.5s ease;
+      animation: fadeIn 0.3s ease;
     }
 
     .table tbody tr:nth-child(even) {
@@ -553,10 +567,27 @@
       background-color: var(--pale-green);
     }
 
-    .row-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
+    /* Estados de Feedback */
+    .row-processing {
+      background-color: #e3f2fd !important; /* Azul claro para indicar processamento */
+      opacity: 0.85;
+    }
+
+    .row-success {
+      background-color: var(--success-color);
+      color: white;
+      animation: flashSuccess 1.5s forwards;
+    }
+
+    .row-error {
+      background-color: var(--error-color);
+      color: white;
+      animation: flashError 1.5s forwards;
+    }
+
+    .row-deleting {
+      opacity: 0.5;
+      transform: translateX(-10px);
     }
 
     .switch {
@@ -601,6 +632,17 @@
 
     input:checked + .slider:before {
       transform: translateX(26px);
+    }
+
+    input:disabled + .slider {
+      background-color: #bdbdbd;
+      cursor: not-allowed;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
     }
 
     .modal-backdrop {
@@ -650,7 +692,7 @@
       border-radius: 4px;
     }
 
-    /* Animações Simplificadas */
+    /* Animações */
     @keyframes shimmer {
       0% { background-position: -200% 0; }
       100% { background-position: 200% 0; }
@@ -671,13 +713,14 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    @keyframes highlight-flash {
-      0% { background-color: var(--pale-green); }
-      100% { background-color: transparent; }
+    @keyframes flashSuccess {
+      0% { background-color: var(--success-color); }
+      100% { background-color: transparent; color: var(--dark-gray); }
     }
 
-    .highlight-flash {
-      animation: highlight-flash 1.2s ease-out;
+    @keyframes flashError {
+      0% { background-color: var(--error-color); }
+      100% { background-color: transparent; color: var(--dark-gray); }
     }
 
     .fade-out {
@@ -686,11 +729,53 @@
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
+    /* Snackbar (Feedback global opcional) */
+    #snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: var(--dark-gray);
+      color: var(--white);
+      text-align: center;
+      border-radius: 2px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1001;
+      left: 50%;
+      bottom: 30px;
+      font-size: 17px;
+    }
+
+    #snackbar.show {
+      visibility: visible;
+      -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @-webkit-keyframes fadein {
+      from { bottom: 0; opacity: 0; }
+      to { bottom: 30px; opacity: 1; }
+    }
+
+    @keyframes fadein {
+      from { bottom: 0; opacity: 0; }
+      to { bottom: 30px; opacity: 1; }
+    }
+
+    @-webkit-keyframes fadeout {
+      from { bottom: 30px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
+
+    @keyframes fadeout {
+      from { bottom: 30px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
+
     @media (max-width: 1024px) {
       .header-nav {
         display: none;
       }
-      
       .mobile-menu-toggle {
         display: flex;
         flex-direction: column;
@@ -703,45 +788,27 @@
       .header-container {
         padding: 0 1rem;
       }
-      
       .brand-text {
         display: none;
       }
-      
       .notification-btn {
         display: none;
       }
-      
       .user-info {
         display: none;
       }
-      
       .user-card {
         padding: 0.4rem;
       }
-      
-      .filter-form { 
-        grid-template-columns: 1fr; 
-      }
-      
-      .table-container { 
-        font-size: 0.875rem; 
-      }
-      
-      .row-actions { 
-        flex-direction: column; 
-        gap: 4px; 
-      }
-      
-      .btn { 
-        padding: 0.6rem; 
-        font-size: 0.875rem; 
-      }
+      .filter-form { grid-template-columns: 1fr; }
+      .table-container { font-size: 0.875rem; }
+      .row-actions { flex-direction: column; gap: 4px; }
+      .btn { padding: 0.6rem; font-size: 0.875rem; }
     }
   </style>
 </head>
 <body>
- <header id="mainHeader">
+  <header id="mainHeader">
     <div class="header-container">
       <div class="header-brand">
         <div class="brand-logo">
@@ -779,7 +846,7 @@
           </a>
         </div>
         <div class="nav-item">
-          <a href="vagas.html" class="nav-link">
+          <a href="vagas.html" class="nav-link active">
             <i class="fas fa-briefcase"></i>
             <span>Vagas</span>
           </a>
@@ -795,7 +862,7 @@
         <div class="user-dropdown">
           <div class="user-card" id="userCard">
             <div class="user-avatar" id="userAvatar">
-              U
+              <i class="fas fa-user"></i>
               <span class="user-status"></span>
             </div>
             <div class="user-info">
@@ -804,7 +871,7 @@
             </div>
             <i class="fas fa-chevron-down user-dropdown-icon"></i>
           </div>
-          
+
           <div class="dropdown-menu" id="userDropdown">
             <div class="dropdown-header">
               <div class="dropdown-user-info">
@@ -815,7 +882,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="dropdown-body">
               <a href="perfil.html" class="dropdown-item">
                 <i class="fas fa-user"></i>
@@ -830,18 +897,18 @@
                 Ajuda e Suporte
               </a>
             </div>
-            
+
             <div class="dropdown-divider"></div>
-            
+
             <div class="dropdown-footer">
               <div class="dropdown-footer-item">
                 <span>Último acesso:</span>
                 <span id="lastLogin">Hoje</span>
               </div>
             </div>
-            
+
             <div class="dropdown-divider"></div>
-            
+
             <div class="dropdown-body">
               <a href="#" class="dropdown-item" onclick="window.logout()">
                 <i class="fas fa-sign-out-alt"></i>
@@ -901,7 +968,9 @@
               <th style="width:220px;text-align:right">Ações</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody id="vagas-tbody">
+            <!-- Skeleton será inserido aqui -->
+          </tbody>
         </table>
       </div>
     </section>
@@ -922,6 +991,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Snackbar para feedback global -->
+  <div id="snackbar">Mensagem de feedback</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
@@ -965,8 +1037,8 @@
   </script>
 
   <script>
-    // Página
-    const tbody = document.querySelector('#vagas-table tbody');
+    // --- Referências a Elementos do DOM (Cache) ---
+    const tbody = document.querySelector('#vagas-tbody');
     const meta = document.getElementById('list-meta');
     const inputNome = document.getElementById('input-nome');
     const inputAtiva = document.getElementById('input-ativa');
@@ -993,128 +1065,135 @@
     let toDeleteId = null;
     let toDeleteRow = null;
 
-    // Header scroll effect
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        mainHeader.classList.add('scrolled');
-      } else {
-        mainHeader.classList.remove('scrolled');
-      }
-    });
+    // Snackbar
+    const snackbar = document.getElementById('snackbar');
 
-    // Função para carregar informações do usuário
-    async function loadUserInfo() {
-      try {
-        if (window.authManager && window.authManager.isAuthenticated()) {
-          const userProfile = window.authManager.userProfile;
-          const currentUser = window.authManager.currentUser;
-          
-          if (userProfile) {
-            const name = userProfile.nome || userProfile.name || 'Usuário';
-            const role = userProfile.role || userProfile.funcao || 'Administrador';
-            
-            userName.textContent = name;
-            userRole.textContent = role;
-            dropdownUserName.textContent = name;
-            dropdownUserRole.textContent = role;
-            
-            // Iniciais do nome para o avatar
-            const initials = name.split(' ')
-              .map(word => word.charAt(0))
-              .join('')
-              .substring(0, 2)
-              .toUpperCase();
-            userAvatar.textContent = initials;
-            dropdownAvatar.textContent = initials;
-            
-            // Último acesso (simulado)
-            const now = new Date();
-            lastLogin.textContent = now.toLocaleString('pt-BR', { 
-              day: 'numeric', 
-              month: 'short', 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            });
-          } else if (currentUser) {
-            const email = currentUser.email || 'Usuário';
-            userName.textContent = email;
-            userRole.textContent = 'Administrador';
-            dropdownUserName.textContent = email;
-            dropdownUserRole.textContent = 'Administrador';
-            userAvatar.textContent = email.charAt(0).toUpperCase();
-            dropdownAvatar.textContent = email.charAt(0).toUpperCase();
-          }
-        } else {
-          userName.textContent = 'Visitante';
-          userRole.textContent = 'Não autenticado';
-          dropdownUserName.textContent = 'Visitante';
-          dropdownUserRole.textContent = 'Não autenticado';
-          userAvatar.textContent = '?';
-          dropdownAvatar.textContent = '?';
+    // --- Estado e Dados ---
+    let vagasCache = [];
+    let isProcessing = false; // Para evitar operações concorrentes
+
+    // --- Funções de Feedback ---
+    function showSnackbar(message, isError = false) {
+      snackbar.textContent = message;
+      snackbar.style.backgroundColor = isError ? 'var(--error-color)' : 'var(--dark-gray)';
+      snackbar.className = 'show';
+      setTimeout(() => { snackbar.className = snackbar.className.replace('show', ''); }, 3000);
+    }
+
+    function applyRowState(row, state) {
+        row.classList.remove('row-processing', 'row-success', 'row-error', 'row-deleting');
+        if (state) {
+            row.classList.add(state);
         }
-      } catch (error) {
-        console.error('Erro ao carregar informações do usuário:', error);
-        userName.textContent = 'Erro';
-        userRole.textContent = 'Tente novamente';
-        dropdownUserName.textContent = 'Erro';
-        dropdownUserRole.textContent = 'Tente novamente';
-        userAvatar.textContent = '!';
-        dropdownAvatar.textContent = '!';
-      }
     }
 
-    // Toggle do dropdown do usuário
-    userCard.addEventListener('click', function(e) {
-      e.stopPropagation();
-      userDropdown.classList.toggle('show');
-    });
+    // --- Funções CRUD com Feedback ---
+    async function handleAddVaga() {
+        const nome = inputNome.value.trim();
+        const ativa = inputAtiva.checked;
 
-    // Fechar dropdown ao clicar fora
-    document.addEventListener('click', function() {
-      if (userDropdown.classList.contains('show')) {
-        userDropdown.classList.remove('show');
-      }
-    });
+        if (!nome) {
+            showSnackbar('Informe um nome para a vaga.', true);
+            return;
+        }
 
-    // Mobile menu toggle
-    mobileMenuToggle.addEventListener('click', function() {
-      // Implementar menu mobile aqui
-      console.log('Menu mobile clicado');
-    });
+        if (isProcessing) return; // Previne cliques múltiplos
+        isProcessing = true;
+        btnAdd.disabled = true;
+        btnAdd.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adicionando...';
 
-    function openConfirm(id, row){ 
-      toDeleteId = id; 
-      toDeleteRow = row;
-      confirmBackdrop.style.display='flex'; 
+        try {
+            const newVaga = await vagas_create({ nome, ativa });
+            // Feedback visual imediato: Adiciona a nova vaga na lista com destaque
+            vagasCache.unshift(newVaga);
+            renderTable(vagasCache);
+            applyRowState(tbody.querySelector(`tr[data-id="${newVaga.id}"]`), 'row-success');
+            inputNome.value = '';
+            inputAtiva.checked = true;
+            showSnackbar('Vaga adicionada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar vaga:', error);
+            showSnackbar('Erro ao adicionar vaga: ' + error.message, true);
+        } finally {
+            btnAdd.disabled = false;
+            btnAdd.innerHTML = '<i class="fas fa-plus"></i> Adicionar';
+            isProcessing = false;
+        }
     }
-    function closeConfirm(){ 
-      toDeleteId = null; 
-      toDeleteRow = null;
-      confirmBackdrop.style.display='none'; 
+
+    async function handleSaveVaga(row) {
+        const id = row.dataset.id;
+        const nomeInput = row.querySelector('.input-nome');
+        const ativaInput = row.querySelector('.input-ativa');
+
+        const nome = nomeInput.value.trim();
+        const ativa = ativaInput.checked;
+
+        if (!nome) {
+            showSnackbar('Nome é obrigatório', true);
+            return;
+        }
+
+        if (isProcessing) return;
+        isProcessing = true;
+
+        // Feedback visual imediato
+        applyRowState(row, 'row-processing');
+        const saveBtn = row.querySelector('.btn-save');
+        const originalHTML = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
+        try {
+            const updatedVaga = await vagas_update(id, { nome, ativa });
+            // Atualiza o cache local
+            const index = vagasCache.findIndex(v => v.id == id);
+            if (index !== -1) {
+                vagasCache[index] = updatedVaga;
+            }
+            // Feedback visual de sucesso
+            applyRowState(row, 'row-success');
+            showSnackbar('Vaga atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao salvar vaga:', error);
+            applyRowState(row, 'row-error');
+            showSnackbar('Erro ao salvar vaga: ' + error.message, true);
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalHTML;
+            isProcessing = false;
+        }
     }
-    confirmClose.onclick = confirmCancel.onclick = closeConfirm;
-    confirmOk.onclick = async () => {
-      const id = toDeleteId; if (!id) return;
-      confirmOk.disabled = true; 
-      confirmOk.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Excluindo...';
-      
-      // Adiciona efeito de fade-out na linha antes de deletar
-      if(toDeleteRow) {
-        toDeleteRow.classList.add('fade-out');
-      }
 
-      try{
-        await vagas_delete(id);
-        // A atualização será feita pelo listener de Realtime, mas podemos forçar para feedback imediato
-        // await renderList(); 
-      }catch(e){ alert('Erro: '+e.message); }
-      finally{ 
-        confirmOk.disabled=false; 
-        confirmOk.innerHTML='<i class="fas fa-trash"></i> Excluir'; 
-        closeConfirm(); 
-      }
-    };
+    async function handleDeleteVaga(row) {
+        const id = row.dataset.id;
 
+        if (isProcessing) return;
+        isProcessing = true;
+
+        // Feedback visual imediato
+        applyRowState(row, 'row-deleting');
+        confirmBackdrop.style.display = 'none'; // Fecha o modal se estiver aberto
+
+        try {
+            await vagas_delete(id);
+            // Atualiza o cache local e a UI
+            vagasCache = vagasCache.filter(v => v.id != id);
+            row.remove(); // Remove a linha da tabela
+            meta.textContent = `${vagasCache.length} registro(s)`;
+            showSnackbar('Vaga excluída com sucesso!');
+        } catch (error) {
+            console.error('Erro ao excluir vaga:', error);
+            applyRowState(row, 'row-error');
+            showSnackbar('Erro ao excluir vaga: ' + error.message, true);
+            // Reverte o estado visual se falhar
+            applyRowState(row, '');
+        } finally {
+            isProcessing = false;
+        }
+    }
+
+    // --- Renderização da Tabela ---
     function rowTpl(v) {
       const created = v.criada_em ? new Date(v.criada_em).toLocaleString('pt-BR') : '—';
       const checked = v.ativa ? 'checked' : '';
@@ -1145,81 +1224,178 @@
       `;
     }
 
-    async function renderList() {
-      tbody.innerHTML = '<tr><td colspan="5"><div class="skeleton" style="height:20px;margin:10px;"></div></td></tr>';
-      try{
-        const rows = await vagas_list();
-        meta.textContent = `${rows.length} registro(s)`;
-        if (!rows.length) {
-          tbody.innerHTML = '<tr><td colspan="5" class="small" style="text-align:center;padding: 2rem;">Nenhuma vaga cadastrada.</td></tr>';
-          return;
+    function renderTable(data) {
+        if (!data || !Array.isArray(data)) {
+            tbody.innerHTML = '<tr><td colspan="5" class="small" style="text-align:center;padding: 2rem;">Erro ao carregar dados.</td></tr>';
+            return;
         }
-        tbody.innerHTML = rows.map(rowTpl).join('');
-
-        // Adiciona efeito de flash nas linhas após carregar
-        setTimeout(() => {
-            tbody.querySelectorAll('tr').forEach(row => row.classList.add('highlight-flash'));
-        }, 100);
-
-        // Wire events
-        tbody.querySelectorAll('.btn-save').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const tr = e.currentTarget.closest('tr');
-            const id = tr.dataset.id;
-            const nome = tr.querySelector('.input-nome').value.trim();
-            const ativa = tr.querySelector('.input-ativa').checked;
-            if (!nome) { alert('Nome é obrigatório'); return; }
-            btn.disabled = true; 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-            try{
-              await vagas_update(id, { nome, ativa });
-              // Feedback visual de sucesso
-              tr.classList.add('highlight-flash');
-            }catch(err){ alert('Erro ao salvar: '+err.message); }
-            finally{ 
-              btn.disabled=false; 
-              btn.innerHTML='<i class="fas fa-save"></i> Salvar'; 
-            }
-          });
-        });
-
-        tbody.querySelectorAll('.btn-delete').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const tr = e.currentTarget.closest('tr');
-            const id = tr.dataset.id;
-            openConfirm(id, tr);
-          });
-        });
-      }catch(err){
-        meta.textContent = 'Erro ao carregar';
-        tbody.innerHTML = `<tr><td colspan="5" class="small" style="text-align:center;padding: 2rem;">Erro: ${err.message}</td></tr>`;
-      }
+        meta.textContent = `${data.length} registro(s)`;
+        if (!data.length) {
+            tbody.innerHTML = '<tr><td colspan="5" class="small" style="text-align:center;padding: 2rem;">Nenhuma vaga cadastrada.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = data.map(rowTpl).join('');
     }
 
-    btnAdd.addEventListener('click', async () => {
-      const nome = inputNome.value.trim();
-      const ativa = inputAtiva.checked;
-      if (!nome) { alert('Informe um nome para a vaga.'); return; }
-      btnAdd.disabled = true; 
-      btnAdd.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adicionando...';
-      try{
-        await vagas_create({ nome, ativa });
-        inputNome.value = ''; inputAtiva.checked = true;
-        // A atualização será feita pelo listener de Realtime
-        // await renderList(); 
-      }catch(err){ alert('Erro ao adicionar: '+err.message); }
-      finally{ 
-        btnAdd.disabled=false; 
-        btnAdd.innerHTML='<i class="fas fa-plus"></i> Adicionar'; 
+    function renderSkeleton() {
+        const skeletonRows = 5; // Número de linhas de skeleton
+        let skeletonHTML = '';
+        for (let i = 0; i < skeletonRows; i++) {
+            skeletonHTML += `
+            <tr>
+                <td><div class="skeleton" style="height:20px;margin:5px 0;"></div></td>
+                <td><div class="skeleton" style="height:20px;margin:5px 0;"></div></td>
+                <td style="text-align:center;"><div class="skeleton" style="height:20px;margin:5px 0; width: 40px; margin-left: auto; margin-right: auto;"></div></td>
+                <td><div class="skeleton" style="height:20px;margin:5px 0;"></div></td>
+                <td><div class="skeleton" style="height:20px;margin:5px 0;"></div></td>
+            </tr>`;
+        }
+        tbody.innerHTML = skeletonHTML;
+    }
+
+    // --- Eventos e Configurações ---
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        mainHeader.classList.add('scrolled');
+      } else {
+        mainHeader.classList.remove('scrolled');
       }
     });
 
-    window.logout = async function(){ 
+    // Evento de clique para o botão Adicionar
+    btnAdd.addEventListener('click', handleAddVaga);
+
+    // Evento de clique delegado para ações na tabela
+    tbody.addEventListener('click', (e) => {
+        const target = e.target;
+        const row = target.closest('tr[data-id]');
+
+        if (!row) return;
+
+        if (target.closest('.btn-save')) {
+            handleSaveVaga(row);
+        }
+        if (target.closest('.btn-delete')) {
+            const id = row.dataset.id;
+            toDeleteRow = row;
+            openConfirm(id);
+        }
+        // Para o switch de ativo/inativo, pode-se adicionar um listener de change
+        const switchInput = target.closest('.input-ativa');
+        if (switchInput) {
+            // Atualiza imediatamente a UI para refletir a mudança
+            const id = row.dataset.id;
+            const isChecked = switchInput.checked;
+            // Encontra a vaga no cache e atualiza o estado visual
+            const vaga = vagasCache.find(v => v.id == id);
+            if (vaga) {
+                vaga.ativa = isChecked;
+            }
+            // Aplica o estado visual de processamento
+            applyRowState(row, 'row-processing');
+            // Chama a função de salvar
+            handleSaveVaga(row);
+        }
+    });
+
+    // Funções do Modal de Confirmação
+    function openConfirm(id) {
+        toDeleteId = id;
+        confirmBackdrop.style.display = 'flex';
+    }
+    function closeConfirm() {
+        confirmBackdrop.style.display = 'none';
+    }
+    confirmClose.onclick = confirmCancel.onclick = closeConfirm;
+    confirmOk.onclick = async () => {
+        if (!toDeleteId || !toDeleteRow) return;
+        await handleDeleteVaga(toDeleteRow);
+        closeConfirm();
+    };
+
+    // Função para carregar informações do usuário (mantida)
+    async function loadUserInfo() {
+      try {
+        if (window.authManager && window.authManager.isAuthenticated()) {
+          const userProfile = window.authManager.userProfile;
+          const currentUser = window.authManager.currentUser;
+
+          if (userProfile) {
+            const name = userProfile.nome || userProfile.name || 'Usuário';
+            const role = userProfile.role || userProfile.funcao || 'Administrador';
+
+            userName.textContent = name;
+            userRole.textContent = role;
+            dropdownUserName.textContent = name;
+            dropdownUserRole.textContent = role;
+
+            const initials = name.split(' ')
+              .map(word => word.charAt(0))
+              .join('')
+              .substring(0, 2)
+              .toUpperCase();
+            userAvatar.textContent = initials;
+            dropdownAvatar.textContent = initials;
+
+            const now = new Date();
+            lastLogin.textContent = now.toLocaleString('pt-BR', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+          } else if (currentUser) {
+            const email = currentUser.email || 'Usuário';
+            userName.textContent = email;
+            userRole.textContent = 'Administrador';
+            dropdownUserName.textContent = email;
+            dropdownUserRole.textContent = 'Administrador';
+            userAvatar.textContent = email.charAt(0).toUpperCase();
+            dropdownAvatar.textContent = email.charAt(0).toUpperCase();
+          }
+        } else {
+          userName.textContent = 'Visitante';
+          userRole.textContent = 'Não autenticado';
+          dropdownUserName.textContent = 'Visitante';
+          dropdownUserRole.textContent = 'Não autenticado';
+          userAvatar.textContent = '?';
+          dropdownAvatar.textContent = '?';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar informações do usuário:', error);
+        userName.textContent = 'Erro';
+        userRole.textContent = 'Tente novamente';
+        dropdownUserName.textContent = 'Erro';
+        dropdownUserRole.textContent = 'Tente novamente';
+        userAvatar.textContent = '!';
+        dropdownAvatar.textContent = '!';
+      }
+    }
+
+    // Eventos do dropdown do usuário (mantidos)
+    userCard.addEventListener('click', function(e) {
+      e.stopPropagation();
+      userDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', function() {
+      if (userDropdown.classList.contains('show')) {
+        userDropdown.classList.remove('show');
+      }
+    });
+
+    // Mobile menu toggle (mantido)
+    mobileMenuToggle.addEventListener('click', function() {
+      console.log('Menu mobile clicado');
+    });
+
+    // Função de logout (mantida)
+    window.logout = async function(){
       if (window.authManager) await window.authManager.logout();
       else window.location.href = 'index.html';
     };
 
-    // --- CONFIGURAÇÃO DA AUTO-ATUALIZAÇÃO EM TEMPO REAL ---
+    // --- CONFIGURAÇÃO DA AUTO-ATUALIZAÇÃO EM TEMPO REAL (Otimizada) ---
     function setupRealtimeSubscription() {
       if (!window.supabase) return;
 
@@ -1229,8 +1405,40 @@
           'postgres_changes',
           { event: '*', schema: 'public', table: 'vagas' },
           (payload) => {
-            console.log('Mudança detectada!', payload);
-            renderList(); // Re-renderiza a tabela sempre que houver uma mudança
+            console.log('Mudança detectada no servidor!', payload);
+            // Atualiza a UI localmente com base no evento recebido
+            const eventType = payload.eventType;
+            const newRecord = payload.new;
+            const oldRecord = payload.old;
+
+            if (eventType === 'INSERT') {
+                // Adiciona a nova vaga no início da lista
+                vagasCache.unshift(newRecord);
+                renderTable(vagasCache);
+            } else if (eventType === 'UPDATE') {
+                // Atualiza a vaga existente no cache e na UI
+                const index = vagasCache.findIndex(v => v.id == newRecord.id);
+                if (index !== -1) {
+                    vagasCache[index] = newRecord;
+                    const row = tbody.querySelector(`tr[data-id="${newRecord.id}"]`);
+                    if (row) {
+                        // Atualiza os campos da linha existente sem re-renderizar tudo
+                        row.querySelector('.input-nome').value = newRecord.nome;
+                        row.querySelector('.input-ativa').checked = newRecord.ativa;
+                        // Opcional: Aplicar feedback visual leve
+                        applyRowState(row, 'row-success');
+                        setTimeout(() => applyRowState(row, ''), 1500); // Remove após animação
+                    }
+                }
+            } else if (eventType === 'DELETE') {
+                // Remove a vaga do cache e da UI
+                vagasCache = vagasCache.filter(v => v.id != oldRecord.id);
+                const row = tbody.querySelector(`tr[data-id="${oldRecord.id}"]`);
+                if (row) {
+                    row.remove(); // Remove a linha da tabela
+                    meta.textContent = `${vagasCache.length} registro(s)`; // Atualiza contagem
+                }
+            }
           }
         )
         .subscribe((status) => {
@@ -1240,28 +1448,29 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Carrega informações do usuário
-      loadUserInfo();
-      
-      // Carrega lista de vagas
-      renderList();
-      setupRealtimeSubscription();
-      
-      // Atualiza informações do usuário quando o estado de autenticação mudar
-      if (window.supabase && window.supabase.auth) {
-        window.supabase.auth.onAuthStateChange(() => {
-          loadUserInfo();
-          renderList();
-        });
-      }
-    });
+    // --- Inicialização ---
+    document.addEventListener('DOMContentLoaded', async () => {
+        loadUserInfo();
+        renderSkeleton(); // Mostra skeleton imediatamente
+        try {
+            const data = await vagas_list();
+            vagasCache = data; // Atualiza o cache
+            renderTable(data);
+        } catch (error) {
+            console.error('Erro ao carregar lista inicial:', error);
+            meta.textContent = 'Erro ao carregar';
+            tbody.innerHTML = `<tr><td colspan="5" class="small" style="text-align:center;padding: 2rem;">Erro: ${error.message}</td></tr>`;
+        }
+        setupRealtimeSubscription();
 
-    // Se a sessão mudar, recarrega a lista (mantido do original)
-    const chk = setInterval(() => { if (window.supabase && window.supabase.auth) {
-      clearInterval(chk);
-      window.supabase.auth.onAuthStateChange(() => renderList());
-    }}, 200);
+        if (window.supabase && window.supabase.auth) {
+          window.supabase.auth.onAuthStateChange(() => {
+            loadUserInfo();
+            // Pode-se recarregar a lista se a autenticação mudar
+            // renderList();
+          });
+        }
+    });
   </script>
 </body>
 </html>
