@@ -131,7 +131,7 @@ async function getCandidaturas(filters = {}) {
 
   let query = window.supabase
     .from('candidaturas')
-    .select('*')
+    .select('*', { count: 'exact' }) // Importante para paginação
     .order('enviado_em', { ascending: false });
 
   if (filters.vaga) { query = query.eq('vaga', filters.vaga); }
@@ -175,7 +175,13 @@ async function getCandidaturas(filters = {}) {
       throw new Error(`Falha ao carregar candidaturas: ${error.message}`);
     }
     const normalized = (data || []).map(normalizeCandidatura);
-    return { data: normalized, page: Number(page), limit: Number(limit), total: count || 0, totalPages: Math.ceil((count || 0) / limit) };
+    return { 
+      data: normalized, 
+      page: Number(page), 
+      limit: Number(limit), 
+      total: count || 0, 
+      totalPages: Math.ceil((count || 0) / limit) || 1 // Garante totalPages >= 1
+    };
   }
 
   if (filters.limit) {
@@ -775,7 +781,7 @@ async function getExperienceEmployees(filters = {}) {
       page: Number(page), 
       limit: Number(limit), 
       total: count || 0, 
-      totalPages: Math.ceil((count || 0) / limit),
+      totalPages: Math.ceil((count || 0) / limit) || 1, // Garante totalPages >= 1
       stats 
     };
   }
