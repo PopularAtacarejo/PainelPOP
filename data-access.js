@@ -139,6 +139,13 @@ async function getCandidaturas(filters = {}) {
   if (filters.vaga) { query = query.eq('vaga', filters.vaga); }
   if (filters.cidade) { query = query.ilike('cidade', `%${filters.cidade}%`); }
   if (filters.status) { query = query.eq('status', filters.status); }
+  if (filters.visto) {
+    if (filters.visto === 'visto') {
+      query = query.not('ultima_visualizacao', 'is', null);
+    } else if (filters.visto === 'nao_visto' || filters.visto === 'nao-visto') {
+      query = query.is('ultima_visualizacao', null);
+    }
+  }
   if (filters.bairro) { query = query.ilike('bairro', `%${filters.bairro}%`); }
   if (filters.rua) { query = query.ilike('rua', `%${filters.rua}%`); }
   if (filters.cpf) {
@@ -171,7 +178,50 @@ async function getCandidaturas(filters = {}) {
     const limit = Number(filters.limit) || 20;
     const from = (page - 1) * limit;
     const to = from + limit - 1;
-    const { data, error, count } = await query.range(from, to);
+
+    // Recria a query solicitando o count exato, pois o count só é retornado
+    // quando passamos { count: 'exact' } no select.
+    let pagQuery = window.supabase
+      .from('candidaturas')
+      .select('*, ultima_visualizacao', { count: 'exact' })
+      .order('enviado_em', { ascending: false });
+
+    if (filters.vaga) { pagQuery = pagQuery.eq('vaga', filters.vaga); }
+    if (filters.cidade) { pagQuery = pagQuery.ilike('cidade', `%${filters.cidade}%`); }
+    if (filters.status) { pagQuery = pagQuery.eq('status', filters.status); }
+    if (filters.visto) {
+      if (filters.visto === 'visto') {
+        pagQuery = pagQuery.not('ultima_visualizacao', 'is', null);
+      } else if (filters.visto === 'nao_visto' || filters.visto === 'nao-visto') {
+        pagQuery = pagQuery.is('ultima_visualizacao', null);
+      }
+    }
+    if (filters.bairro) { pagQuery = pagQuery.ilike('bairro', `%${filters.bairro}%`); }
+    if (filters.rua) { pagQuery = pagQuery.ilike('rua', `%${filters.rua}%`); }
+    if (filters.cpf) {
+      const cpfNorm = String(filters.cpf).replace(/\D/g, '');
+      if (cpfNorm) pagQuery = pagQuery.ilike('cpf', `%${cpfNorm}%`);
+    }
+    if (filters.nome) { pagQuery = pagQuery.ilike('nome', `%${filters.nome}%`); }
+    if (filters.search) {
+      const searchText = `%${filters.search}%`;
+      pagQuery = pagQuery.or(`nome.ilike.${searchText},email.ilike.${searchText},cpf.ilike.${searchText}`);
+    }
+    if (filters.data_inicio) {
+      try {
+        const inicio = new Date(filters.data_inicio);
+        pagQuery = pagQuery.gte('enviado_em', inicio.toISOString());
+      } catch {}
+    }
+    if (filters.data_fim) {
+      try {
+        const end = new Date(filters.data_fim);
+        end.setHours(23, 59, 59, 999);
+        pagQuery = pagQuery.lte('enviado_em', end.toISOString());
+      } catch {}
+    }
+
+    const { data, error, count } = await pagQuery.range(from, to);
     if (error) {
       console.error("Erro ao carregar candidaturas:", error);
       throw new Error(`Falha ao carregar candidaturas: ${error.message}`);
@@ -181,8 +231,8 @@ async function getCandidaturas(filters = {}) {
       data: normalized,
       page: Number(page),
       limit: Number(limit),
-      total: count || 0,
-      totalPages: Math.ceil((count || 0) / limit) || 1
+      total: typeof count === 'number' ? count : (normalized.length || 0),
+      totalPages: Math.max(1, Math.ceil((typeof count === 'number' ? count : normalized.length) / limit))
     };
   }
 
@@ -823,19 +873,56 @@ async function getExperienceEmployees(filters = {}) {
     const limit = Number(filters.limit) || 20;
     const from = (page - 1) * limit;
     const to = from + limit - 1;
-    
-    const { data, error, count } = await query.range(from, to);
+
+    // Recria a query pedindo o count exato para permitir paginação correta
+    let pagQuery = window.supabase
+      .from('employee_experience')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false });
+
+    if (filters.period) {
+      pagQuery = pagQuery.eq('period', filters.period);
+    }
+
+    if (filters.phase) {
+      pagQuery = pagQuery.eq('phase', filters.phase);
+    }
+
+    if (filters.vaga) {
+      pagQuery = pagQuery.eq('vaga', filters.vaga);
+    }
+
+    if (filters.cidade) {
+      pagQuery = pagQuery.ilike('cidade', `%${filters.cidade}%`);
+    }
+
+    if (filters.nome) {
+      pagQuery = pagQuery.ilike('nome', `%${filters.nome}%`);
+    }
+
+    if (filters.data_inicio) {
+      const startDate = new Date(filters.data_inicio);
+      pagQuery = pagQuery.gte('start_date', startDate.toISOString());
+    }
+
+    if (filters.data_fim) {
+      const endDate = new Date(filters.data_fim);
+      endDate.setHours(23, 59, 59, 999);
+      pagQuery = pagQuery.lte('end_date', endDate.toISOString());
+    }
+
+    const { data, error, count } = await pagQuery.range(from, to);
     if (error) throw error;
-    
+
     const processedData = processExperienceData(data || []);
     const stats = calculateStats(processedData);
-    
+
     return { 
       data: processedData, 
       page: Number(page), 
       limit: Number(limit), 
-      total: count || 0, 
-      totalPages: Math.ceil((count || 0) / limit) || 1, // Garante totalPages >= 1
+      total: typeof count === 'number' ? count : processedData.length, 
+      totalPages: Math.max(1, Math.ceil((typeof count === 'number' ? count : processedData.length) / limit)), // Garante totalPages >= 1
       stats 
     };
   }
